@@ -1484,64 +1484,70 @@ const App: React.FC = () => {
                          </div>
                        </div>
                        
-                                                                                                                                                                                               {/* Description Field - Simple Input + Save Button */}
-                              <div style={{ marginBottom: '12px' }}>
-                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                  <input
-                                    type="text"
-                                    value={editingMatnId === matn.id ? editingText : (matn.description || '')}
-                                    onChange={(e) => {
-                                      if (editingMatnId === matn.id) {
-                                        setEditingText(e.target.value);
-                                      } else {
-                                        setEditingText(e.target.value);
-                                        setEditingMatnId(matn.id);
-                                      }
-                                    }}
-                                    placeholder="أضف ملاحظة للمتن..."
-                                    style={{
-                                      flex: 1,
-                                      padding: '12px',
-                                      border: `1px solid ${colors.border}`,
-                                      borderRadius: '8px',
-                                      fontSize: '0.9rem',
-                                      fontFamily: 'inherit',
-                                      backgroundColor: colors.background,
-                                      color: colors.text,
-                                      outline: 'none',
-                                      direction: 'rtl',
-                                      textAlign: 'right'
-                                    }}
-                                    onFocus={(e) => e.target.style.borderColor = colors.primary}
-                                    onBlur={(e) => e.target.style.borderColor = colors.border}
-                                  />
-                                  <button
-                                    onClick={() => {
-                                      updateMatnDescription(matn.id, editingText);
-                                      setEditingMatnId(null);
-                                      setEditingText('');
-                                    }}
-                                    style={{
-                                      background: `linear-gradient(135deg, ${colors.success}, #2ed573)`,
-                                      color: 'white',
-                                      border: 'none',
-                                      borderRadius: '8px',
-                                      padding: '12px 16px',
-                                      cursor: 'pointer',
-                                      fontSize: '0.9rem',
-                                      fontWeight: '600',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: '4px',
-                                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                                      transition: 'all 0.2s',
-                                      minWidth: '70px'
-                                    }}
-                                  >
-                                    💾 حفظ
-                                  </button>
-                                </div>
-                              </div>
+                                                                                                                                                                                                                       {/* Description Field - Simple Input + Save Button */}
+                               <div style={{ marginBottom: '12px' }}>
+                                 <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
+                                   <input
+                                     type="text"
+                                     value={editingMatnId === matn.id ? editingText : (matn.description || '')}
+                                     onChange={(e) => {
+                                       setEditingText(e.target.value);
+                                       if (editingMatnId !== matn.id) {
+                                         setEditingMatnId(matn.id);
+                                       }
+                                     }}
+                                     onFocus={() => {
+                                       if (editingMatnId !== matn.id) {
+                                         const currentDescription = mutunData.find(m => m.id === matn.id)?.description || '';
+                                         setEditingText(currentDescription);
+                                         setEditingMatnId(matn.id);
+                                       }
+                                     }}
+                                     placeholder="أضف ملاحظة للمتن..."
+                                     style={{
+                                       flex: 1,
+                                       padding: '12px',
+                                       border: `1px solid ${colors.border}`,
+                                       borderRadius: '8px',
+                                       fontSize: '0.9rem',
+                                       fontFamily: 'inherit',
+                                       backgroundColor: colors.background,
+                                       color: colors.text,
+                                       outline: 'none',
+                                       direction: 'rtl',
+                                       textAlign: 'right'
+                                     }}
+                                     onFocusCapture={(e) => e.target.style.borderColor = colors.primary}
+                                     onBlur={(e) => e.target.style.borderColor = colors.border}
+                                   />
+                                   <button
+                                     onClick={() => {
+                                       const currentText = editingMatnId === matn.id ? editingText : (matn.description || '');
+                                       updateMatnDescription(matn.id, currentText);
+                                       setEditingMatnId(null);
+                                       setEditingText('');
+                                     }}
+                                     style={{
+                                       background: `linear-gradient(135deg, ${colors.success}, #2ed573)`,
+                                       color: 'white',
+                                       border: 'none',
+                                       borderRadius: '8px',
+                                       width: '44px',
+                                       height: '44px',
+                                       cursor: 'pointer',
+                                       fontSize: '1.2rem',
+                                       display: 'flex',
+                                       alignItems: 'center',
+                                       justifyContent: 'center',
+                                       boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                                       transition: 'all 0.2s',
+                                       flexShrink: 0
+                                     }}
+                                   >
+                                     💾
+                                   </button>
+                                 </div>
+                               </div>
                        
                        {/* Action Buttons */}
                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
