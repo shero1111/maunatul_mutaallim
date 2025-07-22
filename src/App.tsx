@@ -254,26 +254,44 @@ const App: React.FC = () => {
     }
   }, [currentUser, mutunData]);
 
-  // Load data from localStorage
+  // Load data from localStorage + AUTO LOGIN
   useEffect(() => {
     const savedMutunData = localStorage.getItem('mutunData');
     const savedUsersData = localStorage.getItem('usersData');
     const savedNewsData = localStorage.getItem('newsData');
     const savedLanguage = localStorage.getItem('language') as Language;
     const savedTheme = localStorage.getItem('theme') as Theme;
+    const savedCurrentUser = localStorage.getItem('currentUser');
+    const savedCurrentPage = localStorage.getItem('currentPage');
     
     if (savedMutunData) setMutunData(JSON.parse(savedMutunData));
     if (savedUsersData) setUsersData(JSON.parse(savedUsersData));
     if (savedNewsData) setNewsData(JSON.parse(savedNewsData));
     if (savedLanguage) setLanguage(savedLanguage);
     if (savedTheme) setTheme(savedTheme);
+    
+    // AUTO LOGIN PERSISTENCE
+    if (savedCurrentUser) {
+      const user = JSON.parse(savedCurrentUser);
+      setCurrentUser(user);
+      setIsLoggedIn(true);
+      setCurrentPage(savedCurrentPage || 'home');
+    }
   }, []);
 
-  // Save language and theme to localStorage
+  // Save language, theme, user and page to localStorage
   useEffect(() => {
     localStorage.setItem('language', language);
     localStorage.setItem('theme', theme);
   }, [language, theme]);
+
+  // Save current user and page
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      localStorage.setItem('currentPage', currentPage);
+    }
+  }, [currentUser, currentPage]);
 
   // Auto-check Mutuun thresholds
   useEffect(() => {
@@ -594,8 +612,11 @@ const App: React.FC = () => {
 
     return (
       <div style={{ position: 'relative', marginBottom: '20px' }}>
-        <input type="text" value={query} onChange={(e) => handleSearch(e.target.value)} placeholder={placeholder} style={{ width: '100%', padding: currentLang === 'ar' ? '12px 40px 12px 12px' : '12px 12px 12px 40px', border: `2px solid ${currentColors.border}`, borderRadius: '25px', fontSize: '16px', outline: 'none', backgroundColor: currentColors.surface, color: currentColors.text, direction: currentLang === 'ar' ? 'rtl' : 'ltr', transition: 'border-color 0.2s' }} onFocus={(e) => e.target.style.borderColor = currentColors.primary} onBlur={(e) => e.target.style.borderColor = currentColors.border} />
+        <input type="text" value={query} onChange={(e) => handleSearch(e.target.value)} placeholder={placeholder} style={{ width: '100%', padding: currentLang === 'ar' ? '12px 80px 12px 40px' : '12px 80px 12px 40px', border: `2px solid ${currentColors.border}`, borderRadius: '25px', fontSize: '16px', outline: 'none', backgroundColor: currentColors.surface, color: currentColors.text, direction: currentLang === 'ar' ? 'rtl' : 'ltr', transition: 'border-color 0.2s' }} onFocus={(e) => e.target.style.borderColor = currentColors.primary} onBlur={(e) => e.target.style.borderColor = currentColors.border} />
         <span style={{ position: 'absolute', [currentLang === 'ar' ? 'right' : 'left']: '15px', top: '50%', transform: 'translateY(-50%)', color: currentColors.primary, fontSize: '18px' }}>🔍</span>
+        {query && (
+          <button onClick={() => handleSearch('')} style={{ position: 'absolute', [currentLang === 'ar' ? 'left' : 'right']: '15px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: currentColors.textSecondary, cursor: 'pointer', fontSize: '18px', padding: '2px' }}>✕</button>
+        )}
       </div>
     );
   };
@@ -662,10 +683,10 @@ const App: React.FC = () => {
     );
   };
 
-  // Login Component
+  // Login Component (Auto-fill for testing)
   const LoginPage: React.FC = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState('student1');
+    const [password, setPassword] = useState('test');
     const [error, setError] = useState('');
 
     const handleLogin = () => {
@@ -690,12 +711,22 @@ const App: React.FC = () => {
           
           <div style={{ marginBottom: '20px' }}>
             <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: colors.text }}>{t.username}</label>
-            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} style={{ width: '100%', padding: '12px', border: `1px solid ${colors.border}`, borderRadius: '8px', fontSize: '16px', backgroundColor: colors.surface, color: colors.text, direction: 'ltr', outline: 'none', transition: 'border-color 0.2s' }} onFocus={(e) => e.target.style.borderColor = colors.primary} onBlur={(e) => e.target.style.borderColor = colors.border} />
+            <div style={{ position: 'relative' }}>
+              <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} style={{ width: '100%', padding: '12px 40px 12px 12px', border: `1px solid ${colors.border}`, borderRadius: '8px', fontSize: '16px', backgroundColor: colors.surface, color: colors.text, direction: 'ltr', outline: 'none', transition: 'border-color 0.2s' }} onFocus={(e) => e.target.style.borderColor = colors.primary} onBlur={(e) => e.target.style.borderColor = colors.border} />
+              {username && (
+                <button onClick={() => setUsername('')} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: colors.textSecondary, cursor: 'pointer', fontSize: '18px', padding: '2px' }}>✕</button>
+              )}
+            </div>
           </div>
           
           <div style={{ marginBottom: '20px' }}>
             <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: colors.text }}>{t.password}</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={{ width: '100%', padding: '12px', border: `1px solid ${colors.border}`, borderRadius: '8px', fontSize: '16px', backgroundColor: colors.surface, color: colors.text, direction: 'ltr', outline: 'none', transition: 'border-color 0.2s' }} onFocus={(e) => e.target.style.borderColor = colors.primary} onBlur={(e) => e.target.style.borderColor = colors.border} onKeyPress={(e) => e.key === 'Enter' && handleLogin()} />
+            <div style={{ position: 'relative' }}>
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={{ width: '100%', padding: '12px 40px 12px 12px', border: `1px solid ${colors.border}`, borderRadius: '8px', fontSize: '16px', backgroundColor: colors.surface, color: colors.text, direction: 'ltr', outline: 'none', transition: 'border-color 0.2s' }} onFocus={(e) => e.target.style.borderColor = colors.primary} onBlur={(e) => e.target.style.borderColor = colors.border} onKeyPress={(e) => e.key === 'Enter' && handleLogin()} />
+              {password && (
+                <button onClick={() => setPassword('')} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: colors.textSecondary, cursor: 'pointer', fontSize: '18px', padding: '2px' }}>✕</button>
+              )}
+            </div>
           </div>
           
           {error && (
@@ -972,6 +1003,7 @@ const App: React.FC = () => {
       setIsLoggedIn(false);
       setCurrentPage('home');
       localStorage.removeItem('currentUser');
+      localStorage.removeItem('currentPage');
     };
 
     return (
