@@ -1410,51 +1410,91 @@ const App: React.FC = () => {
                          </div>
                        </div>
                        
-                       {/* Description Field - Always Visible */}
-                       <div style={{ marginBottom: '12px' }}>
-                         {editingMatnId === matn.id ? (
-                           <div>
-                             <textarea 
-                               value={matn.description || ''} 
-                               onChange={(e) => updateMatnDescription(matn.id, e.target.value)}
-                               onBlur={() => setEditingMatnId(null)}
-                               autoFocus
-                               placeholder="أضف ملاحظة..."
-                               style={{ 
-                                 width: '100%', 
-                                 padding: '10px', 
-                                 border: `2px solid ${colors.primary}`, 
-                                 borderRadius: '8px', 
-                                 fontSize: '0.9rem', 
-                                 backgroundColor: colors.background, 
-                                 color: colors.text, 
-                                 minHeight: '60px', 
-                                 resize: 'vertical',
-                                 outline: 'none',
-                                 fontFamily: 'inherit'
-                               }} 
-                             />
-                           </div>
-                         ) : (
-                           <div 
-                             onClick={() => setEditingMatnId(matn.id)}
-                             style={{ 
-                               background: colors.background, 
-                               padding: '10px', 
-                               borderRadius: '8px',
-                               border: `1px solid ${colors.border}`,
-                               cursor: 'text',
-                               minHeight: '40px',
-                               display: 'flex',
-                               alignItems: 'center'
-                             }}
-                           >
-                             <span style={{ color: matn.description ? colors.text : colors.textSecondary, fontSize: '0.9rem', fontStyle: matn.description ? 'normal' : 'italic' }}>
-                               {matn.description || 'انقر لإضافة ملاحظة...'}
-                             </span>
-                           </div>
-                         )}
-                       </div>
+                                               {/* Description Field - Always Visible */}
+                        <div style={{ marginBottom: '12px' }}>
+                          {editingMatnId === matn.id ? (
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                              <textarea 
+                                value={matn.description || ''} 
+                                onChange={(e) => updateMatnDescription(matn.id, e.target.value)}
+                                autoFocus
+                                placeholder="أضف ملاحظة..."
+                                style={{ 
+                                  flex: 1,
+                                  padding: '10px', 
+                                  border: `2px solid ${colors.primary}`, 
+                                  borderRadius: '8px', 
+                                  fontSize: '0.9rem', 
+                                  backgroundColor: colors.background, 
+                                  color: colors.text, 
+                                  minHeight: '60px', 
+                                  resize: 'vertical',
+                                  outline: 'none',
+                                  fontFamily: 'inherit'
+                                }} 
+                              />
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <button 
+                                  onClick={() => setEditingMatnId(null)}
+                                  style={{ 
+                                    background: colors.success, 
+                                    color: 'white', 
+                                    border: 'none', 
+                                    borderRadius: '6px', 
+                                    padding: '8px 10px', 
+                                    cursor: 'pointer', 
+                                    fontSize: '12px',
+                                    fontWeight: 'bold',
+                                    minWidth: '40px'
+                                  }}
+                                >
+                                  ✓
+                                </button>
+                                <button 
+                                  onClick={() => {
+                                    // Revert changes
+                                    const originalMatn = mutunData.find(m => m.id === matn.id);
+                                    if (originalMatn) {
+                                      updateMatnDescription(matn.id, originalMatn.description || '');
+                                    }
+                                    setEditingMatnId(null);
+                                  }}
+                                  style={{ 
+                                    background: colors.error, 
+                                    color: 'white', 
+                                    border: 'none', 
+                                    borderRadius: '6px', 
+                                    padding: '8px 10px', 
+                                    cursor: 'pointer', 
+                                    fontSize: '12px',
+                                    fontWeight: 'bold',
+                                    minWidth: '40px'
+                                  }}
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div 
+                              onClick={() => setEditingMatnId(matn.id)}
+                              style={{ 
+                                background: colors.background, 
+                                padding: '10px', 
+                                borderRadius: '8px',
+                                border: `1px solid ${colors.border}`,
+                                cursor: 'text',
+                                minHeight: '40px',
+                                display: 'flex',
+                                alignItems: 'center'
+                              }}
+                            >
+                              <span style={{ color: matn.description ? colors.text : colors.textSecondary, fontSize: '0.9rem', fontStyle: matn.description ? 'normal' : 'italic' }}>
+                                {matn.description || 'انقر لإضافة ملاحظة...'}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                        
                        {/* Action Buttons */}
                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
