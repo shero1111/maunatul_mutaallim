@@ -204,6 +204,8 @@ const App: React.FC = () => {
   const [audioPlayer, setAudioPlayer] = useState<{url: string, title: string} | null>(null);
   const [editingMatnId, setEditingMatnId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState<string>('');
+  const [descriptionModalOpen, setDescriptionModalOpen] = useState<boolean>(false);
+  const [descriptionModalMatn, setDescriptionModalMatn] = useState<Matn | null>(null);
   const [thresholdModalMatn, setThresholdModalMatn] = useState<Matn | null>(null);
   const [tempThreshold, setTempThreshold] = useState<number>(7);
   // PDF Viewer removed - only external opening
@@ -461,6 +463,97 @@ const App: React.FC = () => {
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: currentColors.surface, borderRadius: '20px 20px 0 0', maxHeight: '80vh', overflowY: 'auto', padding: '20px', direction: currentLang === 'ar' ? 'rtl' : 'ltr', boxShadow: '0 -10px 30px rgba(0,0,0,0.2)' }}>
           <div style={{ width: '40px', height: '4px', background: currentColors.border, borderRadius: '2px', margin: '0 auto 20px' }} />
           {children}
+        </div>
+      </div>
+    );
+  };
+
+  // Description Modal Component
+  const DescriptionModal: React.FC = () => {
+    if (!descriptionModalOpen || !descriptionModalMatn) return null;
+    
+    // Use current theme colors and language
+    const currentColors = themeColors[theme];
+    const currentLang = language;
+
+    const handleSave = () => {
+      updateMatnDescription(descriptionModalMatn.id, editingText);
+      setDescriptionModalOpen(false);
+      setDescriptionModalMatn(null);
+      setEditingText('');
+    };
+
+    const handleCancel = () => {
+      setDescriptionModalOpen(false);
+      setDescriptionModalMatn(null);
+      setEditingText('');
+    };
+
+    return (
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: currentColors.overlay, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1004, padding: '20px' }}>
+        <div style={{ background: currentColors.surface, borderRadius: '20px', padding: '30px', maxWidth: '400px', width: '100%', direction: currentLang === 'ar' ? 'rtl' : 'ltr' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <h3 style={{ margin: 0, color: currentColors.text, fontSize: '1.2rem' }}>📝 تعديل الملاحظة</h3>
+            <button onClick={handleCancel} style={{ background: 'none', border: 'none', fontSize: '20px', color: currentColors.textSecondary, cursor: 'pointer' }}>✕</button>
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <p style={{ color: currentColors.text, fontSize: '1rem', marginBottom: '15px', fontWeight: 'bold' }}>
+              {descriptionModalMatn.name}
+            </p>
+            
+            <textarea
+              value={editingText}
+              onChange={(e) => setEditingText(e.target.value)}
+              placeholder="أضف ملاحظة للمتن..."
+              autoFocus
+              style={{
+                width: '100%',
+                minHeight: '120px',
+                padding: '15px',
+                border: `2px solid ${currentColors.border}`,
+                borderRadius: '12px',
+                fontSize: '1rem',
+                fontFamily: 'inherit',
+                backgroundColor: currentColors.background,
+                color: currentColors.text,
+                resize: 'vertical',
+                outline: 'none',
+                direction: 'rtl',
+                textAlign: 'right'
+              }}
+              onFocus={(e) => e.target.style.borderColor = currentColors.primary}
+              onBlur={(e) => e.target.style.borderColor = currentColors.border}
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button onClick={handleSave} style={{ 
+              flex: 1, 
+              padding: '12px', 
+              background: currentColors.success, 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '10px', 
+              cursor: 'pointer', 
+              fontWeight: 'bold',
+              fontSize: '16px'
+            }}>
+              💾 حفظ
+            </button>
+            <button onClick={handleCancel} style={{ 
+              flex: 1, 
+              padding: '12px', 
+              background: currentColors.border, 
+              color: currentColors.text, 
+              border: 'none', 
+              borderRadius: '10px', 
+              cursor: 'pointer',
+              fontSize: '16px'
+            }}>
+              إلغاء
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -1472,106 +1565,36 @@ const App: React.FC = () => {
                          </div>
                        </div>
                        
-                                                                                               {/* Description Field - Completely Redesigned */}
-                          <div style={{ marginBottom: '12px' }}>
-                            {editingMatnId === matn.id ? (
-                              <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                                <textarea 
-                                  key={`textarea-${matn.id}`}
-                                  value={editingText}
-                                  onChange={(e) => setEditingText(e.target.value)}
-                                  autoFocus
-                                  placeholder="أضف ملاحظة..."
-                                  style={{ 
-                                    flex: 1,
-                                    padding: '10px', 
-                                    border: `2px solid ${colors.primary}`, 
-                                    borderRadius: '8px', 
-                                    fontSize: '0.9rem', 
-                                    backgroundColor: colors.background, 
-                                    color: colors.text, 
-                                    minHeight: '60px', 
-                                    resize: 'vertical',
-                                    outline: 'none',
-                                    fontFamily: 'inherit',
-                                    direction: 'rtl',
-                                    textAlign: 'right'
-                                  }} 
-                                />
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                  <button 
-                                    type="button"
-                                    onMouseDown={(e) => {
-                                      e.preventDefault();
-                                      updateMatnDescription(matn.id, editingText);
-                                      setEditingMatnId(null);
-                                      setEditingText('');
-                                    }}
-                                    style={{ 
-                                      background: colors.success, 
-                                      color: 'white', 
-                                      border: 'none', 
-                                      borderRadius: '6px', 
-                                      padding: '8px 10px', 
-                                      cursor: 'pointer', 
-                                      fontSize: '12px',
-                                      fontWeight: 'bold',
-                                      minWidth: '40px',
-                                      userSelect: 'none'
-                                    }}
-                                  >
-                                    ✓
-                                  </button>
-                                  <button 
-                                    type="button"
-                                    onMouseDown={(e) => {
-                                      e.preventDefault();
-                                      setEditingMatnId(null);
-                                      setEditingText('');
-                                    }}
-                                    style={{ 
-                                      background: colors.error, 
-                                      color: 'white', 
-                                      border: 'none', 
-                                      borderRadius: '6px', 
-                                      padding: '8px 10px', 
-                                      cursor: 'pointer', 
-                                      fontSize: '12px',
-                                      fontWeight: 'bold',
-                                      minWidth: '40px',
-                                      userSelect: 'none'
-                                    }}
-                                  >
-                                    ✕
-                                  </button>
-                                </div>
-                              </div>
-                            ) : (
-                              <div 
-                                onMouseDown={(e) => {
-                                  e.preventDefault();
-                                  const currentDescription = mutunData.find(m => m.id === matn.id)?.description || '';
-                                  setEditingText(currentDescription);
-                                  setEditingMatnId(matn.id);
-                                }}
-                                style={{ 
-                                  background: colors.background, 
-                                  padding: '10px', 
-                                  borderRadius: '8px',
-                                  border: `1px solid ${colors.border}`,
-                                  cursor: 'text',
-                                  minHeight: '40px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  userSelect: 'none'
-                                }}
-                              >
-                                <span style={{ color: matn.description ? colors.text : colors.textSecondary, fontSize: '0.9rem', fontStyle: matn.description ? 'normal' : 'italic' }}>
-                                  {matn.description || 'انقر لإضافة ملاحظة...'}
-                                </span>
-                              </div>
-                            )}
-                          </div>
+                                                                                                                       {/* Description Field - Modal Approach */}
+                           <div style={{ marginBottom: '12px' }}>
+                             <div 
+                               onClick={() => {
+                                 const currentDescription = mutunData.find(m => m.id === matn.id)?.description || '';
+                                 setEditingText(currentDescription);
+                                 setDescriptionModalMatn(matn);
+                                 setDescriptionModalOpen(true);
+                               }}
+                               style={{ 
+                                 background: colors.background, 
+                                 padding: '12px', 
+                                 borderRadius: '8px',
+                                 border: `1px solid ${colors.border}`,
+                                 cursor: 'pointer',
+                                 minHeight: '45px',
+                                 display: 'flex',
+                                 alignItems: 'center',
+                                 justifyContent: 'space-between',
+                                 transition: 'all 0.2s'
+                               }}
+                               onMouseEnter={(e) => e.currentTarget.style.borderColor = colors.primary}
+                               onMouseLeave={(e) => e.currentTarget.style.borderColor = colors.border}
+                             >
+                               <span style={{ color: matn.description ? colors.text : colors.textSecondary, fontSize: '0.9rem', fontStyle: matn.description ? 'normal' : 'italic', flex: 1 }}>
+                                 {matn.description || 'انقر لإضافة ملاحظة...'}
+                               </span>
+                               <span style={{ color: colors.textSecondary, fontSize: '1.2rem', marginLeft: '8px' }}>✏️</span>
+                             </div>
+                           </div>
                        
                        {/* Action Buttons */}
                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -1799,6 +1822,9 @@ const App: React.FC = () => {
 
       {/* Timer Modal */}
       <TimerModal />
+
+      {/* Description Modal */}
+      <DescriptionModal />
 
       {/* Threshold Modal */}
       <ThresholdModal />
