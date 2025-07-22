@@ -1041,57 +1041,204 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {Object.entries(groupedMutun).map(([section, mutun]) => (
-          <div key={section} style={{ marginBottom: '30px' }}>
-            <h2 style={{ color: colors.primary, fontSize: '1.3rem', marginBottom: '15px', paddingBottom: '10px', borderBottom: `2px solid ${colors.border}` }}>
-              {section}
-            </h2>
-            
-            <div style={{ display: 'grid', gap: '15px' }}>
-              {mutun.map(matn => (
-                <div key={matn.id} onClick={() => openMatnBottomSheet(matn)} style={{ background: colors.surface, borderRadius: '12px', padding: '15px', border: `3px solid ${getMatnColor(matn.status)}`, cursor: 'pointer', transition: 'all 0.2s' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-                    <h3 style={{ color: colors.text, fontSize: '1.1rem', margin: 0, flex: 1 }}>{matn.name}</h3>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: getMatnColor(matn.status) }} />
-                      <button onClick={(e) => { e.stopPropagation(); changeMatnStatus(matn.id); }} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer' }}>🔄</button>
+        {/* Enhanced Collapsible Sections with Better Cards */}
+        {Object.entries(groupedMutun).map(([section, mutun]) => {
+          const isCollapsed = collapsedSections[section];
+          const sectionStats = {
+            total: mutun.length,
+            red: mutun.filter(m => m.status === 'red').length,
+            orange: mutun.filter(m => m.status === 'orange').length,
+            green: mutun.filter(m => m.status === 'green').length
+          };
+          
+          return (
+            <div key={section} style={{ marginBottom: '25px' }}>
+              {/* Collapsible Section Header */}
+              <div onClick={() => toggleSection(section)} style={{ 
+                background: colors.surface, 
+                borderRadius: '12px', 
+                padding: '15px 20px', 
+                border: `1px solid ${colors.border}`, 
+                cursor: 'pointer',
+                marginBottom: isCollapsed ? '0' : '15px',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <h2 style={{ color: colors.primary, fontSize: '1.3rem', margin: '0 0 5px 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ fontSize: '1.5rem' }}>{isCollapsed ? '📁' : '📂'}</span>
+                      {section}
+                    </h2>
+                    <div style={{ display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <span style={{ color: colors.textSecondary, fontSize: '0.9rem' }}>
+                        المجموع: <strong>{sectionStats.total}</strong>
+                      </span>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: colors.error }} />
+                          <span style={{ color: colors.textSecondary, fontSize: '0.8rem' }}>{sectionStats.red}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: colors.warning }} />
+                          <span style={{ color: colors.textSecondary, fontSize: '0.8rem' }}>{sectionStats.orange}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: colors.success }} />
+                          <span style={{ color: colors.textSecondary, fontSize: '0.8rem' }}>{sectionStats.green}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  
-                  {matn.days_since_last_revision > 0 && (
-                    <p style={{ color: colors.textSecondary, fontSize: '0.9rem', margin: '5px 0' }}>
-                      آخر مراجعة: {matn.days_since_last_revision} {matn.days_since_last_revision === 1 ? t.day : t.days}
-                    </p>
-                  )}
-                  
-                  {matn.description && (
-                    <p style={{ color: colors.textSecondary, fontSize: '0.9rem', margin: '5px 0', fontStyle: 'italic' }}>
-                      "{matn.description.substring(0, 50)}{matn.description.length > 50 ? '...' : ''}"
-                    </p>
-                  )}
-                  
-                  <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                    {matn.memorization_pdf_link && (
-                      <button onClick={(e) => { e.stopPropagation(); window.open(matn.memorization_pdf_link, '_blank'); }} style={{ padding: '5px 10px', background: colors.primary, color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}>
-                        📄 {t.memorizationPdf}
-                      </button>
-                    )}
-                    {matn.explanation_pdf_link && (
-                      <button onClick={(e) => { e.stopPropagation(); window.open(matn.explanation_pdf_link, '_blank'); }} style={{ padding: '5px 10px', background: colors.secondary, color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}>
-                        �� {t.explanationPdf}
-                      </button>
-                    )}
-                    {matn.memorization_audio_link && (
-                      <button onClick={(e) => { e.stopPropagation(); setAudioPlayer({ url: matn.memorization_audio_link, title: matn.name }); }} style={{ padding: '5px 10px', background: colors.success, color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}>
-                        🎧 {t.audio}
-                      </button>
-                    )}
-                  </div>
+                  <span style={{ color: colors.primary, fontSize: '1.5rem', transition: 'transform 0.3s ease', transform: isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}>
+                    ▼
+                  </span>
                 </div>
-              ))}
+              </div>
+              
+              {/* Section Content */}
+              {!isCollapsed && (
+                <div style={{ display: 'grid', gap: '12px' }}>
+                  {mutun.map(matn => (
+                    <div key={matn.id} onClick={() => openMatnBottomSheet(matn)} style={{ 
+                      background: colors.surface, 
+                      borderRadius: '12px', 
+                      padding: '16px', 
+                      border: `2px solid ${getMatnColor(matn.status)}`, 
+                      cursor: 'pointer', 
+                      transition: 'all 0.2s',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                    }}>
+                      {/* Enhanced Header */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                        <h3 style={{ color: colors.text, fontSize: '1.1rem', margin: 0, flex: 1, fontWeight: 'bold' }}>{matn.name}</h3>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ 
+                            background: getMatnColor(matn.status), 
+                            color: 'white', 
+                            padding: '4px 8px', 
+                            borderRadius: '12px', 
+                            fontSize: '0.75rem', 
+                            fontWeight: 'bold',
+                            minWidth: '90px',
+                            textAlign: 'center'
+                          }}>
+                            {matn.status === 'red' ? 'يحتاج مراجعة' : matn.status === 'orange' ? 'قريب الانتهاء' : 'تم المراجعة'}
+                          </div>
+                          <button onClick={(e) => { e.stopPropagation(); changeMatnStatus(matn.id); }} style={{ 
+                            background: colors.border, 
+                            border: 'none', 
+                            borderRadius: '6px', 
+                            padding: '6px 8px', 
+                            cursor: 'pointer', 
+                            fontSize: '14px',
+                            transition: 'background 0.2s'
+                          }}>🔄</button>
+                        </div>
+                      </div>
+                      
+                      {/* Enhanced Status Info */}
+                      <div style={{ marginBottom: '12px' }}>
+                        <div style={{ 
+                          background: colors.background, 
+                          padding: '10px', 
+                          borderRadius: '8px', 
+                          marginBottom: '8px',
+                          border: `1px solid ${colors.border}`
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                            <span style={{ color: colors.text, fontSize: '0.9rem', fontWeight: 'bold' }}>
+                              📅 آخر مراجعة: {matn.days_since_last_revision} {matn.days_since_last_revision === 1 ? t.day : t.days}
+                            </span>
+                            <span style={{ 
+                              color: matn.days_since_last_revision > matn.threshold ? colors.error : colors.success, 
+                              fontSize: '0.8rem',
+                              fontWeight: 'bold'
+                            }}>
+                              {matn.days_since_last_revision > matn.threshold ? '⚠️ متأخر' : '✅ في الوقت'}
+                            </span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ color: colors.textSecondary, fontSize: '0.8rem' }}>
+                              ⚙️ إعادة التعيين: <strong>{matn.threshold} أيام</strong>
+                            </span>
+                            {matn.threshold > 0 && (
+                              <span style={{ color: colors.textSecondary, fontSize: '0.8rem' }}>
+                                باقي: <strong>{Math.max(0, matn.threshold - matn.days_since_last_revision)} أيام</strong>
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {matn.description && (
+                          <div style={{ 
+                            background: colors.background, 
+                            padding: '8px', 
+                            borderRadius: '6px',
+                            border: `1px solid ${colors.border}`
+                          }}>
+                            <p style={{ color: colors.text, fontSize: '0.9rem', margin: 0, fontStyle: 'italic' }}>
+                              📝 "{matn.description.substring(0, 80)}{matn.description.length > 80 ? '...' : ''}"
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Enhanced Action Buttons */}
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        {matn.memorization_pdf_link && (
+                          <button onClick={(e) => { e.stopPropagation(); window.open(matn.memorization_pdf_link, '_blank'); }} style={{ 
+                            padding: '6px 12px', 
+                            background: colors.primary, 
+                            color: 'white', 
+                            border: 'none', 
+                            borderRadius: '6px', 
+                            cursor: 'pointer', 
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                            transition: 'transform 0.1s'
+                          }}>
+                            📄 {t.memorizationPdf}
+                          </button>
+                        )}
+                        {matn.explanation_pdf_link && (
+                          <button onClick={(e) => { e.stopPropagation(); window.open(matn.explanation_pdf_link, '_blank'); }} style={{ 
+                            padding: '6px 12px', 
+                            background: colors.secondary, 
+                            color: 'white', 
+                            border: 'none', 
+                            borderRadius: '6px', 
+                            cursor: 'pointer', 
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                            transition: 'transform 0.1s'
+                          }}>
+                            📖 {t.explanationPdf}
+                          </button>
+                        )}
+                        {matn.memorization_audio_link && (
+                          <button onClick={(e) => { e.stopPropagation(); setAudioPlayer({ url: matn.memorization_audio_link, title: matn.name }); }} style={{ 
+                            padding: '6px 12px', 
+                            background: colors.success, 
+                            color: 'white', 
+                            border: 'none', 
+                            borderRadius: '6px', 
+                            cursor: 'pointer', 
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                            transition: 'transform 0.1s'
+                          }}>
+                            🎧 {t.audio}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         {filteredMutun.length === 0 && (
           <div style={{ textAlign: 'center', padding: '40px', color: colors.textSecondary }}>
