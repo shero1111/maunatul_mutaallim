@@ -1418,7 +1418,7 @@ const App: React.FC = () => {
                              textAlign: 'center',
                              transition: 'transform 0.1s'
                            }}>
-                             {matn.status === 'red' ? 'يحتاج مراجعة' : matn.status === 'orange' ? 'قريب الانتهاء' : 'تم المراجعة'}
+                             {matn.status === 'red' ? 'يحتاج مراجعة' : matn.status === 'orange' ? 'قريب الانتهاء' : 'تم الختمة'}
                            </button>
                            <button onClick={() => openThresholdModal(matn)} style={{ 
                              background: colors.border, 
