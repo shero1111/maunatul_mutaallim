@@ -665,7 +665,7 @@ const App: React.FC = () => {
     );
   };
 
-  // Timer Modal Component (Fixed scope)
+  // Timer Modal Component - iPhone Style Redesign
   const TimerModal: React.FC = () => {
     if (!timerState.isOpen) return null;
     
@@ -673,6 +673,9 @@ const App: React.FC = () => {
     const currentColors = themeColors[theme];
     const currentLang = language;
     const currentT = translations[currentLang];
+
+    const isRunning = timerState.isRunning;
+    const canAdjust = !isRunning;
 
     const startTimer = () => {
       setTimerState(prev => ({ ...prev, isRunning: true, startTime: Date.now() }));
@@ -691,88 +694,239 @@ const App: React.FC = () => {
       setTimerState(prev => ({ ...prev, targetTime: seconds, time: seconds }));
     };
 
+    const adjustTime = (type: 'hours' | 'minutes', direction: 'up' | 'down') => {
+      const hours = Math.floor(timerState.time / 3600);
+      const minutes = Math.floor((timerState.time % 3600) / 60);
+      
+      let newHours = hours;
+      let newMinutes = minutes;
+      
+      if (type === 'hours') {
+        newHours = direction === 'up' ? Math.min(23, hours + 1) : Math.max(0, hours - 1);
+      } else {
+        newMinutes = direction === 'up' ? Math.min(59, minutes + 1) : Math.max(0, minutes - 1);
+      }
+      
+      const newTime = newHours * 3600 + newMinutes * 60;
+      setTimerState(prev => ({ ...prev, time: newTime, targetTime: newTime }));
+    };
+
     return (
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: currentColors.overlay, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1002, padding: '20px' }}>
-        <div style={{ background: currentColors.surface, borderRadius: '20px', padding: '30px', maxWidth: '400px', width: '100%', direction: currentLang === 'ar' ? 'rtl' : 'ltr' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h2 style={{ margin: 0, color: currentColors.text }}>⏱️ {timerState.mode === 'timer' ? currentT.timer : currentT.stopwatch}</h2>
-            <button onClick={() => setTimerState(prev => ({ ...prev, isOpen: false }))} style={{ background: 'none', border: 'none', fontSize: '24px', color: currentColors.textSecondary, cursor: 'pointer' }}>✕</button>
+        <div style={{ 
+          background: currentColors.surface, 
+          borderRadius: '28px', 
+          padding: '40px 30px', 
+          maxWidth: '380px', 
+          width: '100%', 
+          direction: currentLang === 'ar' ? 'rtl' : 'ltr',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          backdropFilter: 'blur(20px)',
+          border: `1px solid ${currentColors.border}20`
+        }}>
+          {/* Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+            <h2 style={{ margin: 0, color: currentColors.text, fontSize: '1.4rem', fontWeight: '600' }}>
+              {timerState.mode === 'timer' ? '⏰ المؤقت' : '⏱️ ساعة الإيقاف'}
+            </h2>
+            <button onClick={() => setTimerState(prev => ({ ...prev, isOpen: false }))} style={{ 
+              background: currentColors.background, 
+              border: 'none', 
+              borderRadius: '50%', 
+              width: '36px', 
+              height: '36px', 
+              fontSize: '18px', 
+              color: currentColors.textSecondary, 
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s'
+            }}>✕</button>
           </div>
 
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-            <button onClick={() => setTimerState(prev => ({ ...prev, mode: 'timer', time: prev.targetTime }))} style={{ flex: 1, padding: '10px', background: timerState.mode === 'timer' ? currentColors.primary : currentColors.border, color: timerState.mode === 'timer' ? 'white' : currentColors.text, border: 'none', borderRadius: '10px', cursor: 'pointer' }}>{currentT.timer}</button>
-            <button onClick={() => setTimerState(prev => ({ ...prev, mode: 'stopwatch', time: 0 }))} style={{ flex: 1, padding: '10px', background: timerState.mode === 'stopwatch' ? currentColors.primary : currentColors.border, color: timerState.mode === 'stopwatch' ? 'white' : currentColors.text, border: 'none', borderRadius: '10px', cursor: 'pointer' }}>{currentT.stopwatch}</button>
+          {/* Mode Toggle */}
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '30px', background: currentColors.background, borderRadius: '16px', padding: '4px' }}>
+            <button onClick={() => setTimerState(prev => ({ ...prev, mode: 'timer', time: prev.targetTime }))} style={{ 
+              flex: 1, 
+              padding: '12px', 
+              background: timerState.mode === 'timer' ? `linear-gradient(135deg, ${currentColors.primary}, ${currentColors.secondary})` : 'transparent', 
+              color: timerState.mode === 'timer' ? 'white' : currentColors.text, 
+              border: 'none', 
+              borderRadius: '12px', 
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '600',
+              transition: 'all 0.3s'
+            }}>⏰ {currentT.timer}</button>
+            <button onClick={() => setTimerState(prev => ({ ...prev, mode: 'stopwatch', time: 0 }))} style={{ 
+              flex: 1, 
+              padding: '12px', 
+              background: timerState.mode === 'stopwatch' ? `linear-gradient(135deg, ${currentColors.primary}, ${currentColors.secondary})` : 'transparent', 
+              color: timerState.mode === 'stopwatch' ? 'white' : currentColors.text, 
+              border: 'none', 
+              borderRadius: '12px', 
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '600',
+              transition: 'all 0.3s'
+            }}>⏱️ {currentT.stopwatch}</button>
           </div>
 
-          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-            <div style={{ fontSize: '3rem', fontFamily: 'monospace', color: currentColors.primary, marginBottom: '20px' }}>{formatTimerDisplay(timerState.time)}</div>
-            
-            {timerState.mode === 'timer' && (
-              <div style={{ marginBottom: '20px' }}>
-                {/* Quick Buttons */}
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                  {[5, 10, 15, 30, 45, 60].map(minutes => (
-                    <button key={minutes} onClick={() => setTimerMinutes(minutes)} style={{ padding: '8px 12px', background: currentColors.border, color: currentColors.text, border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>{minutes}م</button>
-                  ))}
+          {/* Main Time Display Container */}
+          <div style={{ 
+            background: `linear-gradient(135deg, ${currentColors.primary}08, ${currentColors.secondary}08)`, 
+            borderRadius: '24px', 
+            padding: '30px 20px', 
+            marginBottom: '25px',
+            border: `1px solid ${currentColors.border}30`,
+            textAlign: 'center'
+          }}>
+            {/* Time Adjustment Buttons (only when not running) */}
+            {canAdjust && timerState.mode === 'timer' && (
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', marginBottom: '20px' }}>
+                {/* Hours Controls */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                  <button onClick={() => adjustTime('hours', 'up')} style={{ 
+                    background: `${currentColors.primary}20`, 
+                    color: currentColors.primary, 
+                    border: `1px solid ${currentColors.primary}40`, 
+                    borderRadius: '50%', 
+                    width: '44px', 
+                    height: '44px', 
+                    cursor: 'pointer', 
+                    fontSize: '18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s',
+                    fontWeight: 'bold'
+                  }}>▲</button>
+                  <span style={{ color: currentColors.textSecondary, fontSize: '0.85rem', fontWeight: '500' }}>ساعات</span>
+                  <button onClick={() => adjustTime('hours', 'down')} style={{ 
+                    background: `${currentColors.primary}20`, 
+                    color: currentColors.primary, 
+                    border: `1px solid ${currentColors.primary}40`, 
+                    borderRadius: '50%', 
+                    width: '44px', 
+                    height: '44px', 
+                    cursor: 'pointer', 
+                    fontSize: '18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s',
+                    fontWeight: 'bold'
+                  }}>▼</button>
                 </div>
-                
-                {/* Custom Time Picker */}
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', marginTop: '15px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <label style={{ color: currentColors.text, fontSize: '0.9rem', marginBottom: '5px' }}>الساعات</label>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: currentColors.surface, borderRadius: '8px', padding: '10px' }}>
-                      <button onClick={() => {
-                        const hours = Math.floor(timerState.time / 3600);
-                        const minutes = Math.floor((timerState.time % 3600) / 60);
-                        const newTime = Math.min(23, hours + 1) * 3600 + minutes * 60;
-                        setTimerState(prev => ({ ...prev, time: newTime, targetTime: newTime }));
-                      }} style={{ background: 'none', border: 'none', color: currentColors.primary, fontSize: '18px', cursor: 'pointer', padding: '5px' }}>▲</button>
-                      <span style={{ color: currentColors.text, fontSize: '1.5rem', fontFamily: 'monospace', minWidth: '40px', textAlign: 'center' }}>
-                        {Math.floor(timerState.time / 3600).toString().padStart(2, '0')}
-                      </span>
-                      <button onClick={() => {
-                        const hours = Math.floor(timerState.time / 3600);
-                        const minutes = Math.floor((timerState.time % 3600) / 60);
-                        const newTime = Math.max(0, hours - 1) * 3600 + minutes * 60;
-                        setTimerState(prev => ({ ...prev, time: newTime, targetTime: newTime }));
-                      }} style={{ background: 'none', border: 'none', color: currentColors.primary, fontSize: '18px', cursor: 'pointer', padding: '5px' }}>▼</button>
-                    </div>
-                  </div>
-                  
-                  <span style={{ color: currentColors.text, fontSize: '2rem', fontFamily: 'monospace' }}>:</span>
-                  
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <label style={{ color: currentColors.text, fontSize: '0.9rem', marginBottom: '5px' }}>الدقائق</label>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: currentColors.surface, borderRadius: '8px', padding: '10px' }}>
-                      <button onClick={() => {
-                        const hours = Math.floor(timerState.time / 3600);
-                        const minutes = Math.floor((timerState.time % 3600) / 60);
-                        const newMinutes = Math.min(59, minutes + 1);
-                        const newTime = hours * 3600 + newMinutes * 60;
-                        setTimerState(prev => ({ ...prev, time: newTime, targetTime: newTime }));
-                      }} style={{ background: 'none', border: 'none', color: currentColors.primary, fontSize: '18px', cursor: 'pointer', padding: '5px' }}>▲</button>
-                      <span style={{ color: currentColors.text, fontSize: '1.5rem', fontFamily: 'monospace', minWidth: '40px', textAlign: 'center' }}>
-                        {Math.floor((timerState.time % 3600) / 60).toString().padStart(2, '0')}
-                      </span>
-                      <button onClick={() => {
-                        const hours = Math.floor(timerState.time / 3600);
-                        const minutes = Math.floor((timerState.time % 3600) / 60);
-                        const newMinutes = Math.max(0, minutes - 1);
-                        const newTime = hours * 3600 + newMinutes * 60;
-                        setTimerState(prev => ({ ...prev, time: newTime, targetTime: newTime }));
-                      }} style={{ background: 'none', border: 'none', color: currentColors.primary, fontSize: '18px', cursor: 'pointer', padding: '5px' }}>▼</button>
-                    </div>
-                  </div>
+
+                {/* Minutes Controls */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                  <button onClick={() => adjustTime('minutes', 'up')} style={{ 
+                    background: `${currentColors.secondary}20`, 
+                    color: currentColors.secondary, 
+                    border: `1px solid ${currentColors.secondary}40`, 
+                    borderRadius: '50%', 
+                    width: '44px', 
+                    height: '44px', 
+                    cursor: 'pointer', 
+                    fontSize: '18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s',
+                    fontWeight: 'bold'
+                  }}>▲</button>
+                  <span style={{ color: currentColors.textSecondary, fontSize: '0.85rem', fontWeight: '500' }}>دقائق</span>
+                  <button onClick={() => adjustTime('minutes', 'down')} style={{ 
+                    background: `${currentColors.secondary}20`, 
+                    color: currentColors.secondary, 
+                    border: `1px solid ${currentColors.secondary}40`, 
+                    borderRadius: '50%', 
+                    width: '44px', 
+                    height: '44px', 
+                    cursor: 'pointer', 
+                    fontSize: '18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s',
+                    fontWeight: 'bold'
+                  }}>▼</button>
                 </div>
               </div>
             )}
 
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-              <button onClick={timerState.isRunning ? stopTimer : startTimer} style={{ padding: '12px 24px', background: timerState.isRunning ? currentColors.error : currentColors.success, color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontSize: '16px' }}>
-                {timerState.isRunning ? `⏸️ ${currentT.stop}` : `▶️ ${currentT.start}`}
-              </button>
-              <button onClick={resetTimer} style={{ padding: '12px 24px', background: currentColors.border, color: currentColors.text, border: 'none', borderRadius: '10px', cursor: 'pointer', fontSize: '16px' }}>🔄 {currentT.reset}</button>
+            {/* Main Time Display */}
+            <div style={{ 
+              fontSize: isRunning ? '4.5rem' : '4rem', 
+              fontWeight: '200', 
+              color: isRunning ? currentColors.primary : currentColors.text,
+              fontFamily: 'system-ui, -apple-system, SF Pro Display',
+              letterSpacing: '3px',
+              transition: 'all 0.4s ease',
+              marginBottom: canAdjust && timerState.mode === 'timer' ? '0' : '10px',
+              textShadow: isRunning ? `0 0 20px ${currentColors.primary}40` : 'none'
+            }}>
+              {formatTimerDisplay(timerState.time)}
             </div>
+          </div>
+
+          {/* Quick Select Buttons (only when not running and timer mode) */}
+          {canAdjust && timerState.mode === 'timer' && (
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '25px', flexWrap: 'wrap', justifyContent: 'center' }}>
+              {[1, 5, 10, 15, 25, 30, 45, 60].map(minutes => (
+                <button key={minutes} onClick={() => setTimerMinutes(minutes)} style={{ 
+                  padding: '8px 14px', 
+                  background: currentColors.background, 
+                  color: currentColors.text, 
+                  border: `1px solid ${currentColors.border}`, 
+                  borderRadius: '20px', 
+                  cursor: 'pointer', 
+                  fontSize: '13px',
+                  fontWeight: '500',
+                  transition: 'all 0.2s'
+                }}>
+                  {minutes}د
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Control Buttons */}
+          <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
+            <button onClick={timerState.isRunning ? stopTimer : startTimer} style={{ 
+              padding: '18px 36px', 
+              background: timerState.isRunning ? 
+                `linear-gradient(135deg, ${currentColors.error}, #ff4757)` : 
+                `linear-gradient(135deg, ${currentColors.success}, #2ed573)`, 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '28px', 
+              cursor: 'pointer', 
+              fontSize: '16px', 
+              fontWeight: '600',
+              minWidth: '140px',
+              boxShadow: '0 8px 25px rgba(0,0,0,0.25)',
+              transition: 'all 0.3s',
+              transform: isRunning ? 'scale(1.02)' : 'scale(1)',
+              textShadow: '0 1px 2px rgba(0,0,0,0.3)'
+            }}>
+              {timerState.isRunning ? `⏸️ ${currentT.stop}` : `▶️ ${currentT.start}`}
+            </button>
+            
+            <button onClick={resetTimer} style={{ 
+              padding: '18px 36px', 
+              background: currentColors.background, 
+              color: currentColors.text, 
+              border: `1px solid ${currentColors.border}`, 
+              borderRadius: '28px', 
+              cursor: 'pointer', 
+              fontSize: '16px',
+              fontWeight: '500',
+              minWidth: '140px',
+              transition: 'all 0.2s'
+            }}>🔄 {currentT.reset}</button>
           </div>
         </div>
       </div>
