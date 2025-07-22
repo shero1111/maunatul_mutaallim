@@ -446,8 +446,13 @@ const App: React.FC = () => {
     );
   };
 
-  // PDF Viewer Component
+  // PDF Viewer Component (Fixed scope issue)
   const PDFViewer: React.FC<{ pdfUrl: string; title: string; onClose: () => void }> = ({ pdfUrl, title, onClose }) => {
+    // Use current theme colors and language
+    const currentColors = themeColors[theme];
+    const currentLang = language;
+    const currentT = translations[currentLang];
+    
     const convertToEmbedUrl = (url: string) => {
       if (url.includes('drive.google.com/file/d/')) {
         const fileId = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/)?.[1];
@@ -459,16 +464,16 @@ const App: React.FC = () => {
     const embedUrl = convertToEmbedUrl(pdfUrl);
 
     return (
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1002, backgroundColor: colors.overlay }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: colors.background, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1002, backgroundColor: currentColors.overlay }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: currentColors.background, display: 'flex', flexDirection: 'column' }}>
           {/* Header */}
-          <div style={{ padding: '15px 20px', borderBottom: `1px solid ${colors.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: colors.surface }}>
-            <h3 style={{ margin: 0, color: colors.text, fontSize: '1.1rem', maxWidth: '70%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>📄 {title}</h3>
+          <div style={{ padding: '15px 20px', borderBottom: `1px solid ${currentColors.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: currentColors.surface }}>
+            <h3 style={{ margin: 0, color: currentColors.text, fontSize: '1.1rem', maxWidth: '70%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>📄 {title}</h3>
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={() => window.open(pdfUrl, '_blank')} style={{ padding: '8px 12px', background: colors.primary, color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px' }}>
-                🔗 {language === 'ar' ? 'فتح خارجي' : 'Open External'}
+              <button onClick={() => window.open(pdfUrl, '_blank')} style={{ padding: '8px 12px', background: currentColors.primary, color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px' }}>
+                🔗 {currentLang === 'ar' ? 'فتح خارجي' : 'Open External'}
               </button>
-              <button onClick={onClose} style={{ background: colors.error, color: 'white', border: 'none', width: '35px', height: '35px', borderRadius: '50%', cursor: 'pointer', fontSize: '16px' }}>✕</button>
+              <button onClick={onClose} style={{ background: currentColors.error, color: 'white', border: 'none', width: '35px', height: '35px', borderRadius: '50%', cursor: 'pointer', fontSize: '16px' }}>✕</button>
             </div>
           </div>
 
@@ -480,7 +485,7 @@ const App: React.FC = () => {
                 width: '100%', 
                 height: '100%', 
                 border: 'none',
-                backgroundColor: colors.surface
+                backgroundColor: currentColors.surface
               }}
               title={title}
               onError={() => {
@@ -491,12 +496,12 @@ const App: React.FC = () => {
           </div>
 
           {/* Bottom Actions */}
-          <div style={{ padding: '15px', borderTop: `1px solid ${colors.border}`, background: colors.surface, display: 'flex', justifyContent: 'center', gap: '15px' }}>
-            <button onClick={() => window.open(pdfUrl, '_blank')} style={{ padding: '10px 20px', background: colors.secondary, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
-              📱 {language === 'ar' ? 'فتح في التطبيق الخارجي' : 'Open in External App'}
+          <div style={{ padding: '15px', borderTop: `1px solid ${currentColors.border}`, background: currentColors.surface, display: 'flex', justifyContent: 'center', gap: '15px' }}>
+            <button onClick={() => window.open(pdfUrl, '_blank')} style={{ padding: '10px 20px', background: currentColors.secondary, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
+              📱 {currentLang === 'ar' ? 'فتح في التطبيق الخارجي' : 'Open in External App'}
             </button>
-            <button onClick={onClose} style={{ padding: '10px 20px', background: colors.border, color: colors.text, border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
-              {language === 'ar' ? 'إغلاق' : 'Close'}
+            <button onClick={onClose} style={{ padding: '10px 20px', background: currentColors.border, color: currentColors.text, border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
+              {currentLang === 'ar' ? 'إغلاق' : 'Close'}
             </button>
           </div>
         </div>
