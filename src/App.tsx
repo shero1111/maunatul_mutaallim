@@ -1612,7 +1612,7 @@ const App: React.FC = () => {
     );
   };
 
-  // More Page Component
+  // More Page Component - Premium Elegant Design
   const MorePage: React.FC = () => {
     const handleLogout = () => {
       setCurrentUser(null);
@@ -1622,69 +1622,348 @@ const App: React.FC = () => {
       localStorage.removeItem('currentPage');
     };
 
+    const getRoleDisplayName = (role: string) => {
+      switch (role) {
+        case 'superuser': return 'المدير العام';
+        case 'leitung': return 'قائد الحلقات';
+        case 'lehrer': return 'الشيخ المعلم';
+        case 'student': return 'الطالب';
+        default: return role;
+      }
+    };
+
     return (
-      <div style={{ padding: '20px' }}>
-        <h1 style={{ color: colors.primary, fontSize: '1.8rem', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span>⋯</span>
-          {t.more}
-        </h1>
+      <div style={{ 
+        padding: '24px', 
+        background: `linear-gradient(135deg, ${colors.background} 0%, ${theme === 'light' ? '#f8f9fa' : '#1a1d29'} 100%)`,
+        minHeight: 'calc(100vh - 80px)'
+      }}>
+        {/* Elegant Header with Islamic Pattern */}
+        <div style={{ 
+          textAlign: 'center', 
+          marginBottom: '32px',
+          position: 'relative',
+          padding: '40px 20px',
+          background: `linear-gradient(135deg, ${colors.primary}15 0%, ${colors.secondary}15 100%)`,
+          borderRadius: '24px',
+          border: `1px solid ${colors.primary}20`,
+          boxShadow: theme === 'light' ? '0 8px 32px rgba(0,0,0,0.06)' : '0 8px 32px rgba(0,0,0,0.2)'
+        }}>
+          <div style={{ 
+            fontSize: '3.5rem', 
+            marginBottom: '12px',
+            background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
+          }}>
+            ⚙️
+          </div>
+          <h1 style={{ 
+            color: colors.text, 
+            fontSize: '2.2rem', 
+            fontWeight: '700',
+            margin: '0 0 8px 0',
+            textShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          }}>
+            {t.more}
+          </h1>
+          <p style={{ 
+            color: colors.textSecondary, 
+            fontSize: '1rem',
+            margin: 0,
+            fontStyle: 'italic'
+          }}>
+            إعدادات ومعلومات التطبيق
+          </p>
+        </div>
         
-        <div style={{ display: 'grid', gap: '15px' }}>
-          {/* Settings Section */}
-          <div style={{ background: colors.surface, borderRadius: '15px', padding: '20px', border: `1px solid ${colors.border}` }}>
-            <h3 style={{ color: colors.text, marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span>⚙️</span>
+        <div style={{ display: 'grid', gap: '20px', maxWidth: '600px', margin: '0 auto' }}>
+          {/* User Profile Card - Premium */}
+          <div style={{ 
+            background: `linear-gradient(135deg, ${colors.surface} 0%, ${theme === 'light' ? '#ffffff' : '#2a2d3a'} 100%)`,
+            borderRadius: '20px', 
+            padding: '28px', 
+            border: `1px solid ${colors.primary}20`,
+            boxShadow: theme === 'light' ? '0 12px 40px rgba(0,0,0,0.08)' : '0 12px 40px rgba(0,0,0,0.3)',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            {/* Decorative Background Pattern */}
+            <div style={{
+              position: 'absolute',
+              top: '-50px',
+              right: '-50px',
+              width: '120px',
+              height: '120px',
+              background: `linear-gradient(135deg, ${colors.primary}10, ${colors.secondary}10)`,
+              borderRadius: '50%',
+              opacity: 0.6
+            }} />
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
+              <div style={{
+                width: '80px',
+                height: '80px',
+                background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '2.5rem',
+                color: 'white',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                border: '3px solid white'
+              }}>
+                👤
+              </div>
+              <div>
+                <h3 style={{ 
+                  color: colors.text, 
+                  fontSize: '1.4rem', 
+                  margin: '0 0 8px 0',
+                  fontWeight: '600'
+                }}>
+                  {currentUser?.name}
+                </h3>
+                <div style={{ 
+                  display: 'inline-block',
+                  background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+                  color: 'white',
+                  padding: '6px 16px',
+                  borderRadius: '20px',
+                  fontSize: '0.85rem',
+                  fontWeight: '600',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                }}>
+                  {getRoleDisplayName(currentUser?.role || '')}
+                </div>
+              </div>
+            </div>
+            
+            <div style={{ 
+              background: theme === 'light' ? '#f8f9fa' : '#353849',
+              borderRadius: '16px', 
+              padding: '20px',
+              position: 'relative',
+              zIndex: 1
+            }}>
+              <div style={{ display: 'grid', gap: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: colors.textSecondary, fontSize: '0.9rem', fontWeight: '500' }}>تاريخ التسجيل</span>
+                  <span style={{ color: colors.text, fontWeight: '600' }}>{new Date(currentUser?.created_at || '').toLocaleDateString('ar-SA')}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: colors.textSecondary, fontSize: '0.9rem', fontWeight: '500' }}>حالة الاتصال</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ 
+                      width: '8px', 
+                      height: '8px', 
+                      borderRadius: '50%', 
+                      background: currentUser?.isOnline ? '#10b981' : '#6b7280',
+                      boxShadow: currentUser?.isOnline ? '0 0 8px #10b98150' : 'none'
+                    }} />
+                    <span style={{ color: colors.text, fontWeight: '600' }}>
+                      {currentUser?.isOnline ? 'متصل' : 'غير متصل'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Settings Section - Premium */}
+          <div style={{ 
+            background: `linear-gradient(135deg, ${colors.surface} 0%, ${theme === 'light' ? '#ffffff' : '#2a2d3a'} 100%)`,
+            borderRadius: '20px', 
+            padding: '28px', 
+            border: `1px solid ${colors.primary}20`,
+            boxShadow: theme === 'light' ? '0 12px 40px rgba(0,0,0,0.08)' : '0 12px 40px rgba(0,0,0,0.3)'
+          }}>
+            <h3 style={{ 
+              color: colors.text, 
+              marginBottom: '24px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '12px',
+              fontSize: '1.3rem',
+              fontWeight: '600'
+            }}>
+              <span style={{ 
+                fontSize: '1.8rem',
+                background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent'
+              }}>⚙️</span>
               {t.settings}
             </h3>
             
-            <div style={{ display: 'grid', gap: '10px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: colors.text }}>{t.language}</span>
-                <button onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')} style={{ padding: '8px 15px', background: colors.primary, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
+            <div style={{ display: 'grid', gap: '20px' }}>
+              {/* Language Setting */}
+              <div style={{ 
+                background: theme === 'light' ? '#f8f9fa' : '#353849',
+                borderRadius: '16px',
+                padding: '20px',
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center'
+              }}>
+                <div>
+                  <div style={{ color: colors.text, fontWeight: '600', marginBottom: '4px' }}>{t.language}</div>
+                  <div style={{ color: colors.textSecondary, fontSize: '0.85rem' }}>
+                    {language === 'ar' ? 'العربية - الواجهة الرئيسية' : 'English - Main Interface'}
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')} 
+                  style={{ 
+                    padding: '12px 20px', 
+                    background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+                    color: 'white', 
+                    border: 'none', 
+                    borderRadius: '12px', 
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    fontSize: '0.9rem',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                    transition: 'all 0.3s ease',
+                    minWidth: '100px'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0px)'}
+                >
                   {language === 'ar' ? 'English' : 'العربية'}
                 </button>
               </div>
               
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: colors.text }}>{t.theme}</span>
-                <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} style={{ padding: '8px 15px', background: colors.secondary, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
+              {/* Theme Setting */}
+              <div style={{ 
+                background: theme === 'light' ? '#f8f9fa' : '#353849',
+                borderRadius: '16px',
+                padding: '20px',
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center'
+              }}>
+                <div>
+                  <div style={{ color: colors.text, fontWeight: '600', marginBottom: '4px' }}>{t.theme}</div>
+                  <div style={{ color: colors.textSecondary, fontSize: '0.85rem' }}>
+                    {theme === 'light' ? 'المظهر الفاتح - سهل على العين' : 'المظهر الداكن - مريح ليلاً'}
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} 
+                  style={{ 
+                    padding: '12px 20px', 
+                    background: `linear-gradient(135deg, ${colors.secondary}, ${colors.primary})`,
+                    color: 'white', 
+                    border: 'none', 
+                    borderRadius: '12px', 
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    fontSize: '0.9rem',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                    transition: 'all 0.3s ease',
+                    minWidth: '100px'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0px)'}
+                >
                   {theme === 'light' ? '🌙 داكن' : '☀️ فاتح'}
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Account Info */}
-          <div style={{ background: colors.surface, borderRadius: '15px', padding: '20px', border: `1px solid ${colors.border}` }}>
-            <h3 style={{ color: colors.text, marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span>👤</span>
-              معلومات الحساب
+          {/* App Info - Premium */}
+          <div style={{ 
+            background: `linear-gradient(135deg, ${colors.surface} 0%, ${theme === 'light' ? '#ffffff' : '#2a2d3a'} 100%)`,
+            borderRadius: '20px', 
+            padding: '28px', 
+            border: `1px solid ${colors.primary}20`,
+            boxShadow: theme === 'light' ? '0 12px 40px rgba(0,0,0,0.08)' : '0 12px 40px rgba(0,0,0,0.3)'
+          }}>
+            <h3 style={{ 
+              color: colors.text, 
+              marginBottom: '24px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '12px',
+              fontSize: '1.3rem',
+              fontWeight: '600'
+            }}>
+              <span style={{ 
+                fontSize: '1.8rem',
+                background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent'
+              }}>📱</span>
+              معلومات التطبيق
             </h3>
             
-            <div style={{ display: 'grid', gap: '8px', fontSize: '0.9rem' }}>
-              <div><span style={{ color: colors.textSecondary }}>الاسم:</span> <span style={{ color: colors.text }}>{currentUser?.name}</span></div>
-              <div><span style={{ color: colors.textSecondary }}>الدور:</span> <span style={{ color: colors.text }}>{currentUser?.role}</span></div>
-              <div><span style={{ color: colors.textSecondary }}>تاريخ الإنشاء:</span> <span style={{ color: colors.text }}>{currentUser?.created_at}</span></div>
+            <div style={{ 
+              background: theme === 'light' ? '#f8f9fa' : '#353849',
+              borderRadius: '16px',
+              padding: '20px'
+            }}>
+              <div style={{ display: 'grid', gap: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: colors.textSecondary, fontWeight: '500' }}>اسم التطبيق</span>
+                  <span style={{ color: colors.text, fontWeight: '600' }}>معونة المتعلم</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: colors.textSecondary, fontWeight: '500' }}>الإصدار</span>
+                  <span style={{ 
+                    background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+                    color: 'white',
+                    padding: '4px 12px',
+                    borderRadius: '12px',
+                    fontSize: '0.8rem',
+                    fontWeight: '600'
+                  }}>v2.0.0</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: colors.textSecondary, fontWeight: '500' }}>المطور</span>
+                  <span style={{ color: colors.text, fontWeight: '600' }}>فريق معونة المتعلم</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: colors.textSecondary, fontWeight: '500' }}>النوع</span>
+                  <span style={{ color: colors.text, fontWeight: '600' }}>نظام إدارة التعلم الإسلامي</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* App Info */}
-          <div style={{ background: colors.surface, borderRadius: '15px', padding: '20px', border: `1px solid ${colors.border}` }}>
-            <h3 style={{ color: colors.text, marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span>ℹ️</span>
-              {t.aboutUs}
-            </h3>
-            
-            <div style={{ display: 'grid', gap: '8px', fontSize: '0.9rem' }}>
-              <div><span style={{ color: colors.textSecondary }}>{t.version}:</span> <span style={{ color: colors.text }}>1.0.0</span></div>
-              <div><span style={{ color: colors.textSecondary }}>المطور:</span> <span style={{ color: colors.text }}>فريق معونة المتعلم</span></div>
-              <div><span style={{ color: colors.textSecondary }}>النوع:</span> <span style={{ color: colors.text }}>نظام إدارة التعلم الإسلامي</span></div>
-            </div>
-          </div>
-
-          {/* Logout */}
-          <button onClick={handleLogout} style={{ background: colors.error, color: 'white', border: 'none', borderRadius: '15px', padding: '15px', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-            <span>🚪</span>
+          {/* Logout Button - Premium */}
+          <button 
+            onClick={handleLogout} 
+            style={{ 
+              background: `linear-gradient(135deg, #ef4444, #dc2626)`,
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '16px', 
+              padding: '20px', 
+              fontSize: '1.1rem', 
+              fontWeight: '600',
+              cursor: 'pointer', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              gap: '12px',
+              boxShadow: '0 8px 24px rgba(239, 68, 68, 0.25)',
+              transition: 'all 0.3s ease',
+              marginTop: '8px'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 12px 32px rgba(239, 68, 68, 0.35)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0px)';
+              e.currentTarget.style.boxShadow = '0 8px 24px rgba(239, 68, 68, 0.25)';
+            }}
+          >
+            <span style={{ fontSize: '1.3rem' }}>🚪</span>
             {t.logout}
           </button>
         </div>
