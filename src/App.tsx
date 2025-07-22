@@ -715,6 +715,15 @@ const App: React.FC = () => {
       setTimerState(prev => ({ ...prev, isRunning: false }));
     };
 
+    const stopTimer = () => {
+      // Stop and auto-reset to target time
+      setTimerState(prev => ({ ...prev, isRunning: false, startTime: null, time: prev.targetTime }));
+    };
+
+    const resetTimer = () => {
+      setTimerState(prev => ({ ...prev, isRunning: false, startTime: null, time: prev.targetTime }));
+    };
+
     return (
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: currentColors.overlay, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1002, padding: '20px' }}>
         <div style={{ 
@@ -786,139 +795,139 @@ const App: React.FC = () => {
             border: `1px solid ${currentColors.border}30`,
             textAlign: 'center'
           }}>
-                         {/* Time Adjustment Layout - Minutes & Seconds */}
-             {canAdjust && timerState.mode === 'timer' ? (
-               <div style={{ display: 'flex', justifyContent: 'center', gap: '60px', alignItems: 'center' }}>
-                 {/* Minutes Section */}
-                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-                   <button onClick={() => adjustTime('minutes', 'up')} style={{ 
-                     background: `${currentColors.primary}20`, 
-                     color: currentColors.primary, 
-                     border: `1px solid ${currentColors.primary}40`, 
-                     borderRadius: '50%', 
-                     width: '44px', 
-                     height: '44px', 
-                     cursor: 'pointer', 
-                     fontSize: '18px',
-                     display: 'flex',
-                     alignItems: 'center',
-                     justifyContent: 'center',
-                     transition: 'all 0.2s',
-                     fontWeight: 'bold'
-                   }}>▲</button>
-                   
-                   {/* Minutes Display */}
-                   <div style={{ 
-                     background: currentColors.background, 
-                     border: `2px solid ${currentColors.primary}40`, 
-                     borderRadius: '16px', 
-                     padding: '16px 20px', 
-                     minWidth: '80px',
-                     textAlign: 'center'
-                   }}>
-                     <div style={{ 
-                       color: currentColors.text, 
-                       fontSize: '2.5rem', 
-                       fontWeight: '300', 
-                       fontFamily: 'system-ui, -apple-system',
-                       lineHeight: '1'
-                     }}>
-                       {Math.floor(timerState.time / 60).toString().padStart(2, '0')}
-                     </div>
-                     <div style={{ color: currentColors.textSecondary, fontSize: '0.8rem', fontWeight: '500', marginTop: '4px' }}>دقائق</div>
-                   </div>
-                   
-                   <button onClick={() => adjustTime('minutes', 'down')} style={{ 
-                     background: `${currentColors.primary}20`, 
-                     color: currentColors.primary, 
-                     border: `1px solid ${currentColors.primary}40`, 
-                     borderRadius: '50%', 
-                     width: '44px', 
-                     height: '44px', 
-                     cursor: 'pointer', 
-                     fontSize: '18px',
-                     display: 'flex',
-                     alignItems: 'center',
-                     justifyContent: 'center',
-                     transition: 'all 0.2s',
-                     fontWeight: 'bold'
-                   }}>▼</button>
-                 </div>
+                                      {/* Time Adjustment Layout - Minutes & Seconds */}
+              {canAdjust && timerState.mode === 'timer' ? (
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', alignItems: 'center', maxWidth: '300px', margin: '0 auto' }}>
+                  {/* Minutes Section */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', flex: 1 }}>
+                    <button onClick={() => adjustTime('minutes', 'up')} style={{ 
+                      background: `${currentColors.primary}20`, 
+                      color: currentColors.primary, 
+                      border: `1px solid ${currentColors.primary}40`, 
+                      borderRadius: '50%', 
+                      width: '40px', 
+                      height: '40px', 
+                      cursor: 'pointer', 
+                      fontSize: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.2s',
+                      fontWeight: 'bold'
+                    }}>▲</button>
+                    
+                    {/* Minutes Display */}
+                    <div style={{ 
+                      background: currentColors.background, 
+                      border: `2px solid ${currentColors.primary}40`, 
+                      borderRadius: '12px', 
+                      padding: '12px 16px', 
+                      width: '100%',
+                      textAlign: 'center'
+                    }}>
+                      <div style={{ 
+                        color: currentColors.text, 
+                        fontSize: '2rem', 
+                        fontWeight: '300', 
+                        fontFamily: 'system-ui, -apple-system',
+                        lineHeight: '1'
+                      }}>
+                        {Math.floor(timerState.time / 60).toString().padStart(2, '0')}
+                      </div>
+                      <div style={{ color: currentColors.textSecondary, fontSize: '0.75rem', fontWeight: '500', marginTop: '2px' }}>دقائق</div>
+                    </div>
+                    
+                    <button onClick={() => adjustTime('minutes', 'down')} style={{ 
+                      background: `${currentColors.primary}20`, 
+                      color: currentColors.primary, 
+                      border: `1px solid ${currentColors.primary}40`, 
+                      borderRadius: '50%', 
+                      width: '40px', 
+                      height: '40px', 
+                      cursor: 'pointer', 
+                      fontSize: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.2s',
+                      fontWeight: 'bold'
+                    }}>▼</button>
+                  </div>
 
-                 {/* Colon Separator */}
-                 <div style={{ color: currentColors.textSecondary, fontSize: '2rem', fontWeight: '300', alignSelf: 'center', marginTop: '-20px' }}>:</div>
+                  {/* Colon Separator */}
+                  <div style={{ color: currentColors.textSecondary, fontSize: '1.5rem', fontWeight: '300', alignSelf: 'center', marginTop: '-10px' }}>:</div>
 
-                 {/* Seconds Section */}
-                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-                   <button onClick={() => adjustTime('seconds', 'up')} style={{ 
-                     background: `${currentColors.secondary}20`, 
-                     color: currentColors.secondary, 
-                     border: `1px solid ${currentColors.secondary}40`, 
-                     borderRadius: '50%', 
-                     width: '44px', 
-                     height: '44px', 
-                     cursor: 'pointer', 
-                     fontSize: '18px',
-                     display: 'flex',
-                     alignItems: 'center',
-                     justifyContent: 'center',
-                     transition: 'all 0.2s',
-                     fontWeight: 'bold'
-                   }}>▲</button>
-                   
-                   {/* Seconds Display */}
-                   <div style={{ 
-                     background: currentColors.background, 
-                     border: `2px solid ${currentColors.secondary}40`, 
-                     borderRadius: '16px', 
-                     padding: '16px 20px', 
-                     minWidth: '80px',
-                     textAlign: 'center'
-                   }}>
-                     <div style={{ 
-                       color: currentColors.text, 
-                       fontSize: '2.5rem', 
-                       fontWeight: '300', 
-                       fontFamily: 'system-ui, -apple-system',
-                       lineHeight: '1'
-                     }}>
-                       {(timerState.time % 60).toString().padStart(2, '0')}
-                     </div>
-                     <div style={{ color: currentColors.textSecondary, fontSize: '0.8rem', fontWeight: '500', marginTop: '4px' }}>ثواني</div>
-                   </div>
-                   
-                   <button onClick={() => adjustTime('seconds', 'down')} style={{ 
-                     background: `${currentColors.secondary}20`, 
-                     color: currentColors.secondary, 
-                     border: `1px solid ${currentColors.secondary}40`, 
-                     borderRadius: '50%', 
-                     width: '44px', 
-                     height: '44px', 
-                     cursor: 'pointer', 
-                     fontSize: '18px',
-                     display: 'flex',
-                     alignItems: 'center',
-                     justifyContent: 'center',
-                     transition: 'all 0.2s',
-                     fontWeight: 'bold'
-                   }}>▼</button>
-                 </div>
-               </div>
-             ) : (
-               /* Main Time Display - When Running or Stopwatch */
-               <div style={{ 
-                 fontSize: isRunning ? '4.5rem' : '4rem', 
-                 fontWeight: '200', 
-                 color: isRunning ? currentColors.primary : currentColors.text,
-                 fontFamily: 'system-ui, -apple-system, SF Pro Display',
-                 letterSpacing: '3px',
-                 transition: 'all 0.4s ease',
-                 textShadow: isRunning ? `0 0 20px ${currentColors.primary}40` : 'none',
-                 textAlign: 'center'
-               }}>
-                 {formatTimerDisplay(timerState.time)}
-               </div>
-             )}
+                  {/* Seconds Section */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', flex: 1 }}>
+                    <button onClick={() => adjustTime('seconds', 'up')} style={{ 
+                      background: `${currentColors.secondary}20`, 
+                      color: currentColors.secondary, 
+                      border: `1px solid ${currentColors.secondary}40`, 
+                      borderRadius: '50%', 
+                      width: '40px', 
+                      height: '40px', 
+                      cursor: 'pointer', 
+                      fontSize: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.2s',
+                      fontWeight: 'bold'
+                    }}>▲</button>
+                    
+                    {/* Seconds Display */}
+                    <div style={{ 
+                      background: currentColors.background, 
+                      border: `2px solid ${currentColors.secondary}40`, 
+                      borderRadius: '12px', 
+                      padding: '12px 16px', 
+                      width: '100%',
+                      textAlign: 'center'
+                    }}>
+                      <div style={{ 
+                        color: currentColors.text, 
+                        fontSize: '2rem', 
+                        fontWeight: '300', 
+                        fontFamily: 'system-ui, -apple-system',
+                        lineHeight: '1'
+                      }}>
+                        {(timerState.time % 60).toString().padStart(2, '0')}
+                      </div>
+                      <div style={{ color: currentColors.textSecondary, fontSize: '0.75rem', fontWeight: '500', marginTop: '2px' }}>ثواني</div>
+                    </div>
+                    
+                    <button onClick={() => adjustTime('seconds', 'down')} style={{ 
+                      background: `${currentColors.secondary}20`, 
+                      color: currentColors.secondary, 
+                      border: `1px solid ${currentColors.secondary}40`, 
+                      borderRadius: '50%', 
+                      width: '40px', 
+                      height: '40px', 
+                      cursor: 'pointer', 
+                      fontSize: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.2s',
+                      fontWeight: 'bold'
+                    }}>▼</button>
+                  </div>
+                </div>
+              ) : (
+                /* Main Time Display - When Running or Stopwatch */
+                <div style={{ 
+                  fontSize: isRunning ? '4rem' : '3.5rem', 
+                  fontWeight: '200', 
+                  color: isRunning ? currentColors.primary : currentColors.text,
+                  fontFamily: 'system-ui, -apple-system, SF Pro Display',
+                  letterSpacing: '2px',
+                  transition: 'all 0.4s ease',
+                  textShadow: isRunning ? `0 0 20px ${currentColors.primary}40` : 'none',
+                  textAlign: 'center'
+                }}>
+                  {formatTimerDisplay(timerState.time)}
+                </div>
+              )}
           </div>
 
           {/* Quick Select Buttons (only when not running and timer mode) */}
@@ -942,61 +951,44 @@ const App: React.FC = () => {
             </div>
           )}
 
-                     {/* Control Buttons */}
-           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-             {/* Start/Pause Button */}
-             <button onClick={timerState.isRunning ? pauseTimer : startTimer} style={{ 
-               padding: '18px 32px', 
-               background: timerState.isRunning ? 
-                 `linear-gradient(135deg, ${currentColors.secondary}, #ffa726)` : 
-                 `linear-gradient(135deg, ${currentColors.success}, #2ed573)`, 
-               color: 'white', 
-               border: 'none', 
-               borderRadius: '28px', 
-               cursor: 'pointer', 
-               fontSize: '16px', 
-               fontWeight: '600',
-               minWidth: '130px',
-               boxShadow: '0 8px 25px rgba(0,0,0,0.25)',
-               transition: 'all 0.3s',
-               transform: isRunning ? 'scale(1.02)' : 'scale(1)',
-               textShadow: '0 1px 2px rgba(0,0,0,0.3)'
-             }}>
-               {timerState.isRunning ? `⏸️ إيقاف مؤقت` : `▶️ ${currentT.start}`}
-             </button>
-             
-             {/* Stop Button (only when paused or running) */}
-             {(timerState.isRunning || (!timerState.isRunning && timerState.time !== timerState.targetTime)) && (
-               <button onClick={stopTimer} style={{ 
-                 padding: '18px 32px', 
-                 background: `linear-gradient(135deg, ${currentColors.error}, #ff4757)`, 
-                 color: 'white', 
-                 border: 'none', 
-                 borderRadius: '28px', 
-                 cursor: 'pointer', 
-                 fontSize: '16px',
-                 fontWeight: '600',
-                 minWidth: '130px',
-                 boxShadow: '0 6px 20px rgba(0,0,0,0.2)',
-                 transition: 'all 0.2s',
-                 textShadow: '0 1px 2px rgba(0,0,0,0.3)'
-               }}>🛑 {currentT.stop}</button>
-             )}
-             
-             {/* Reset Button */}
-             <button onClick={resetTimer} style={{ 
-               padding: '18px 32px', 
-               background: currentColors.background, 
-               color: currentColors.text, 
-               border: `1px solid ${currentColors.border}`, 
-               borderRadius: '28px', 
-               cursor: 'pointer', 
-               fontSize: '16px',
-               fontWeight: '500',
-               minWidth: '130px',
-               transition: 'all 0.2s'
-             }}>🔄 {currentT.reset}</button>
-           </div>
+                                {/* Control Buttons - Simplified */}
+            <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
+              {/* Start/Pause Button */}
+              <button onClick={timerState.isRunning ? pauseTimer : startTimer} style={{ 
+                padding: '16px 30px', 
+                background: timerState.isRunning ? 
+                  `linear-gradient(135deg, #ff9500, #ff6b35)` : 
+                  `linear-gradient(135deg, ${currentColors.success}, #2ed573)`, 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '25px', 
+                cursor: 'pointer', 
+                fontSize: '16px', 
+                fontWeight: '600',
+                minWidth: '140px',
+                boxShadow: '0 6px 20px rgba(0,0,0,0.2)',
+                transition: 'all 0.2s'
+              }}>
+                {timerState.isRunning ? `⏸️ إيقاف مؤقت` : `▶️ ${currentT.start}`}
+              </button>
+              
+              {/* Stop Button (only when running) */}
+              {timerState.isRunning && (
+                <button onClick={stopTimer} style={{ 
+                  padding: '16px 30px', 
+                  background: `linear-gradient(135deg, ${currentColors.error}, #ff4757)`, 
+                  color: 'white', 
+                  border: 'none', 
+                  borderRadius: '25px', 
+                  cursor: 'pointer', 
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  minWidth: '140px',
+                  boxShadow: '0 6px 20px rgba(0,0,0,0.2)',
+                  transition: 'all 0.2s'
+                }}>🛑 إيقاف</button>
+              )}
+            </div>
         </div>
       </div>
     );
