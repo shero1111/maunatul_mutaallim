@@ -199,6 +199,8 @@ const App: React.FC = () => {
   // UI State
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [levelFilter, setLevelFilter] = useState<string>('all');
+  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
   const [audioPlayer, setAudioPlayer] = useState<{url: string, title: string} | null>(null);
   const [selectedMatn, setSelectedMatn] = useState<Matn | null>(null);
   const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
@@ -897,34 +899,7 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Student Status Change (for students only) */}
-        {currentUser?.role === 'student' && (
-          <div style={{ background: colors.surface, borderRadius: '15px', padding: '20px', marginBottom: '20px', border: `1px solid ${colors.border}` }}>
-            <h3 style={{ color: colors.text, marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '1.5rem' }}>📊</span>
-              {t.changeStatus}
-            </h3>
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              {(['not_available', 'revising', 'khatamat'] as const).map(status => (
-                <button key={status} onClick={() => changeStudentStatus(status)} style={{ 
-                  padding: '10px 15px', 
-                  background: (currentUser as Student).status === status ? getStatusColor(status) : colors.border, 
-                  color: (currentUser as Student).status === status ? 'white' : colors.text, 
-                  border: 'none', 
-                  borderRadius: '10px', 
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  fontSize: '14px'
-                }}>
-                  {t[status]}
-                </button>
-              ))}
-            </div>
-            <p style={{ color: colors.textSecondary, fontSize: '0.9rem', marginTop: '10px' }}>
-              {t.lastUpdate}: {formatTime((currentUser as Student).status_changed_at)}
-            </p>
-          </div>
-        )}
+        {/* Student Status Change removed - now in Student Homepage */}
 
         {/* Students Status Overview */}
         <div style={{ background: colors.surface, borderRadius: '15px', padding: '20px', border: `1px solid ${colors.border}` }}>
@@ -956,13 +931,15 @@ const App: React.FC = () => {
     );
   };
 
-  // Mutuun Page Component
+  // Mutuun Page Component - Enhanced with Level Filters
   const MutunPage: React.FC = () => {
     const userMutun = mutunData.filter(m => m.user_id === currentUser?.id);
+    
     const filteredMutun = userMutun.filter(m => {
       const matchesSearch = m.name.toLowerCase().includes(searchQuery.toLowerCase()) || m.section.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = statusFilter === 'all' || m.status === statusFilter;
-      return matchesSearch && matchesStatus;
+      const matchesLevel = levelFilter === 'all' || m.section === levelFilter;
+      return matchesSearch && matchesStatus && matchesLevel;
     });
 
     const groupedMutun = filteredMutun.reduce((acc, matn) => {
@@ -971,26 +948,96 @@ const App: React.FC = () => {
       return acc;
     }, {} as Record<string, Matn[]>);
 
+    const allLevels = ['المستوى الأول', 'المستوى الثاني', 'المستوى الثالث', 'المستوى الرابع'];
+    
+    const toggleSection = (section: string) => {
+      setCollapsedSections(prev => ({
+        ...prev,
+        [section]: !prev[section]
+      }));
+    };
+
     return (
       <div style={{ padding: '20px' }}>
         <div style={{ marginBottom: '20px' }}>
-          <h1 style={{ color: colors.primary, fontSize: '1.8rem', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <h1 style={{ color: colors.primary, fontSize: '1.8rem', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span>📚</span>
             {t.mutuun}
           </h1>
           
-          <SearchBar onSearch={setSearchQuery} placeholder="البحث في المتون..." />
+          {/* Search Bar - Compact */}
+          <div style={{ marginBottom: '15px' }}>
+            <SearchBar onSearch={setSearchQuery} placeholder="البحث في المتون..." />
+          </div>
           
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
-            <button onClick={() => setStatusFilter('all')} style={{ padding: '8px 15px', background: statusFilter === 'all' ? colors.primary : colors.border, color: statusFilter === 'all' ? 'white' : colors.text, border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>
-              {t.allStatuses}
-            </button>
-            {['red', 'orange', 'green'].map(status => (
-              <button key={status} onClick={() => setStatusFilter(status)} style={{ padding: '8px 15px', background: statusFilter === status ? getMatnColor(status) : colors.border, color: statusFilter === status ? 'white' : colors.text, border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>
-                <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: getMatnColor(status), display: 'inline-block', marginLeft: '5px' }} />
-                {status === 'red' ? 'أحمر' : status === 'orange' ? 'برتقالي' : 'أخضر'}
+          {/* Level Filter Buttons */}
+          <div style={{ marginBottom: '15px' }}>
+            <h3 style={{ color: colors.text, fontSize: '1rem', marginBottom: '10px' }}>المستويات:</h3>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <button onClick={() => setLevelFilter('all')} style={{ 
+                padding: '8px 12px', 
+                background: levelFilter === 'all' ? colors.primary : colors.border, 
+                color: levelFilter === 'all' ? 'white' : colors.text, 
+                border: 'none', 
+                borderRadius: '8px', 
+                cursor: 'pointer', 
+                fontSize: '13px',
+                fontWeight: levelFilter === 'all' ? 'bold' : 'normal'
+              }}>
+                جميع المستويات
               </button>
-            ))}
+              {allLevels.map(level => (
+                <button key={level} onClick={() => setLevelFilter(level)} style={{ 
+                  padding: '8px 12px', 
+                  background: levelFilter === level ? colors.secondary : colors.border, 
+                  color: levelFilter === level ? 'white' : colors.text, 
+                  border: 'none', 
+                  borderRadius: '8px', 
+                  cursor: 'pointer', 
+                  fontSize: '13px',
+                  fontWeight: levelFilter === level ? 'bold' : 'normal'
+                }}>
+                  {level}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Status Filter Buttons */}
+          <div style={{ marginBottom: '20px' }}>
+            <h3 style={{ color: colors.text, fontSize: '1rem', marginBottom: '10px' }}>حالة المراجعة:</h3>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <button onClick={() => setStatusFilter('all')} style={{ 
+                padding: '8px 12px', 
+                background: statusFilter === 'all' ? colors.primary : colors.border, 
+                color: statusFilter === 'all' ? 'white' : colors.text, 
+                border: 'none', 
+                borderRadius: '8px', 
+                cursor: 'pointer', 
+                fontSize: '13px',
+                fontWeight: statusFilter === 'all' ? 'bold' : 'normal'
+              }}>
+                جميع الحالات
+              </button>
+              {['red', 'orange', 'green'].map(status => (
+                <button key={status} onClick={() => setStatusFilter(status)} style={{ 
+                  padding: '8px 12px', 
+                  background: statusFilter === status ? getMatnColor(status) : colors.border, 
+                  color: statusFilter === status ? 'white' : colors.text, 
+                  border: 'none', 
+                  borderRadius: '8px', 
+                  cursor: 'pointer', 
+                  fontSize: '13px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  fontWeight: statusFilter === status ? 'bold' : 'normal'
+                }}>
+                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: getMatnColor(status) }} />
+                  {status === 'red' ? 'أحمر' : status === 'orange' ? 'برتقالي' : 'أخضر'}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
