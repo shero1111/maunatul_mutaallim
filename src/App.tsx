@@ -683,13 +683,7 @@ const App: React.FC = () => {
       setTimerState(prev => ({ ...prev, isRunning: true, startTime: Date.now() }));
     };
 
-    const stopTimer = () => {
-      setTimerState(prev => ({ ...prev, isRunning: false, startTime: null }));
-    };
 
-    const resetTimer = () => {
-      setTimerState(prev => ({ ...prev, isRunning: false, startTime: null, time: prev.mode === 'timer' ? prev.targetTime : 0 }));
-    };
 
     const setTimerMinutes = (minutes: number) => {
       const seconds = minutes * 60;
