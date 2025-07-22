@@ -204,7 +204,7 @@ const App: React.FC = () => {
   const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
   const [editingDescription, setEditingDescription] = useState(false);
   const [newDescription, setNewDescription] = useState('');
-  const [pdfViewer, setPdfViewer] = useState<{url: string, title: string} | null>(null);
+  // PDF Viewer removed - only external opening
   
   // Timer State
   const [timerState, setTimerState] = useState<{
@@ -468,68 +468,7 @@ const App: React.FC = () => {
     );
   };
 
-  // PDF Viewer Component (Fixed scope issue)
-  const PDFViewer: React.FC<{ pdfUrl: string; title: string; onClose: () => void }> = ({ pdfUrl, title, onClose }) => {
-    // Use current theme colors and language
-    const currentColors = themeColors[theme];
-    const currentLang = language;
-    const currentT = translations[currentLang];
-    
-    const convertToEmbedUrl = (url: string) => {
-      if (url.includes('drive.google.com/file/d/')) {
-        const fileId = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/)?.[1];
-        return fileId ? `https://drive.google.com/file/d/${fileId}/preview` : url;
-      }
-      return url;
-    };
-
-    const embedUrl = convertToEmbedUrl(pdfUrl);
-
-    return (
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1002, backgroundColor: currentColors.overlay }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: currentColors.background, display: 'flex', flexDirection: 'column' }}>
-          {/* Header */}
-          <div style={{ padding: '15px 20px', borderBottom: `1px solid ${currentColors.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: currentColors.surface }}>
-            <h3 style={{ margin: 0, color: currentColors.text, fontSize: '1.1rem', maxWidth: '70%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>📄 {title}</h3>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={() => window.open(pdfUrl, '_blank')} style={{ padding: '8px 12px', background: currentColors.primary, color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px' }}>
-                🔗 {currentLang === 'ar' ? 'فتح خارجي' : 'Open External'}
-              </button>
-              <button onClick={onClose} style={{ background: currentColors.error, color: 'white', border: 'none', width: '35px', height: '35px', borderRadius: '50%', cursor: 'pointer', fontSize: '16px' }}>✕</button>
-            </div>
-          </div>
-
-          {/* PDF Viewer */}
-          <div style={{ flex: 1, position: 'relative' }}>
-            <iframe 
-              src={embedUrl}
-              style={{ 
-                width: '100%', 
-                height: '100%', 
-                border: 'none',
-                backgroundColor: currentColors.surface
-              }}
-              title={title}
-              onError={() => {
-                console.error('PDF loading failed, opening in new tab');
-                window.open(pdfUrl, '_blank');
-              }}
-            />
-          </div>
-
-          {/* Bottom Actions */}
-          <div style={{ padding: '15px', borderTop: `1px solid ${currentColors.border}`, background: currentColors.surface, display: 'flex', justifyContent: 'center', gap: '15px' }}>
-            <button onClick={() => window.open(pdfUrl, '_blank')} style={{ padding: '10px 20px', background: currentColors.secondary, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
-              📱 {currentLang === 'ar' ? 'فتح في التطبيق الخارجي' : 'Open in External App'}
-            </button>
-            <button onClick={onClose} style={{ padding: '10px 20px', background: currentColors.border, color: currentColors.text, border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
-              {currentLang === 'ar' ? 'إغلاق' : 'Close'}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
+  // PDF Viewer Component removed - only external opening
 
   // Audio Player Component (Fixed scope)
   const AudioPlayer: React.FC<{ audioUrl: string; title: string; onClose: () => void }> = ({ audioUrl, title, onClose }) => {
@@ -664,10 +603,62 @@ const App: React.FC = () => {
             <div style={{ fontSize: '3rem', fontFamily: 'monospace', color: currentColors.primary, marginBottom: '20px' }}>{formatTimerDisplay(timerState.time)}</div>
             
             {timerState.mode === 'timer' && (
-              <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
-                {[5, 10, 15, 30, 45, 60].map(minutes => (
-                  <button key={minutes} onClick={() => setTimerMinutes(minutes)} style={{ padding: '8px 12px', background: currentColors.border, color: currentColors.text, border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>{minutes}م</button>
-                ))}
+              <div style={{ marginBottom: '20px' }}>
+                {/* Quick Buttons */}
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                  {[5, 10, 15, 30, 45, 60].map(minutes => (
+                    <button key={minutes} onClick={() => setTimerMinutes(minutes)} style={{ padding: '8px 12px', background: currentColors.border, color: currentColors.text, border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>{minutes}م</button>
+                  ))}
+                </div>
+                
+                {/* Custom Time Picker */}
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', marginTop: '15px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <label style={{ color: currentColors.text, fontSize: '0.9rem', marginBottom: '5px' }}>الساعات</label>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: currentColors.surface, borderRadius: '8px', padding: '10px' }}>
+                      <button onClick={() => {
+                        const hours = Math.floor(timerState.time / 3600);
+                        const minutes = Math.floor((timerState.time % 3600) / 60);
+                        const newTime = Math.min(23, hours + 1) * 3600 + minutes * 60;
+                        setTimerState(prev => ({ ...prev, time: newTime, targetTime: newTime }));
+                      }} style={{ background: 'none', border: 'none', color: currentColors.primary, fontSize: '18px', cursor: 'pointer', padding: '5px' }}>▲</button>
+                      <span style={{ color: currentColors.text, fontSize: '1.5rem', fontFamily: 'monospace', minWidth: '40px', textAlign: 'center' }}>
+                        {Math.floor(timerState.time / 3600).toString().padStart(2, '0')}
+                      </span>
+                      <button onClick={() => {
+                        const hours = Math.floor(timerState.time / 3600);
+                        const minutes = Math.floor((timerState.time % 3600) / 60);
+                        const newTime = Math.max(0, hours - 1) * 3600 + minutes * 60;
+                        setTimerState(prev => ({ ...prev, time: newTime, targetTime: newTime }));
+                      }} style={{ background: 'none', border: 'none', color: currentColors.primary, fontSize: '18px', cursor: 'pointer', padding: '5px' }}>▼</button>
+                    </div>
+                  </div>
+                  
+                  <span style={{ color: currentColors.text, fontSize: '2rem', fontFamily: 'monospace' }}>:</span>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <label style={{ color: currentColors.text, fontSize: '0.9rem', marginBottom: '5px' }}>الدقائق</label>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: currentColors.surface, borderRadius: '8px', padding: '10px' }}>
+                      <button onClick={() => {
+                        const hours = Math.floor(timerState.time / 3600);
+                        const minutes = Math.floor((timerState.time % 3600) / 60);
+                        const newMinutes = Math.min(59, minutes + 1);
+                        const newTime = hours * 3600 + newMinutes * 60;
+                        setTimerState(prev => ({ ...prev, time: newTime, targetTime: newTime }));
+                      }} style={{ background: 'none', border: 'none', color: currentColors.primary, fontSize: '18px', cursor: 'pointer', padding: '5px' }}>▲</button>
+                      <span style={{ color: currentColors.text, fontSize: '1.5rem', fontFamily: 'monospace', minWidth: '40px', textAlign: 'center' }}>
+                        {Math.floor((timerState.time % 3600) / 60).toString().padStart(2, '0')}
+                      </span>
+                      <button onClick={() => {
+                        const hours = Math.floor(timerState.time / 3600);
+                        const minutes = Math.floor((timerState.time % 3600) / 60);
+                        const newMinutes = Math.max(0, minutes - 1);
+                        const newTime = hours * 3600 + newMinutes * 60;
+                        setTimerState(prev => ({ ...prev, time: newTime, targetTime: newTime }));
+                      }} style={{ background: 'none', border: 'none', color: currentColors.primary, fontSize: '18px', cursor: 'pointer', padding: '5px' }}>▼</button>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -750,7 +741,7 @@ const App: React.FC = () => {
     );
   };
 
-  // Home Page Component
+  // Home Page Component - Role-based views
   const HomePage: React.FC = () => {
     const students = usersData.filter(u => u.role === 'student') as Student[];
     const teachers = usersData.filter(u => u.role === 'lehrer');
@@ -761,6 +752,116 @@ const App: React.FC = () => {
       revising: students.filter(s => s.status === 'revising').length,
       khatamat: students.filter(s => s.status === 'khatamat').length
     };
+
+    // STUDENT VIEW - Show Halaqa members
+    if (currentUser?.role === 'student') {
+      const student = currentUser as Student;
+      const myHalaqat = halaqatData.filter(h => student.halaqat_ids.includes(h.id));
+      
+      return (
+        <div style={{ padding: '20px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+            <h1 style={{ color: colors.primary, fontSize: '2rem', marginBottom: '10px' }}>مرحباً، {currentUser?.name}</h1>
+            <p style={{ color: colors.textSecondary, fontSize: '1rem' }}>حلقاتي ومتابعة الطلاب</p>
+          </div>
+
+          {/* My Status */}
+          <div style={{ background: colors.surface, borderRadius: '15px', padding: '20px', marginBottom: '20px', border: `1px solid ${colors.border}` }}>
+            <h3 style={{ color: colors.text, marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '1.5rem' }}>📊</span>
+              حالتي الحالية
+            </h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
+              <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: getStatusColor(student.status) }} />
+              <span style={{ color: colors.text, fontSize: '1.1rem', fontWeight: 'bold' }}>{t[student.status]}</span>
+            </div>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              {(['not_available', 'revising', 'khatamat'] as const).map(status => (
+                <button key={status} onClick={() => changeStudentStatus(status)} style={{ 
+                  padding: '10px 15px', 
+                  background: student.status === status ? getStatusColor(status) : colors.border, 
+                  color: student.status === status ? 'white' : colors.text, 
+                  border: 'none', 
+                  borderRadius: '10px', 
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  fontSize: '14px'
+                }}>
+                  {t[status]}
+                </button>
+              ))}
+            </div>
+            <p style={{ color: colors.textSecondary, fontSize: '0.9rem', marginTop: '10px' }}>
+              {t.lastUpdate}: {formatTime(student.status_changed_at)}
+            </p>
+          </div>
+
+          {/* My Halaqat */}
+          {myHalaqat.map(halaqa => {
+            const halaqaStudents = students.filter(s => s.halaqat_ids.includes(halaqa.id));
+            const teacher = teachers.find(t => t.id === halaqa.teacher_id);
+            
+            return (
+              <div key={halaqa.id} style={{ background: colors.surface, borderRadius: '15px', padding: '20px', marginBottom: '20px', border: `1px solid ${colors.border}` }}>
+                <h3 style={{ color: colors.primary, marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '1.5rem' }}>🔵</span>
+                  {halaqa.name}
+                </h3>
+                
+                <div style={{ marginBottom: '15px', padding: '10px', background: colors.background, borderRadius: '8px' }}>
+                  <p style={{ color: colors.text, margin: '5px 0' }}>
+                    <strong>المعلم:</strong> {teacher?.name || 'غير محدد'}
+                  </p>
+                  <p style={{ color: colors.text, margin: '5px 0' }}>
+                    <strong>النوع:</strong> {halaqa.type === 'memorizing' ? 'تحفيظ' : halaqa.type === 'explanation' ? 'شرح' : halaqa.type === 'memorizing_intensive' ? 'تحفيظ مكثف' : 'شرح مكثف'}
+                  </p>
+                  <p style={{ color: colors.text, margin: '5px 0' }}>
+                    <strong>عدد الطلاب:</strong> {halaqaStudents.length}
+                  </p>
+                </div>
+
+                <h4 style={{ color: colors.text, marginBottom: '10px' }}>طلاب الحلقة:</h4>
+                <div style={{ display: 'grid', gap: '10px' }}>
+                  {halaqaStudents.map(halaqaStudent => (
+                    <div key={halaqaStudent.id} style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center', 
+                      padding: '12px', 
+                      background: colors.background, 
+                      borderRadius: '8px',
+                      border: halaqaStudent.id === currentUser.id ? `2px solid ${colors.primary}` : `1px solid ${colors.border}`
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: getStatusColor(halaqaStudent.status) }} />
+                        <span style={{ color: colors.text, fontWeight: halaqaStudent.id === currentUser.id ? 'bold' : 'normal' }}>
+                          {halaqaStudent.name} {halaqaStudent.id === currentUser.id ? '(أنت)' : ''}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ color: getStatusColor(halaqaStudent.status), fontSize: '0.9rem', fontWeight: 'bold' }}>
+                          {t[halaqaStudent.status]}
+                        </span>
+                        {halaqaStudent.isOnline && (
+                          <span style={{ color: colors.success, fontSize: '0.8rem' }}>🟢 متصل</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+
+          {myHalaqat.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '40px', color: colors.textSecondary }}>
+              <div style={{ fontSize: '3rem', marginBottom: '10px' }}>🔵</div>
+              <p>لم يتم تسجيلك في أي حلقة بعد</p>
+            </div>
+          )}
+        </div>
+      );
+    }
 
     return (
       <div style={{ padding: '20px' }}>
@@ -924,12 +1025,12 @@ const App: React.FC = () => {
                   
                   <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                     {matn.memorization_pdf_link && (
-                      <button onClick={(e) => { e.stopPropagation(); setPdfViewer({ url: matn.memorization_pdf_link, title: `${matn.name} - ${t.memorizationPdf}` }); }} style={{ padding: '5px 10px', background: colors.primary, color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}>
+                      <button onClick={(e) => { e.stopPropagation(); window.open(matn.memorization_pdf_link, '_blank'); }} style={{ padding: '5px 10px', background: colors.primary, color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}>
                         📄 {t.memorizationPdf}
                       </button>
                     )}
                     {matn.explanation_pdf_link && (
-                      <button onClick={(e) => { e.stopPropagation(); setPdfViewer({ url: matn.explanation_pdf_link, title: `${matn.name} - ${t.explanationPdf}` }); }} style={{ padding: '5px 10px', background: colors.secondary, color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}>
+                      <button onClick={(e) => { e.stopPropagation(); window.open(matn.explanation_pdf_link, '_blank'); }} style={{ padding: '5px 10px', background: colors.secondary, color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}>
                         �� {t.explanationPdf}
                       </button>
                     )}
@@ -1111,8 +1212,7 @@ const App: React.FC = () => {
         <button onClick={() => setTimerState(prev => ({ ...prev, isOpen: true }))} style={{ position: 'fixed', bottom: '100px', [language === 'ar' ? 'left' : 'right']: '20px', width: '60px', height: '60px', borderRadius: '50%', background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`, color: 'white', border: 'none', fontSize: '24px', cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,0,0,0.3)', zIndex: 999, transition: 'transform 0.2s' }} onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'} onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>⏱️</button>
       )}
 
-      {/* PDF Viewer */}
-      {pdfViewer && <PDFViewer pdfUrl={pdfViewer.url} title={pdfViewer.title} onClose={() => setPdfViewer(null)} />}
+      {/* PDF Viewer removed - only external opening */}
 
       {/* Audio Player */}
       {audioPlayer && <AudioPlayer audioUrl={audioPlayer.url} title={audioPlayer.title} onClose={() => setAudioPlayer(null)} />}
@@ -1170,12 +1270,12 @@ const App: React.FC = () => {
               <h4 style={{ color: colors.text, marginBottom: '10px' }}>{t.materials}:</h4>
               <div style={{ display: 'grid', gap: '10px' }}>
                 {selectedMatn.memorization_pdf_link && (
-                  <button onClick={() => setPdfViewer({ url: selectedMatn.memorization_pdf_link, title: `${selectedMatn.name} - ${t.memorizationPdf}` })} style={{ padding: '12px', background: colors.primary, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', textAlign: 'left' }}>
+                  <button onClick={() => window.open(selectedMatn.memorization_pdf_link, '_blank')} style={{ padding: '12px', background: colors.primary, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', textAlign: 'left' }}>
                     📄 {t.memorizationPdf}
                   </button>
                 )}
                 {selectedMatn.explanation_pdf_link && (
-                  <button onClick={() => setPdfViewer({ url: selectedMatn.explanation_pdf_link, title: `${selectedMatn.name} - ${t.explanationPdf}` })} style={{ padding: '12px', background: colors.secondary, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', textAlign: 'left' }}>
+                  <button onClick={() => window.open(selectedMatn.explanation_pdf_link, '_blank')} style={{ padding: '12px', background: colors.secondary, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', textAlign: 'left' }}>
                     📖 {t.explanationPdf}
                   </button>
                 )}
