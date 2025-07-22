@@ -68,19 +68,19 @@ interface News {
   read_by: string[];
 }
 
-// Mutuun Template from specifications
+// Mutuun Template from specifications - CORRECTED PDF LINKS
 const mutunTemplate = [
   {
     title: 'المستوى الأول',
     items: [
-      { name: 'ثلاثة الأصول وأدلتها', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://docs.google.com/uc?export=open&id=1MGzggNyA4l5prN6XL2ah7jSByi4spcpV', explanation_pdf_link: 'https://drive.google.com/file/d/1MGzggNyA4l5prN6XL2ah7jSByi4spcpV/view?usp=sharing', explanation_audio_link: 'https://docs.google.com/uc?export=open&id=1MGzggNyA4l5prN6XL2ah7jSByi4spcpV' },
-      { name: 'المفتاح في الفقه', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand3.wav', explanation_pdf_link: 'https://drive.google.com/file/d/1MGzggNyA4l5prN6XL2ah7jSByi4spcpV/view?usp=sharing', explanation_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand3.wav' },
-      { name: 'معاني الفاتحة وقصار المفصل', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch3.wav', explanation_pdf_link: 'https://drive.google.com/file/d/1MGzggNyA4l5prN6XL2ah7jSByi4spcpV/view?usp=sharing', explanation_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch3.wav' },
-      { name: 'الأربعين النووية', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/PinkPanther30.wav', explanation_pdf_link: 'https://drive.google.com/file/d/1MGzggNyA4l5prN6XL2ah7jSByi4spcpV/view?usp=sharing', explanation_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/PinkPanther30.wav' },
-      { name: 'الزيادة الرجبية', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1MGzggNyA4l5prN6XL2ah7jSByi4spcpV/view?usp=sharing', explanation_audio_link: '' },
-      { name: 'الآداب العشرة', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1MGzggNyA4l5prN6XL2ah7jSByi4spcpV/view?usp=sharing', explanation_audio_link: '' },
-      { name: 'الخلاصة الحسناء', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1MGzggNyA4l5prN6XL2ah7jSByi4spcpV/view?usp=sharing', explanation_audio_link: '' },
-      { name: 'الباقيات الصالحات', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1MGzggNyA4l5prN6XL2ah7jSByi4spcpV/view?usp=sharing', explanation_audio_link: '' }
+      { name: 'ثلاثة الأصول وأدلتها', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://docs.google.com/uc?export=open&id=1MGzggNyA4l5prN6XL2ah7jSByi4spcpV', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: 'https://docs.google.com/uc?export=open&id=1MGzggNyA4l5prN6XL2ah7jSByi4spcpV' },
+      { name: 'المفتاح في الفقه', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand3.wav', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand3.wav' },
+      { name: 'معاني الفاتحة وقصار المفصل', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch3.wav', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch3.wav' },
+      { name: 'الأربعين النووية', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/PinkPanther30.wav', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/PinkPanther30.wav' },
+      { name: 'الزيادة الرجبية', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: '' },
+      { name: 'الآداب العشرة', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: '' },
+      { name: 'الخلاصة الحسناء', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: '' },
+      { name: 'الباقيات الصالحات', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: '' }
     ]
   },
   {
@@ -431,15 +431,19 @@ const App: React.FC = () => {
     }
   };
 
-  // Bottom Sheet Component
+  // Bottom Sheet Component (Fixed scope)
   const BottomSheet: React.FC<{ isOpen: boolean; onClose: () => void; children: React.ReactNode }> = ({ isOpen, onClose, children }) => {
     if (!isOpen) return null;
+    
+    // Use current theme colors and language
+    const currentColors = themeColors[theme];
+    const currentLang = language;
 
     return (
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000 }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: colors.overlay }} onClick={onClose} />
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: colors.surface, borderRadius: '20px 20px 0 0', maxHeight: '80vh', overflowY: 'auto', padding: '20px', direction: language === 'ar' ? 'rtl' : 'ltr', boxShadow: '0 -10px 30px rgba(0,0,0,0.2)' }}>
-          <div style={{ width: '40px', height: '4px', background: colors.border, borderRadius: '2px', margin: '0 auto 20px' }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: currentColors.overlay }} onClick={onClose} />
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: currentColors.surface, borderRadius: '20px 20px 0 0', maxHeight: '80vh', overflowY: 'auto', padding: '20px', direction: currentLang === 'ar' ? 'rtl' : 'ltr', boxShadow: '0 -10px 30px rgba(0,0,0,0.2)' }}>
+          <div style={{ width: '40px', height: '4px', background: currentColors.border, borderRadius: '2px', margin: '0 auto 20px' }} />
           {children}
         </div>
       </div>
@@ -509,13 +513,18 @@ const App: React.FC = () => {
     );
   };
 
-  // Audio Player Component
+  // Audio Player Component (Fixed scope)
   const AudioPlayer: React.FC<{ audioUrl: string; title: string; onClose: () => void }> = ({ audioUrl, title, onClose }) => {
     const audioRef = useRef<HTMLAudioElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
+    
+    // Use current theme colors and language
+    const currentColors = themeColors[theme];
+    const currentLang = language;
+    const currentT = translations[currentLang];
 
     const togglePlay = () => {
       if (audioRef.current) {
@@ -528,7 +537,7 @@ const App: React.FC = () => {
     const progress = duration ? (currentTime / duration) * 100 : 0;
 
     return (
-      <div style={{ position: 'fixed', bottom: audioPlayer ? 0 : -200, left: 0, right: 0, background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`, color: 'white', padding: '20px', borderRadius: '15px 15px 0 0', zIndex: 1001, boxShadow: '0 -10px 30px rgba(0,0,0,0.2)', direction: language === 'ar' ? 'rtl' : 'ltr', transition: 'bottom 0.3s ease' }}>
+      <div style={{ position: 'fixed', bottom: audioPlayer ? 0 : -200, left: 0, right: 0, background: `linear-gradient(135deg, ${currentColors.primary} 0%, ${currentColors.secondary} 100%)`, color: 'white', padding: '20px', borderRadius: '15px 15px 0 0', zIndex: 1001, boxShadow: '0 -10px 30px rgba(0,0,0,0.2)', direction: currentLang === 'ar' ? 'rtl' : 'ltr', transition: 'bottom 0.3s ease' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
           <h4 style={{ margin: 0, fontSize: '1.1rem', maxWidth: '80%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>🎧 {title}</h4>
           <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', width: '30px', height: '30px', borderRadius: '50%', cursor: 'pointer', fontSize: '16px' }}>✕</button>
@@ -562,7 +571,7 @@ const App: React.FC = () => {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <button onClick={togglePlay} disabled={isLoading} style={{ background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '25px', cursor: isLoading ? 'not-allowed' : 'pointer', fontSize: '16px', opacity: isLoading ? 0.5 : 1, transition: 'opacity 0.2s' }}>
-            {isLoading ? `⏳ ${t.loading}` : isPlaying ? `⏸️ ${t.pause}` : `▶️ ${t.play}`}
+            {isLoading ? `⏳ ${currentT.loading}` : isPlaying ? `⏸️ ${currentT.pause}` : `▶️ ${currentT.play}`}
           </button>
           <span style={{ fontSize: '14px', fontFamily: 'monospace' }}>{formatAudioTime(currentTime)} / {formatAudioTime(duration)}</span>
         </div>
@@ -570,9 +579,13 @@ const App: React.FC = () => {
     );
   };
 
-  // Search Component
+  // Search Component (Fixed scope)
   const SearchBar: React.FC<{ onSearch: (query: string) => void; placeholder?: string; }> = ({ onSearch, placeholder = t.search }) => {
     const [query, setQuery] = useState('');
+    
+    // Use current theme colors and language
+    const currentColors = themeColors[theme];
+    const currentLang = language;
 
     const handleSearch = (value: string) => {
       setQuery(value);
@@ -581,15 +594,20 @@ const App: React.FC = () => {
 
     return (
       <div style={{ position: 'relative', marginBottom: '20px' }}>
-        <input type="text" value={query} onChange={(e) => handleSearch(e.target.value)} placeholder={placeholder} style={{ width: '100%', padding: language === 'ar' ? '12px 40px 12px 12px' : '12px 12px 12px 40px', border: `2px solid ${colors.border}`, borderRadius: '25px', fontSize: '16px', outline: 'none', backgroundColor: colors.surface, color: colors.text, direction: language === 'ar' ? 'rtl' : 'ltr', transition: 'border-color 0.2s' }} onFocus={(e) => e.target.style.borderColor = colors.primary} onBlur={(e) => e.target.style.borderColor = colors.border} />
-        <span style={{ position: 'absolute', [language === 'ar' ? 'right' : 'left']: '15px', top: '50%', transform: 'translateY(-50%)', color: colors.primary, fontSize: '18px' }}>🔍</span>
+        <input type="text" value={query} onChange={(e) => handleSearch(e.target.value)} placeholder={placeholder} style={{ width: '100%', padding: currentLang === 'ar' ? '12px 40px 12px 12px' : '12px 12px 12px 40px', border: `2px solid ${currentColors.border}`, borderRadius: '25px', fontSize: '16px', outline: 'none', backgroundColor: currentColors.surface, color: currentColors.text, direction: currentLang === 'ar' ? 'rtl' : 'ltr', transition: 'border-color 0.2s' }} onFocus={(e) => e.target.style.borderColor = currentColors.primary} onBlur={(e) => e.target.style.borderColor = currentColors.border} />
+        <span style={{ position: 'absolute', [currentLang === 'ar' ? 'right' : 'left']: '15px', top: '50%', transform: 'translateY(-50%)', color: currentColors.primary, fontSize: '18px' }}>🔍</span>
       </div>
     );
   };
 
-  // Timer Modal Component
+  // Timer Modal Component (Fixed scope)
   const TimerModal: React.FC = () => {
     if (!timerState.isOpen) return null;
+    
+    // Use current theme colors and language
+    const currentColors = themeColors[theme];
+    const currentLang = language;
+    const currentT = translations[currentLang];
 
     const startTimer = () => {
       setTimerState(prev => ({ ...prev, isRunning: true, startTime: Date.now() }));
@@ -609,34 +627,34 @@ const App: React.FC = () => {
     };
 
     return (
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: colors.overlay, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1002, padding: '20px' }}>
-        <div style={{ background: colors.surface, borderRadius: '20px', padding: '30px', maxWidth: '400px', width: '100%', direction: language === 'ar' ? 'rtl' : 'ltr' }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: currentColors.overlay, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1002, padding: '20px' }}>
+        <div style={{ background: currentColors.surface, borderRadius: '20px', padding: '30px', maxWidth: '400px', width: '100%', direction: currentLang === 'ar' ? 'rtl' : 'ltr' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h2 style={{ margin: 0, color: colors.text }}>⏱️ {timerState.mode === 'timer' ? t.timer : t.stopwatch}</h2>
-            <button onClick={() => setTimerState(prev => ({ ...prev, isOpen: false }))} style={{ background: 'none', border: 'none', fontSize: '24px', color: colors.textSecondary, cursor: 'pointer' }}>✕</button>
+            <h2 style={{ margin: 0, color: currentColors.text }}>⏱️ {timerState.mode === 'timer' ? currentT.timer : currentT.stopwatch}</h2>
+            <button onClick={() => setTimerState(prev => ({ ...prev, isOpen: false }))} style={{ background: 'none', border: 'none', fontSize: '24px', color: currentColors.textSecondary, cursor: 'pointer' }}>✕</button>
           </div>
 
           <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-            <button onClick={() => setTimerState(prev => ({ ...prev, mode: 'timer', time: prev.targetTime }))} style={{ flex: 1, padding: '10px', background: timerState.mode === 'timer' ? colors.primary : colors.border, color: timerState.mode === 'timer' ? 'white' : colors.text, border: 'none', borderRadius: '10px', cursor: 'pointer' }}>{t.timer}</button>
-            <button onClick={() => setTimerState(prev => ({ ...prev, mode: 'stopwatch', time: 0 }))} style={{ flex: 1, padding: '10px', background: timerState.mode === 'stopwatch' ? colors.primary : colors.border, color: timerState.mode === 'stopwatch' ? 'white' : colors.text, border: 'none', borderRadius: '10px', cursor: 'pointer' }}>{t.stopwatch}</button>
+            <button onClick={() => setTimerState(prev => ({ ...prev, mode: 'timer', time: prev.targetTime }))} style={{ flex: 1, padding: '10px', background: timerState.mode === 'timer' ? currentColors.primary : currentColors.border, color: timerState.mode === 'timer' ? 'white' : currentColors.text, border: 'none', borderRadius: '10px', cursor: 'pointer' }}>{currentT.timer}</button>
+            <button onClick={() => setTimerState(prev => ({ ...prev, mode: 'stopwatch', time: 0 }))} style={{ flex: 1, padding: '10px', background: timerState.mode === 'stopwatch' ? currentColors.primary : currentColors.border, color: timerState.mode === 'stopwatch' ? 'white' : currentColors.text, border: 'none', borderRadius: '10px', cursor: 'pointer' }}>{currentT.stopwatch}</button>
           </div>
 
           <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-            <div style={{ fontSize: '3rem', fontFamily: 'monospace', color: colors.primary, marginBottom: '20px' }}>{formatTimerDisplay(timerState.time)}</div>
+            <div style={{ fontSize: '3rem', fontFamily: 'monospace', color: currentColors.primary, marginBottom: '20px' }}>{formatTimerDisplay(timerState.time)}</div>
             
             {timerState.mode === 'timer' && (
               <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
                 {[5, 10, 15, 30, 45, 60].map(minutes => (
-                  <button key={minutes} onClick={() => setTimerMinutes(minutes)} style={{ padding: '8px 12px', background: colors.border, color: colors.text, border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>{minutes}م</button>
+                  <button key={minutes} onClick={() => setTimerMinutes(minutes)} style={{ padding: '8px 12px', background: currentColors.border, color: currentColors.text, border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>{minutes}م</button>
                 ))}
               </div>
             )}
 
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-              <button onClick={timerState.isRunning ? stopTimer : startTimer} style={{ padding: '12px 24px', background: timerState.isRunning ? colors.error : colors.success, color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontSize: '16px' }}>
-                {timerState.isRunning ? `⏸️ ${t.stop}` : `▶️ ${t.start}`}
+              <button onClick={timerState.isRunning ? stopTimer : startTimer} style={{ padding: '12px 24px', background: timerState.isRunning ? currentColors.error : currentColors.success, color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontSize: '16px' }}>
+                {timerState.isRunning ? `⏸️ ${currentT.stop}` : `▶️ ${currentT.start}`}
               </button>
-              <button onClick={resetTimer} style={{ padding: '12px 24px', background: colors.border, color: colors.text, border: 'none', borderRadius: '10px', cursor: 'pointer', fontSize: '16px' }}>🔄 {t.reset}</button>
+              <button onClick={resetTimer} style={{ padding: '12px 24px', background: currentColors.border, color: currentColors.text, border: 'none', borderRadius: '10px', cursor: 'pointer', fontSize: '16px' }}>🔄 {currentT.reset}</button>
             </div>
           </div>
         </div>
