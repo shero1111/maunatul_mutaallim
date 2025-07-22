@@ -204,6 +204,7 @@ const App: React.FC = () => {
   const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
   const [editingDescription, setEditingDescription] = useState(false);
   const [newDescription, setNewDescription] = useState('');
+  const [pdfViewer, setPdfViewer] = useState<{url: string, title: string} | null>(null);
   
   // Timer State
   const [timerState, setTimerState] = useState<{
@@ -440,6 +441,64 @@ const App: React.FC = () => {
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: colors.surface, borderRadius: '20px 20px 0 0', maxHeight: '80vh', overflowY: 'auto', padding: '20px', direction: language === 'ar' ? 'rtl' : 'ltr', boxShadow: '0 -10px 30px rgba(0,0,0,0.2)' }}>
           <div style={{ width: '40px', height: '4px', background: colors.border, borderRadius: '2px', margin: '0 auto 20px' }} />
           {children}
+        </div>
+      </div>
+    );
+  };
+
+  // PDF Viewer Component
+  const PDFViewer: React.FC<{ pdfUrl: string; title: string; onClose: () => void }> = ({ pdfUrl, title, onClose }) => {
+    const convertToEmbedUrl = (url: string) => {
+      if (url.includes('drive.google.com/file/d/')) {
+        const fileId = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+        return fileId ? `https://drive.google.com/file/d/${fileId}/preview` : url;
+      }
+      return url;
+    };
+
+    const embedUrl = convertToEmbedUrl(pdfUrl);
+
+    return (
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1002, backgroundColor: colors.overlay }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: colors.background, display: 'flex', flexDirection: 'column' }}>
+          {/* Header */}
+          <div style={{ padding: '15px 20px', borderBottom: `1px solid ${colors.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: colors.surface }}>
+            <h3 style={{ margin: 0, color: colors.text, fontSize: '1.1rem', maxWidth: '70%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>📄 {title}</h3>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button onClick={() => window.open(pdfUrl, '_blank')} style={{ padding: '8px 12px', background: colors.primary, color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px' }}>
+                🔗 {language === 'ar' ? 'فتح خارجي' : 'Open External'}
+              </button>
+              <button onClick={onClose} style={{ background: colors.error, color: 'white', border: 'none', width: '35px', height: '35px', borderRadius: '50%', cursor: 'pointer', fontSize: '16px' }}>✕</button>
+            </div>
+          </div>
+
+          {/* PDF Viewer */}
+          <div style={{ flex: 1, position: 'relative' }}>
+            <iframe 
+              src={embedUrl}
+              style={{ 
+                width: '100%', 
+                height: '100%', 
+                border: 'none',
+                backgroundColor: colors.surface
+              }}
+              title={title}
+              onError={() => {
+                console.error('PDF loading failed, opening in new tab');
+                window.open(pdfUrl, '_blank');
+              }}
+            />
+          </div>
+
+          {/* Bottom Actions */}
+          <div style={{ padding: '15px', borderTop: `1px solid ${colors.border}`, background: colors.surface, display: 'flex', justifyContent: 'center', gap: '15px' }}>
+            <button onClick={() => window.open(pdfUrl, '_blank')} style={{ padding: '10px 20px', background: colors.secondary, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
+              📱 {language === 'ar' ? 'فتح في التطبيق الخارجي' : 'Open in External App'}
+            </button>
+            <button onClick={onClose} style={{ padding: '10px 20px', background: colors.border, color: colors.text, border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
+              {language === 'ar' ? 'إغلاق' : 'Close'}
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -811,12 +870,12 @@ const App: React.FC = () => {
                   
                   <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                     {matn.memorization_pdf_link && (
-                      <button onClick={(e) => { e.stopPropagation(); window.open(matn.memorization_pdf_link, '_blank'); }} style={{ padding: '5px 10px', background: colors.primary, color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}>
+                      <button onClick={(e) => { e.stopPropagation(); setPdfViewer({ url: matn.memorization_pdf_link, title: `${matn.name} - ${t.memorizationPdf}` }); }} style={{ padding: '5px 10px', background: colors.primary, color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}>
                         📄 {t.memorizationPdf}
                       </button>
                     )}
                     {matn.explanation_pdf_link && (
-                      <button onClick={(e) => { e.stopPropagation(); window.open(matn.explanation_pdf_link, '_blank'); }} style={{ padding: '5px 10px', background: colors.secondary, color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}>
+                      <button onClick={(e) => { e.stopPropagation(); setPdfViewer({ url: matn.explanation_pdf_link, title: `${matn.name} - ${t.explanationPdf}` }); }} style={{ padding: '5px 10px', background: colors.secondary, color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}>
                         �� {t.explanationPdf}
                       </button>
                     )}
@@ -997,6 +1056,9 @@ const App: React.FC = () => {
         <button onClick={() => setTimerState(prev => ({ ...prev, isOpen: true }))} style={{ position: 'fixed', bottom: '100px', [language === 'ar' ? 'left' : 'right']: '20px', width: '60px', height: '60px', borderRadius: '50%', background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`, color: 'white', border: 'none', fontSize: '24px', cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,0,0,0.3)', zIndex: 999, transition: 'transform 0.2s' }} onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'} onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>⏱️</button>
       )}
 
+      {/* PDF Viewer */}
+      {pdfViewer && <PDFViewer pdfUrl={pdfViewer.url} title={pdfViewer.title} onClose={() => setPdfViewer(null)} />}
+
       {/* Audio Player */}
       {audioPlayer && <AudioPlayer audioUrl={audioPlayer.url} title={audioPlayer.title} onClose={() => setAudioPlayer(null)} />}
 
@@ -1053,12 +1115,12 @@ const App: React.FC = () => {
               <h4 style={{ color: colors.text, marginBottom: '10px' }}>{t.materials}:</h4>
               <div style={{ display: 'grid', gap: '10px' }}>
                 {selectedMatn.memorization_pdf_link && (
-                  <button onClick={() => window.open(selectedMatn.memorization_pdf_link, '_blank')} style={{ padding: '12px', background: colors.primary, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', textAlign: 'left' }}>
+                  <button onClick={() => setPdfViewer({ url: selectedMatn.memorization_pdf_link, title: `${selectedMatn.name} - ${t.memorizationPdf}` })} style={{ padding: '12px', background: colors.primary, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', textAlign: 'left' }}>
                     📄 {t.memorizationPdf}
                   </button>
                 )}
                 {selectedMatn.explanation_pdf_link && (
-                  <button onClick={() => window.open(selectedMatn.explanation_pdf_link, '_blank')} style={{ padding: '12px', background: colors.secondary, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', textAlign: 'left' }}>
+                  <button onClick={() => setPdfViewer({ url: selectedMatn.explanation_pdf_link, title: `${selectedMatn.name} - ${t.explanationPdf}` })} style={{ padding: '12px', background: colors.secondary, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', textAlign: 'left' }}>
                     📖 {t.explanationPdf}
                   </button>
                 )}
