@@ -170,7 +170,13 @@ const translations = {
     logout: 'تسجيل الخروج', language: 'اللغة', theme: 'المظهر', aboutUs: 'من نحن', guide: 'دليل الاستخدام', version: 'الإصدار', materials: 'المواد', memorizationPdf: 'PDF التحفيظ', explanationPdf: 'PDF الشرح', audio: 'الصوت',
     search: 'البحث', edit: 'تعديل', delete: 'حذف', add: 'إضافة', loading: 'جاري التحميل...', play: 'تشغيل', pause: 'إيقاف', allStatuses: 'جميع الحالات', timer: 'مؤقت', stopwatch: 'ساعة إيقاف', start: 'ابدأ', stop: 'توقف', reset: 'إعادة تعيين',
     minutes: 'دقائق', seconds: 'ثواني', days: 'أيام', day: 'يوم', lastFullRevising: 'آخر ختمة كاملة كانت قبل', writeNote: 'اكتب ملاحظة', save: 'حفظ', settings: 'الإعدادات', threshold: 'عدد الأيام قبل إعادة تعيين اللون إلى الأحمر',
-    issuesErrors: 'المشاكل والأخطاء', changePassword: 'تغيير كلمة المرور', invalidCredentials: 'اسم المستخدم أو كلمة المرور غير صحيحة', close: 'إغلاق', cancel: 'إلغاء', confirm: 'تأكيد'
+    issuesErrors: 'المشاكل والأخطاء', changePassword: 'تغيير كلمة المرور', invalidCredentials: 'اسم المستخدم أو كلمة المرور غير صحيحة', close: 'إغلاق', cancel: 'إلغاء', confirm: 'تأكيد',
+    // Halaqat & Users page translations
+    createHalaqa: 'إنشاء حلقة جديدة', halaqaName: 'اسم الحلقة', halaqaType: 'نوع الحلقة', teacher: 'المعلم', students: 'الطلاب', active: 'نشط', inactive: 'غير نشط', 
+    memorizing: 'تحفيظ', explanation: 'شرح', memorizingIntensive: 'تحفيظ مكثف', explanationIntensive: 'شرح مكثف',
+    createUser: 'إنشاء مستخدم جديد', name: 'الاسم', role: 'الدور', status: 'الحالة', createdAt: 'تاريخ الإنشاء', lastSeen: 'آخر ظهور',
+    superuser: 'المدير العام', leitung: 'قائد الحلقات', lehrer: 'المعلم', student: 'الطالب', online: 'متصل', offline: 'غير متصل',
+    assignToHalaqa: 'إضافة إلى حلقة', removeFromHalaqa: 'إزالة من حلقة', noStudentsAssigned: 'لا يوجد طلاب مسجلون', noHalaqatAvailable: 'لا توجد حلقات متاحة'
   },
   en: {
     appName: 'Maunatul Mutaallim', username: 'Username', password: 'Password', login: 'Login', home: 'Home', mutuun: 'Mutun', halaqat: 'Halaqat', users: 'Users', news: 'News', more: 'More',
@@ -178,7 +184,13 @@ const translations = {
     logout: 'Logout', language: 'Language', theme: 'Theme', aboutUs: 'About Us', guide: 'Guide', version: 'Version', materials: 'Materials', memorizationPdf: 'Memorization PDF', explanationPdf: 'Explanation PDF', audio: 'Audio',
     search: 'Search', edit: 'Edit', delete: 'Delete', add: 'Add', loading: 'Loading...', play: 'Play', pause: 'Pause', allStatuses: 'All Statuses', timer: 'Timer', stopwatch: 'Stopwatch', start: 'Start', stop: 'Stop', reset: 'Reset',
     minutes: 'Minutes', seconds: 'Seconds', days: 'days', day: 'day', lastFullRevising: 'Last full revising was before', writeNote: 'Write a note', save: 'Save', settings: 'Settings', threshold: 'Number of days before color resets to red',
-    issuesErrors: 'Issues & Errors', changePassword: 'Change Password', invalidCredentials: 'Invalid username or password', close: 'Close', cancel: 'Cancel', confirm: 'Confirm'
+    issuesErrors: 'Issues & Errors', changePassword: 'Change Password', invalidCredentials: 'Invalid username or password', close: 'Close', cancel: 'Cancel', confirm: 'Confirm',
+    // Halaqat & Users page translations
+    createHalaqa: 'Create New Halaqa', halaqaName: 'Halaqa Name', halaqaType: 'Halaqa Type', teacher: 'Teacher', students: 'Students', active: 'Active', inactive: 'Inactive',
+    memorizing: 'Memorizing', explanation: 'Explanation', memorizingIntensive: 'Intensive Memorizing', explanationIntensive: 'Intensive Explanation',
+    createUser: 'Create New User', name: 'Name', role: 'Role', status: 'Status', createdAt: 'Created At', lastSeen: 'Last Seen',
+    superuser: 'Super Admin', leitung: 'Halaqa Leader', lehrer: 'Teacher', student: 'Student', online: 'Online', offline: 'Offline',
+    assignToHalaqa: 'Assign to Halaqa', removeFromHalaqa: 'Remove from Halaqa', noStudentsAssigned: 'No students assigned', noHalaqatAvailable: 'No halaqat available'
   }
 };
 
