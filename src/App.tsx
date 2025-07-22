@@ -808,123 +808,123 @@ const App: React.FC = () => {
              textAlign: 'center'
            }}>
                                       {/* Time Adjustment Layout - Minutes & Seconds */}
-              {canAdjust && timerState.mode === 'timer' ? (
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', alignItems: 'center', maxWidth: '300px', margin: '0 auto' }}>
-                  {/* Minutes Section */}
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', flex: 1 }}>
-                    <button onClick={() => adjustTime('minutes', 'up')} style={{ 
-                      background: `${currentColors.primary}20`, 
-                      color: currentColors.primary, 
-                      border: `1px solid ${currentColors.primary}40`, 
-                      borderRadius: '50%', 
-                      width: '40px', 
-                      height: '40px', 
-                      cursor: 'pointer', 
-                      fontSize: '16px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'all 0.2s',
-                      fontWeight: 'bold'
-                    }}>▲</button>
-                    
-                    {/* Minutes Display */}
-                    <div style={{ 
-                      background: currentColors.background, 
-                      border: `2px solid ${currentColors.primary}40`, 
-                      borderRadius: '12px', 
-                      padding: '12px 16px', 
-                      width: '100%',
-                      textAlign: 'center'
-                    }}>
-                      <div style={{ 
-                        color: currentColors.text, 
-                        fontSize: '2rem', 
-                        fontWeight: '300', 
-                        fontFamily: 'system-ui, -apple-system',
-                        lineHeight: '1'
-                      }}>
-                        {Math.floor(timerState.time / 60).toString().padStart(2, '0')}
-                      </div>
-                      <div style={{ color: currentColors.textSecondary, fontSize: '0.75rem', fontWeight: '500', marginTop: '2px' }}>دقائق</div>
-                    </div>
-                    
-                    <button onClick={() => adjustTime('minutes', 'down')} style={{ 
-                      background: `${currentColors.primary}20`, 
-                      color: currentColors.primary, 
-                      border: `1px solid ${currentColors.primary}40`, 
-                      borderRadius: '50%', 
-                      width: '40px', 
-                      height: '40px', 
-                      cursor: 'pointer', 
-                      fontSize: '16px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'all 0.2s',
-                      fontWeight: 'bold'
-                    }}>▼</button>
-                  </div>
+                             {canAdjust && timerState.mode === 'timer' ? (
+                 <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', alignItems: 'center', maxWidth: '300px', margin: '0 auto', direction: 'ltr' }}>
+                   {/* Minutes Section - LEFT */}
+                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', flex: 1 }}>
+                     <button onClick={() => adjustTime('minutes', 'up')} style={{ 
+                       background: `${currentColors.primary}20`, 
+                       color: currentColors.primary, 
+                       border: `1px solid ${currentColors.primary}40`, 
+                       borderRadius: '50%', 
+                       width: '40px', 
+                       height: '40px', 
+                       cursor: 'pointer', 
+                       fontSize: '16px',
+                       display: 'flex',
+                       alignItems: 'center',
+                       justifyContent: 'center',
+                       transition: 'all 0.2s',
+                       fontWeight: 'bold'
+                     }}>▲</button>
+                     
+                     {/* Minutes Display */}
+                     <div style={{ 
+                       background: currentColors.background, 
+                       border: `2px solid ${currentColors.primary}40`, 
+                       borderRadius: '12px', 
+                       padding: '12px 16px', 
+                       width: '100%',
+                       textAlign: 'center'
+                     }}>
+                       <div style={{ 
+                         color: currentColors.text, 
+                         fontSize: '2rem', 
+                         fontWeight: '300', 
+                         fontFamily: 'system-ui, -apple-system',
+                         lineHeight: '1'
+                       }}>
+                         {Math.floor(timerState.time / 60).toString().padStart(2, '0')}
+                       </div>
+                       <div style={{ color: currentColors.textSecondary, fontSize: '0.75rem', fontWeight: '500', marginTop: '2px' }}>MIN</div>
+                     </div>
+                     
+                     <button onClick={() => adjustTime('minutes', 'down')} style={{ 
+                       background: `${currentColors.primary}20`, 
+                       color: currentColors.primary, 
+                       border: `1px solid ${currentColors.primary}40`, 
+                       borderRadius: '50%', 
+                       width: '40px', 
+                       height: '40px', 
+                       cursor: 'pointer', 
+                       fontSize: '16px',
+                       display: 'flex',
+                       alignItems: 'center',
+                       justifyContent: 'center',
+                       transition: 'all 0.2s',
+                       fontWeight: 'bold'
+                     }}>▼</button>
+                   </div>
 
-                  {/* Colon Separator */}
-                  <div style={{ color: currentColors.textSecondary, fontSize: '1.5rem', fontWeight: '300', alignSelf: 'center', marginTop: '-10px' }}>:</div>
+                   {/* Colon Separator */}
+                   <div style={{ color: currentColors.textSecondary, fontSize: '1.5rem', fontWeight: '300', alignSelf: 'center', marginTop: '-10px' }}>:</div>
 
-                  {/* Seconds Section */}
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', flex: 1 }}>
-                    <button onClick={() => adjustTime('seconds', 'up')} style={{ 
-                      background: `${currentColors.secondary}20`, 
-                      color: currentColors.secondary, 
-                      border: `1px solid ${currentColors.secondary}40`, 
-                      borderRadius: '50%', 
-                      width: '40px', 
-                      height: '40px', 
-                      cursor: 'pointer', 
-                      fontSize: '16px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'all 0.2s',
-                      fontWeight: 'bold'
-                    }}>▲</button>
-                    
-                    {/* Seconds Display */}
-                    <div style={{ 
-                      background: currentColors.background, 
-                      border: `2px solid ${currentColors.secondary}40`, 
-                      borderRadius: '12px', 
-                      padding: '12px 16px', 
-                      width: '100%',
-                      textAlign: 'center'
-                    }}>
-                      <div style={{ 
-                        color: currentColors.text, 
-                        fontSize: '2rem', 
-                        fontWeight: '300', 
-                        fontFamily: 'system-ui, -apple-system',
-                        lineHeight: '1'
-                      }}>
-                        {(timerState.time % 60).toString().padStart(2, '0')}
-                      </div>
-                      <div style={{ color: currentColors.textSecondary, fontSize: '0.75rem', fontWeight: '500', marginTop: '2px' }}>ثواني</div>
-                    </div>
-                    
-                    <button onClick={() => adjustTime('seconds', 'down')} style={{ 
-                      background: `${currentColors.secondary}20`, 
-                      color: currentColors.secondary, 
-                      border: `1px solid ${currentColors.secondary}40`, 
-                      borderRadius: '50%', 
-                      width: '40px', 
-                      height: '40px', 
-                      cursor: 'pointer', 
-                      fontSize: '16px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'all 0.2s',
-                      fontWeight: 'bold'
-                    }}>▼</button>
-                  </div>
-                </div>
+                   {/* Seconds Section - RIGHT */}
+                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', flex: 1 }}>
+                     <button onClick={() => adjustTime('seconds', 'up')} style={{ 
+                       background: `${currentColors.secondary}20`, 
+                       color: currentColors.secondary, 
+                       border: `1px solid ${currentColors.secondary}40`, 
+                       borderRadius: '50%', 
+                       width: '40px', 
+                       height: '40px', 
+                       cursor: 'pointer', 
+                       fontSize: '16px',
+                       display: 'flex',
+                       alignItems: 'center',
+                       justifyContent: 'center',
+                       transition: 'all 0.2s',
+                       fontWeight: 'bold'
+                     }}>▲</button>
+                     
+                     {/* Seconds Display */}
+                     <div style={{ 
+                       background: currentColors.background, 
+                       border: `2px solid ${currentColors.secondary}40`, 
+                       borderRadius: '12px', 
+                       padding: '12px 16px', 
+                       width: '100%',
+                       textAlign: 'center'
+                     }}>
+                       <div style={{ 
+                         color: currentColors.text, 
+                         fontSize: '2rem', 
+                         fontWeight: '300', 
+                         fontFamily: 'system-ui, -apple-system',
+                         lineHeight: '1'
+                       }}>
+                         {(timerState.time % 60).toString().padStart(2, '0')}
+                       </div>
+                       <div style={{ color: currentColors.textSecondary, fontSize: '0.75rem', fontWeight: '500', marginTop: '2px' }}>SEC</div>
+                     </div>
+                     
+                     <button onClick={() => adjustTime('seconds', 'down')} style={{ 
+                       background: `${currentColors.secondary}20`, 
+                       color: currentColors.secondary, 
+                       border: `1px solid ${currentColors.secondary}40`, 
+                       borderRadius: '50%', 
+                       width: '40px', 
+                       height: '40px', 
+                       cursor: 'pointer', 
+                       fontSize: '16px',
+                       display: 'flex',
+                       alignItems: 'center',
+                       justifyContent: 'center',
+                       transition: 'all 0.2s',
+                       fontWeight: 'bold'
+                     }}>▼</button>
+                   </div>
+                 </div>
               ) : (
                 /* Main Time Display - When Running or Stopwatch */
                 <div style={{ 
@@ -1484,170 +1484,64 @@ const App: React.FC = () => {
                          </div>
                        </div>
                        
-                                                                                                                                                                       {/* Description Field - Beautiful Inline Editing */}
-                             <div style={{ marginBottom: '12px' }}>
-                               {editingMatnId === matn.id ? (
-                                 <div style={{ 
-                                   background: colors.background, 
-                                   padding: '12px', 
-                                   borderRadius: '12px',
-                                   border: `2px solid ${colors.primary}`,
-                                   boxShadow: `0 0 0 3px ${colors.primary}20`
-                                 }}>
-                                                                       <div
-                                      contentEditable
-                                      ref={(el) => {
-                                        if (el) {
-                                          el.focus();
-                                          el.textContent = editingText;
-                                        }
-                                      }}
-                                      onInput={(e) => setEditingText(e.currentTarget.textContent || '')}
-                                      onKeyDown={(e) => {
-                                        if (e.key === 'Enter' && e.ctrlKey) {
-                                          updateMatnDescription(matn.id, editingText);
-                                          setEditingMatnId(null);
-                                          setEditingText('');
-                                        }
-                                        if (e.key === 'Escape') {
-                                          setEditingMatnId(null);
-                                          setEditingText('');
-                                        }
-                                      }}
-                                      style={{
-                                        width: '100%',
-                                        minHeight: '80px',
-                                        padding: '12px',
-                                        border: 'none',
-                                        borderRadius: '8px',
-                                        fontSize: '0.9rem',
-                                        fontFamily: 'inherit',
-                                        backgroundColor: 'transparent',
-                                        color: colors.text,
-                                        outline: 'none',
-                                        direction: 'rtl',
-                                        textAlign: 'right',
-                                        lineHeight: '1.4',
-                                        whiteSpace: 'pre-wrap',
-                                        wordWrap: 'break-word'
-                                      }}
-                                      suppressContentEditableWarning={true}
-                                      data-placeholder={editingText === '' ? 'أضف ملاحظة للمتن...' : ''}
-                                    />
-                                   <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '8px' }}>
-                                     <button
-                                       onClick={() => {
-                                         updateMatnDescription(matn.id, editingText);
-                                         setEditingMatnId(null);
-                                         setEditingText('');
-                                       }}
-                                       style={{
-                                         background: `linear-gradient(135deg, ${colors.success}, #2ed573)`,
-                                         color: 'white',
-                                         border: 'none',
-                                         borderRadius: '8px',
-                                         padding: '8px 16px',
-                                         cursor: 'pointer',
-                                         fontSize: '0.9rem',
-                                         fontWeight: '600',
-                                         display: 'flex',
-                                         alignItems: 'center',
-                                         gap: '4px',
-                                         boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                                         transition: 'all 0.2s'
-                                       }}
-                                       onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
-                                       onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                                     >
-                                       <span>💾</span>
-                                       حفظ
-                                     </button>
-                                     <button
-                                       onClick={() => {
-                                         setEditingMatnId(null);
-                                         setEditingText('');
-                                       }}
-                                       style={{
-                                         background: colors.background,
-                                         color: colors.text,
-                                         border: `1px solid ${colors.border}`,
-                                         borderRadius: '8px',
-                                         padding: '8px 16px',
-                                         cursor: 'pointer',
-                                         fontSize: '0.9rem',
-                                         fontWeight: '500',
-                                         display: 'flex',
-                                         alignItems: 'center',
-                                         gap: '4px',
-                                         transition: 'all 0.2s'
-                                       }}
-                                       onMouseEnter={(e) => e.currentTarget.style.borderColor = colors.error}
-                                       onMouseLeave={(e) => e.currentTarget.style.borderColor = colors.border}
-                                     >
-                                       <span>❌</span>
-                                       إلغاء
-                                     </button>
-                                   </div>
-                                 </div>
-                               ) : (
-                                 <div 
-                                   onClick={() => {
-                                     const currentDescription = mutunData.find(m => m.id === matn.id)?.description || '';
-                                     setEditingText(currentDescription);
-                                     setEditingMatnId(matn.id);
-                                   }}
-                                   style={{ 
-                                     background: colors.background, 
-                                     padding: '16px', 
-                                     borderRadius: '12px',
-                                     border: `1px solid ${colors.border}`,
-                                     cursor: 'pointer',
-                                     minHeight: '60px',
-                                     display: 'flex',
-                                     alignItems: 'center',
-                                     justifyContent: 'space-between',
-                                     transition: 'all 0.3s ease',
-                                     position: 'relative',
-                                     overflow: 'hidden'
-                                   }}
-                                   onMouseEnter={(e) => {
-                                     e.currentTarget.style.borderColor = colors.primary;
-                                     e.currentTarget.style.transform = 'translateY(-1px)';
-                                     e.currentTarget.style.boxShadow = `0 4px 12px ${colors.primary}20`;
-                                   }}
-                                   onMouseLeave={(e) => {
-                                     e.currentTarget.style.borderColor = colors.border;
-                                     e.currentTarget.style.transform = 'translateY(0)';
-                                     e.currentTarget.style.boxShadow = 'none';
-                                   }}
-                                 >
-                                   <span style={{ 
-                                     color: matn.description ? colors.text : colors.textSecondary, 
-                                     fontSize: '0.9rem', 
-                                     fontStyle: matn.description ? 'normal' : 'italic', 
-                                     flex: 1,
-                                     lineHeight: '1.4'
-                                   }}>
-                                     {matn.description || 'انقر لإضافة ملاحظة...'}
-                                   </span>
-                                   <div style={{
-                                     background: `${colors.primary}15`,
-                                     color: colors.primary,
-                                     borderRadius: '50%',
-                                     width: '32px',
-                                     height: '32px',
-                                     display: 'flex',
-                                     alignItems: 'center',
-                                     justifyContent: 'center',
-                                     fontSize: '1rem',
-                                     marginLeft: '12px',
-                                     transition: 'all 0.2s'
-                                   }}>
-                                     ✏️
-                                   </div>
-                                 </div>
-                               )}
-                             </div>
+                                                                                                                                                                                               {/* Description Field - Simple Input + Save Button */}
+                              <div style={{ marginBottom: '12px' }}>
+                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                  <input
+                                    type="text"
+                                    value={editingMatnId === matn.id ? editingText : (matn.description || '')}
+                                    onChange={(e) => {
+                                      if (editingMatnId === matn.id) {
+                                        setEditingText(e.target.value);
+                                      } else {
+                                        setEditingText(e.target.value);
+                                        setEditingMatnId(matn.id);
+                                      }
+                                    }}
+                                    placeholder="أضف ملاحظة للمتن..."
+                                    style={{
+                                      flex: 1,
+                                      padding: '12px',
+                                      border: `1px solid ${colors.border}`,
+                                      borderRadius: '8px',
+                                      fontSize: '0.9rem',
+                                      fontFamily: 'inherit',
+                                      backgroundColor: colors.background,
+                                      color: colors.text,
+                                      outline: 'none',
+                                      direction: 'rtl',
+                                      textAlign: 'right'
+                                    }}
+                                    onFocus={(e) => e.target.style.borderColor = colors.primary}
+                                    onBlur={(e) => e.target.style.borderColor = colors.border}
+                                  />
+                                  <button
+                                    onClick={() => {
+                                      updateMatnDescription(matn.id, editingText);
+                                      setEditingMatnId(null);
+                                      setEditingText('');
+                                    }}
+                                    style={{
+                                      background: `linear-gradient(135deg, ${colors.success}, #2ed573)`,
+                                      color: 'white',
+                                      border: 'none',
+                                      borderRadius: '8px',
+                                      padding: '12px 16px',
+                                      cursor: 'pointer',
+                                      fontSize: '0.9rem',
+                                      fontWeight: '600',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '4px',
+                                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                                      transition: 'all 0.2s',
+                                      minWidth: '70px'
+                                    }}
+                                  >
+                                    💾 حفظ
+                                  </button>
+                                </div>
+                              </div>
                        
                        {/* Action Buttons */}
                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
