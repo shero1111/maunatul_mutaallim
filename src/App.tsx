@@ -681,10 +681,38 @@ const App: React.FC = () => {
     const canAdjust = !isRunning;
 
     const startTimer = () => {
-      setTimerState(prev => ({ ...prev, isRunning: true, startTime: Date.now() }));
+      if (timerState.mode === 'timer') {
+        // Timer mode: calculate remaining time when resuming
+        const now = Date.now();
+        setTimerState(prev => ({ 
+          ...prev, 
+          isRunning: true, 
+          startTime: now - (prev.targetTime - prev.time) * 1000 
+        }));
+      } else {
+        // Stopwatch mode: continue from current time
+        const now = Date.now();
+        setTimerState(prev => ({ 
+          ...prev, 
+          isRunning: true, 
+          startTime: now - prev.time * 1000 
+        }));
+      }
     };
 
+    const pauseTimer = () => {
+      setTimerState(prev => ({ ...prev, isRunning: false, startTime: null }));
+    };
 
+    const stopTimer = () => {
+      // Reset to original target time
+      setTimerState(prev => ({ 
+        ...prev, 
+        isRunning: false, 
+        startTime: null, 
+        time: prev.mode === 'timer' ? prev.targetTime : 0 
+      }));
+    };
 
     const setTimerMinutes = (minutes: number) => {
       const seconds = minutes * 60;
@@ -708,31 +736,18 @@ const App: React.FC = () => {
       setTimerState(prev => ({ ...prev, time: newTime, targetTime: newTime }));
     };
 
-    const pauseTimer = () => {
-      setTimerState(prev => ({ ...prev, isRunning: false }));
-    };
-
-    const stopTimer = () => {
-      // Stop and auto-reset to target time
-      setTimerState(prev => ({ ...prev, isRunning: false, startTime: null, time: prev.targetTime }));
-    };
-
-    const resetTimer = () => {
-      setTimerState(prev => ({ ...prev, isRunning: false, startTime: null, time: prev.targetTime }));
-    };
-
     return (
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: currentColors.overlay, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1002, padding: '20px' }}>
         <div style={{ 
           background: currentColors.surface, 
-          borderRadius: '28px', 
-          padding: '40px 30px', 
-          maxWidth: '380px', 
+          borderRadius: '24px', 
+          padding: '30px 25px', 
+          maxWidth: '350px', 
           width: '100%', 
           direction: currentLang === 'ar' ? 'rtl' : 'ltr',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-          backdropFilter: 'blur(20px)',
-          border: `1px solid ${currentColors.border}20`
+          boxShadow: '0 15px 40px rgba(0,0,0,0.25)',
+          backdropFilter: 'blur(15px)',
+          border: `1px solid ${currentColors.border}30`
         }}>
           {/* Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
@@ -783,15 +798,15 @@ const App: React.FC = () => {
             }}>⏱️ {currentT.stopwatch}</button>
           </div>
 
-          {/* Main Time Display Container */}
-          <div style={{ 
-            background: `linear-gradient(135deg, ${currentColors.primary}08, ${currentColors.secondary}08)`, 
-            borderRadius: '24px', 
-            padding: '30px 20px', 
-            marginBottom: '25px',
-            border: `1px solid ${currentColors.border}30`,
-            textAlign: 'center'
-          }}>
+                     {/* Main Time Display Container */}
+           <div style={{ 
+             background: `linear-gradient(135deg, ${currentColors.primary}06, ${currentColors.secondary}06)`, 
+             borderRadius: '20px', 
+             padding: '25px 20px', 
+             marginBottom: '20px',
+             border: `1px solid ${currentColors.border}25`,
+             textAlign: 'center'
+           }}>
                                       {/* Time Adjustment Layout - Minutes & Seconds */}
               {canAdjust && timerState.mode === 'timer' ? (
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', alignItems: 'center', maxWidth: '300px', margin: '0 auto' }}>
@@ -927,65 +942,66 @@ const App: React.FC = () => {
               )}
           </div>
 
-          {/* Quick Select Buttons (only when not running and timer mode) */}
-          {canAdjust && timerState.mode === 'timer' && (
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '25px', flexWrap: 'wrap', justifyContent: 'center' }}>
-              {[1, 5, 10, 15, 25, 30, 45, 60].map(minutes => (
-                <button key={minutes} onClick={() => setTimerMinutes(minutes)} style={{ 
-                  padding: '8px 14px', 
-                  background: currentColors.background, 
-                  color: currentColors.text, 
-                  border: `1px solid ${currentColors.border}`, 
-                  borderRadius: '20px', 
-                  cursor: 'pointer', 
-                  fontSize: '13px',
-                  fontWeight: '500',
-                  transition: 'all 0.2s'
-                }}>
-                  {minutes}د
-                </button>
-              ))}
-            </div>
-          )}
+                     {/* Quick Select Buttons (only when not running and timer mode) */}
+           {canAdjust && timerState.mode === 'timer' && (
+             <div style={{ display: 'flex', gap: '6px', marginBottom: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
+               {[1, 5, 10, 15, 25, 30].map(minutes => (
+                 <button key={minutes} onClick={() => setTimerMinutes(minutes)} style={{ 
+                   padding: '6px 12px', 
+                   background: currentColors.background, 
+                   color: currentColors.text, 
+                   border: `1px solid ${currentColors.border}`, 
+                   borderRadius: '16px', 
+                   cursor: 'pointer', 
+                   fontSize: '12px',
+                   fontWeight: '500',
+                   transition: 'all 0.2s',
+                   minWidth: '40px'
+                 }}>
+                   {minutes}د
+                 </button>
+               ))}
+             </div>
+           )}
 
-                                {/* Control Buttons - Simplified */}
-            <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
-              {/* Start/Pause Button */}
-              <button onClick={timerState.isRunning ? pauseTimer : startTimer} style={{ 
-                padding: '16px 30px', 
-                background: timerState.isRunning ? 
-                  `linear-gradient(135deg, #ff9500, #ff6b35)` : 
-                  `linear-gradient(135deg, ${currentColors.success}, #2ed573)`, 
-                color: 'white', 
-                border: 'none', 
-                borderRadius: '25px', 
-                cursor: 'pointer', 
-                fontSize: '16px', 
-                fontWeight: '600',
-                minWidth: '140px',
-                boxShadow: '0 6px 20px rgba(0,0,0,0.2)',
-                transition: 'all 0.2s'
-              }}>
-                {timerState.isRunning ? `⏸️ إيقاف مؤقت` : `▶️ ${currentT.start}`}
-              </button>
-              
-              {/* Stop Button (only when running) */}
-              {timerState.isRunning && (
-                <button onClick={stopTimer} style={{ 
-                  padding: '16px 30px', 
-                  background: `linear-gradient(135deg, ${currentColors.error}, #ff4757)`, 
-                  color: 'white', 
-                  border: 'none', 
-                  borderRadius: '25px', 
-                  cursor: 'pointer', 
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  minWidth: '140px',
-                  boxShadow: '0 6px 20px rgba(0,0,0,0.2)',
-                  transition: 'all 0.2s'
-                }}>🛑 إيقاف</button>
-              )}
-            </div>
+                                           {/* Control Buttons - Compact */}
+             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+               {/* Start/Pause Button */}
+               <button onClick={timerState.isRunning ? pauseTimer : startTimer} style={{ 
+                 padding: '14px 24px', 
+                 background: timerState.isRunning ? 
+                   `linear-gradient(135deg, #ff9500, #ff6b35)` : 
+                   `linear-gradient(135deg, ${currentColors.success}, #2ed573)`, 
+                 color: 'white', 
+                 border: 'none', 
+                 borderRadius: '22px', 
+                 cursor: 'pointer', 
+                 fontSize: '15px', 
+                 fontWeight: '600',
+                 minWidth: '120px',
+                 boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                 transition: 'all 0.2s'
+               }}>
+                 {timerState.isRunning ? `⏸️ إيقاف مؤقت` : `▶️ ${currentT.start}`}
+               </button>
+               
+               {/* Stop Button (only when running) */}
+               {timerState.isRunning && (
+                 <button onClick={stopTimer} style={{ 
+                   padding: '14px 24px', 
+                   background: `linear-gradient(135deg, ${currentColors.error}, #ff4757)`, 
+                   color: 'white', 
+                   border: 'none', 
+                   borderRadius: '22px', 
+                   cursor: 'pointer', 
+                   fontSize: '15px',
+                   fontWeight: '600',
+                   minWidth: '120px',
+                   boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                   transition: 'all 0.2s'
+                 }}>🛑 إيقاف</button>
+               )}
+             </div>
         </div>
       </div>
     );
@@ -1478,27 +1494,46 @@ const App: React.FC = () => {
                                    border: `2px solid ${colors.primary}`,
                                    boxShadow: `0 0 0 3px ${colors.primary}20`
                                  }}>
-                                   <textarea
-                                     ref={(el) => el && el.focus()}
-                                     value={editingText}
-                                     onChange={(e) => setEditingText(e.target.value)}
-                                     placeholder="أضف ملاحظة للمتن..."
-                                     style={{
-                                       width: '100%',
-                                       minHeight: '80px',
-                                       padding: '12px',
-                                       border: 'none',
-                                       borderRadius: '8px',
-                                       fontSize: '0.9rem',
-                                       fontFamily: 'inherit',
-                                       backgroundColor: 'transparent',
-                                       color: colors.text,
-                                       resize: 'vertical',
-                                       outline: 'none',
-                                       direction: 'rtl',
-                                       textAlign: 'right'
-                                     }}
-                                   />
+                                                                       <div
+                                      contentEditable
+                                      ref={(el) => {
+                                        if (el) {
+                                          el.focus();
+                                          el.textContent = editingText;
+                                        }
+                                      }}
+                                      onInput={(e) => setEditingText(e.currentTarget.textContent || '')}
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && e.ctrlKey) {
+                                          updateMatnDescription(matn.id, editingText);
+                                          setEditingMatnId(null);
+                                          setEditingText('');
+                                        }
+                                        if (e.key === 'Escape') {
+                                          setEditingMatnId(null);
+                                          setEditingText('');
+                                        }
+                                      }}
+                                      style={{
+                                        width: '100%',
+                                        minHeight: '80px',
+                                        padding: '12px',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        fontSize: '0.9rem',
+                                        fontFamily: 'inherit',
+                                        backgroundColor: 'transparent',
+                                        color: colors.text,
+                                        outline: 'none',
+                                        direction: 'rtl',
+                                        textAlign: 'right',
+                                        lineHeight: '1.4',
+                                        whiteSpace: 'pre-wrap',
+                                        wordWrap: 'break-word'
+                                      }}
+                                      suppressContentEditableWarning={true}
+                                      data-placeholder={editingText === '' ? 'أضف ملاحظة للمتن...' : ''}
+                                    />
                                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '8px' }}>
                                      <button
                                        onClick={() => {
