@@ -1550,7 +1550,7 @@ const App: React.FC = () => {
                        {/* Threshold Info as Simple Text at Bottom */}
                        <div style={{ textAlign: 'center', marginTop: '8px' }}>
                          <span style={{ color: colors.textSecondary, fontSize: '0.75rem' }}>
-                           ⚙️ العتبة: {matn.threshold} أيام
+                           آخر ختمة قبل: {matn.threshold} يوم
                          </span>
                        </div>
                      </div>
