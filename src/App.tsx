@@ -197,8 +197,7 @@ const App: React.FC = () => {
   const [mutunData, setMutunData] = useState<Matn[]>([]);
   
   // UI State
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+
   const [levelFilter, setLevelFilter] = useState<string>('all');
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
   const [audioPlayer, setAudioPlayer] = useState<{url: string, title: string} | null>(null);
@@ -644,29 +643,7 @@ const App: React.FC = () => {
     );
   };
 
-  // Search Component (Fixed scope)
-  const SearchBar: React.FC<{ onSearch: (query: string) => void; placeholder?: string; }> = ({ onSearch, placeholder = t.search }) => {
-    const [query, setQuery] = useState('');
-    
-    // Use current theme colors and language
-    const currentColors = themeColors[theme];
-    const currentLang = language;
 
-    const handleSearch = (value: string) => {
-      setQuery(value);
-      onSearch(value);
-    };
-
-    return (
-      <div style={{ position: 'relative', marginBottom: '20px' }}>
-        <input type="text" value={query} onChange={(e) => handleSearch(e.target.value)} placeholder={placeholder} style={{ width: '100%', padding: currentLang === 'ar' ? '12px 80px 12px 40px' : '12px 80px 12px 40px', border: `2px solid ${currentColors.border}`, borderRadius: '25px', fontSize: '16px', outline: 'none', backgroundColor: currentColors.surface, color: currentColors.text, direction: currentLang === 'ar' ? 'rtl' : 'ltr', transition: 'border-color 0.2s' }} onFocus={(e) => e.target.style.borderColor = currentColors.primary} onBlur={(e) => e.target.style.borderColor = currentColors.border} />
-        <span style={{ position: 'absolute', [currentLang === 'ar' ? 'right' : 'left']: '15px', top: '50%', transform: 'translateY(-50%)', color: currentColors.primary, fontSize: '18px' }}>🔍</span>
-        {query && (
-          <button onClick={() => handleSearch('')} style={{ position: 'absolute', [currentLang === 'ar' ? 'left' : 'right']: '15px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: currentColors.textSecondary, cursor: 'pointer', fontSize: '18px', padding: '2px' }}>✕</button>
-        )}
-      </div>
-    );
-  };
 
   // Timer Modal Component - iPhone Style Redesign
   const TimerModal: React.FC = () => {
@@ -1262,15 +1239,13 @@ const App: React.FC = () => {
     );
   };
 
-  // Mutuun Page Component - Enhanced with Level Filters
+  // Mutuun Page Component - Simplified with Auto-Expand Logic
   const MutunPage: React.FC = () => {
     const userMutun = mutunData.filter(m => m.user_id === currentUser?.id);
     
     const filteredMutun = userMutun.filter(m => {
-      const matchesSearch = m.name.toLowerCase().includes(searchQuery.toLowerCase()) || m.section.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = statusFilter === 'all' || m.status === statusFilter;
       const matchesLevel = levelFilter === 'all' || m.section === levelFilter;
-      return matchesSearch && matchesStatus && matchesLevel;
+      return matchesLevel;
     });
 
     const groupedMutun = filteredMutun.reduce((acc, matn) => {
@@ -1288,6 +1263,38 @@ const App: React.FC = () => {
       }));
     };
 
+    // Auto-expand logic: when a specific level is selected, expand only that level
+    // When "all levels" is selected, expand all levels
+    const shouldExpandSection = (section: string) => {
+      if (levelFilter === 'all') {
+        return true; // Expand all when "all levels" is selected
+      } else if (levelFilter === section) {
+        return true; // Expand the selected level
+      }
+      return !collapsedSections[section]; // Use manual toggle state for others
+    };
+
+    const handleLevelFilterChange = (newFilter: string) => {
+      setLevelFilter(newFilter);
+      
+      // Auto-expand logic
+      if (newFilter === 'all') {
+        // Expand all sections
+        const newCollapsed: Record<string, boolean> = {};
+        allLevels.forEach(level => {
+          newCollapsed[level] = false;
+        });
+        setCollapsedSections(newCollapsed);
+      } else {
+        // Collapse all except the selected one
+        const newCollapsed: Record<string, boolean> = {};
+        allLevels.forEach(level => {
+          newCollapsed[level] = level !== newFilter;
+        });
+        setCollapsedSections(newCollapsed);
+      }
+    };
+
     return (
       <div style={{ padding: '20px' }}>
         <div style={{ marginBottom: '20px' }}>
@@ -1296,16 +1303,11 @@ const App: React.FC = () => {
             {t.mutuun}
           </h1>
           
-          {/* Search Bar - Compact */}
-          <div style={{ marginBottom: '15px' }}>
-            <SearchBar onSearch={setSearchQuery} placeholder="البحث في المتون..." />
-          </div>
-          
-          {/* Level Filter Buttons */}
-          <div style={{ marginBottom: '15px' }}>
+          {/* Level Filter Buttons Only */}
+          <div style={{ marginBottom: '20px' }}>
             <h3 style={{ color: colors.text, fontSize: '1rem', marginBottom: '10px' }}>المستويات:</h3>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              <button onClick={() => setLevelFilter('all')} style={{ 
+              <button onClick={() => handleLevelFilterChange('all')} style={{ 
                 padding: '8px 12px', 
                 background: levelFilter === 'all' ? colors.primary : colors.border, 
                 color: levelFilter === 'all' ? 'white' : colors.text, 
@@ -1318,7 +1320,7 @@ const App: React.FC = () => {
                 جميع المستويات
               </button>
               {allLevels.map(level => (
-                <button key={level} onClick={() => setLevelFilter(level)} style={{ 
+                <button key={level} onClick={() => handleLevelFilterChange(level)} style={{ 
                   padding: '8px 12px', 
                   background: levelFilter === level ? colors.secondary : colors.border, 
                   color: levelFilter === level ? 'white' : colors.text, 
@@ -1333,58 +1335,15 @@ const App: React.FC = () => {
               ))}
             </div>
           </div>
-          
-          {/* Status Filter Buttons */}
-          <div style={{ marginBottom: '20px' }}>
-            <h3 style={{ color: colors.text, fontSize: '1rem', marginBottom: '10px' }}>حالة المراجعة:</h3>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              <button onClick={() => setStatusFilter('all')} style={{ 
-                padding: '8px 12px', 
-                background: statusFilter === 'all' ? colors.primary : colors.border, 
-                color: statusFilter === 'all' ? 'white' : colors.text, 
-                border: 'none', 
-                borderRadius: '8px', 
-                cursor: 'pointer', 
-                fontSize: '13px',
-                fontWeight: statusFilter === 'all' ? 'bold' : 'normal'
-              }}>
-                جميع الحالات
-              </button>
-              {['red', 'orange', 'green'].map(status => (
-                <button key={status} onClick={() => setStatusFilter(status)} style={{ 
-                  padding: '8px 12px', 
-                  background: statusFilter === status ? getMatnColor(status) : colors.border, 
-                  color: statusFilter === status ? 'white' : colors.text, 
-                  border: 'none', 
-                  borderRadius: '8px', 
-                  cursor: 'pointer', 
-                  fontSize: '13px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '5px',
-                  fontWeight: statusFilter === status ? 'bold' : 'normal'
-                }}>
-                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: getMatnColor(status) }} />
-                  {status === 'red' ? 'أحمر' : status === 'orange' ? 'برتقالي' : 'أخضر'}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
 
-        {/* Enhanced Collapsible Sections with Better Cards */}
+        {/* Simplified Collapsible Sections */}
         {Object.entries(groupedMutun).map(([section, mutun]) => {
-          const isCollapsed = collapsedSections[section];
-          const sectionStats = {
-            total: mutun.length,
-            red: mutun.filter(m => m.status === 'red').length,
-            orange: mutun.filter(m => m.status === 'orange').length,
-            green: mutun.filter(m => m.status === 'green').length
-          };
+          const isCollapsed = !shouldExpandSection(section);
           
           return (
             <div key={section} style={{ marginBottom: '25px' }}>
-              {/* Collapsible Section Header */}
+              {/* Simple Section Header */}
               <div onClick={() => toggleSection(section)} style={{ 
                 background: colors.surface, 
                 borderRadius: '12px', 
@@ -1396,31 +1355,10 @@ const App: React.FC = () => {
                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <h2 style={{ color: colors.primary, fontSize: '1.3rem', margin: '0 0 5px 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontSize: '1.5rem' }}>{isCollapsed ? '📁' : '📂'}</span>
-                      {section}
-                    </h2>
-                    <div style={{ display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap' }}>
-                      <span style={{ color: colors.textSecondary, fontSize: '0.9rem' }}>
-                        المجموع: <strong>{sectionStats.total}</strong>
-                      </span>
-                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: colors.error }} />
-                          <span style={{ color: colors.textSecondary, fontSize: '0.8rem' }}>{sectionStats.red}</span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: colors.warning }} />
-                          <span style={{ color: colors.textSecondary, fontSize: '0.8rem' }}>{sectionStats.orange}</span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: colors.success }} />
-                          <span style={{ color: colors.textSecondary, fontSize: '0.8rem' }}>{sectionStats.green}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <h2 style={{ color: colors.primary, fontSize: '1.3rem', margin: '0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '1.5rem' }}>{isCollapsed ? '📁' : '📂'}</span>
+                    {section}
+                  </h2>
                   <span style={{ color: colors.primary, fontSize: '1.5rem', transition: 'transform 0.3s ease', transform: isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}>
                     ▼
                   </span>
@@ -1470,23 +1408,18 @@ const App: React.FC = () => {
                          </div>
                        </div>
                        
-                                               {/* Days Since Last Completion + Threshold Hint */}
+                                               {/* Threshold Info as Simple Text */}
                          <div style={{ marginBottom: '12px' }}>
                            <div style={{ 
                              background: colors.background, 
                              padding: '10px', 
                              borderRadius: '8px',
                              border: `1px solid ${colors.border}`,
-                             display: 'flex',
-                             justifyContent: 'space-between',
-                             alignItems: 'center'
+                             textAlign: 'center'
                            }}>
-                             <span style={{ color: colors.text, fontSize: '0.9rem' }}>
-                               منذ آخر ختمة: <strong>{matn.days_since_last_revision} أيام</strong>
-                             </span>
-                             <span style={{ color: colors.textSecondary, fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                             <span style={{ color: colors.textSecondary, fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                                <span>⚙️</span>
-                               {matn.threshold}د
+                               العتبة: {matn.threshold} أيام
                              </span>
                            </div>
                          </div>
