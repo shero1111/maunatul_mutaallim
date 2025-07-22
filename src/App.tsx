@@ -1470,19 +1470,26 @@ const App: React.FC = () => {
                          </div>
                        </div>
                        
-                       {/* Days Since Last Completion */}
-                       <div style={{ marginBottom: '12px' }}>
-                         <div style={{ 
-                           background: colors.background, 
-                           padding: '10px', 
-                           borderRadius: '8px',
-                           border: `1px solid ${colors.border}`
-                         }}>
-                           <span style={{ color: colors.text, fontSize: '0.9rem' }}>
-                             منذ آخر ختمة: <strong>{matn.days_since_last_revision} أيام</strong>
-                           </span>
+                                               {/* Days Since Last Completion + Threshold Hint */}
+                         <div style={{ marginBottom: '12px' }}>
+                           <div style={{ 
+                             background: colors.background, 
+                             padding: '10px', 
+                             borderRadius: '8px',
+                             border: `1px solid ${colors.border}`,
+                             display: 'flex',
+                             justifyContent: 'space-between',
+                             alignItems: 'center'
+                           }}>
+                             <span style={{ color: colors.text, fontSize: '0.9rem' }}>
+                               منذ آخر ختمة: <strong>{matn.days_since_last_revision} أيام</strong>
+                             </span>
+                             <span style={{ color: colors.textSecondary, fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                               <span>⚙️</span>
+                               {matn.threshold}د
+                             </span>
+                           </div>
                          </div>
-                       </div>
                        
                                                                                                                                                                                                                        {/* Description Field - Simple Input + Save Button */}
                                <div style={{ marginBottom: '12px' }}>
