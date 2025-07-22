@@ -203,6 +203,7 @@ const App: React.FC = () => {
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
   const [audioPlayer, setAudioPlayer] = useState<{url: string, title: string} | null>(null);
   const [editingMatnId, setEditingMatnId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState<string>('');
   const [thresholdModalMatn, setThresholdModalMatn] = useState<Matn | null>(null);
   const [tempThreshold, setTempThreshold] = useState<number>(7);
   // PDF Viewer removed - only external opening
@@ -1471,32 +1472,14 @@ const App: React.FC = () => {
                          </div>
                        </div>
                        
-                                                                       {/* Description Field - Always Visible */}
-                         <div style={{ marginBottom: '12px' }}>
-                           {editingMatnId === matn.id ? (
-                             <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                                                               <textarea 
-                                  value={mutunData.find(m => m.id === matn.id)?.description || ''} 
-                                  onChange={(e) => {
-                                    e.stopPropagation();
-                                    updateMatnDescription(matn.id, e.target.value);
-                                  }}
-                                  onFocus={(e) => {
-                                    e.stopPropagation();
-                                  }}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                  }}
-                                  onKeyDown={(e) => {
-                                    e.stopPropagation();
-                                    if (e.key === 'Escape') {
-                                      setEditingMatnId(null);
-                                    }
-                                  }}
-                                  onBlur={() => {
-                                    // Optional: auto-save on blur
-                                    // setEditingMatnId(null);
-                                  }}
+                                                                                               {/* Description Field - Completely Redesigned */}
+                          <div style={{ marginBottom: '12px' }}>
+                            {editingMatnId === matn.id ? (
+                              <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                                <textarea 
+                                  key={`textarea-${matn.id}`}
+                                  value={editingText}
+                                  onChange={(e) => setEditingText(e.target.value)}
                                   autoFocus
                                   placeholder="أضف ملاحظة..."
                                   style={{ 
@@ -1512,80 +1495,83 @@ const App: React.FC = () => {
                                     outline: 'none',
                                     fontFamily: 'inherit',
                                     direction: 'rtl',
-                                    textAlign: 'right',
-                                    touchAction: 'manipulation'
+                                    textAlign: 'right'
                                   }} 
                                 />
-                               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                 <button 
-                                   onClick={(e) => {
-                                     e.stopPropagation();
-                                     setEditingMatnId(null);
-                                   }}
-                                   style={{ 
-                                     background: colors.success, 
-                                     color: 'white', 
-                                     border: 'none', 
-                                     borderRadius: '6px', 
-                                     padding: '8px 10px', 
-                                     cursor: 'pointer', 
-                                     fontSize: '12px',
-                                     fontWeight: 'bold',
-                                     minWidth: '40px',
-                                     userSelect: 'none'
-                                   }}
-                                 >
-                                   ✓
-                                 </button>
-                                 <button 
-                                   onClick={(e) => {
-                                     e.stopPropagation();
-                                     // Revert to original description
-                                     const originalDescription = mutunData.find(m => m.id === matn.id)?.description || '';
-                                     updateMatnDescription(matn.id, originalDescription);
-                                     setEditingMatnId(null);
-                                   }}
-                                   style={{ 
-                                     background: colors.error, 
-                                     color: 'white', 
-                                     border: 'none', 
-                                     borderRadius: '6px', 
-                                     padding: '8px 10px', 
-                                     cursor: 'pointer', 
-                                     fontSize: '12px',
-                                     fontWeight: 'bold',
-                                     minWidth: '40px',
-                                     userSelect: 'none'
-                                   }}
-                                 >
-                                   ✕
-                                 </button>
-                               </div>
-                             </div>
-                           ) : (
-                             <div 
-                               onClick={(e) => {
-                                 e.stopPropagation();
-                                 setEditingMatnId(matn.id);
-                               }}
-                               style={{ 
-                                 background: colors.background, 
-                                 padding: '10px', 
-                                 borderRadius: '8px',
-                                 border: `1px solid ${colors.border}`,
-                                 cursor: 'text',
-                                 minHeight: '40px',
-                                 display: 'flex',
-                                 alignItems: 'center',
-                                 userSelect: 'none'
-                               }}
-                             >
-                               <span style={{ color: matn.description ? colors.text : colors.textSecondary, fontSize: '0.9rem', fontStyle: matn.description ? 'normal' : 'italic' }}>
-                                 {matn.description || 'انقر لإضافة ملاحظة...'}
-                               </span>
-                             </div>
-                           )}
-                         </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                  <button 
+                                    type="button"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      updateMatnDescription(matn.id, editingText);
+                                      setEditingMatnId(null);
+                                      setEditingText('');
+                                    }}
+                                    style={{ 
+                                      background: colors.success, 
+                                      color: 'white', 
+                                      border: 'none', 
+                                      borderRadius: '6px', 
+                                      padding: '8px 10px', 
+                                      cursor: 'pointer', 
+                                      fontSize: '12px',
+                                      fontWeight: 'bold',
+                                      minWidth: '40px',
+                                      userSelect: 'none'
+                                    }}
+                                  >
+                                    ✓
+                                  </button>
+                                  <button 
+                                    type="button"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      setEditingMatnId(null);
+                                      setEditingText('');
+                                    }}
+                                    style={{ 
+                                      background: colors.error, 
+                                      color: 'white', 
+                                      border: 'none', 
+                                      borderRadius: '6px', 
+                                      padding: '8px 10px', 
+                                      cursor: 'pointer', 
+                                      fontSize: '12px',
+                                      fontWeight: 'bold',
+                                      minWidth: '40px',
+                                      userSelect: 'none'
+                                    }}
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div 
+                                onMouseDown={(e) => {
+                                  e.preventDefault();
+                                  const currentDescription = mutunData.find(m => m.id === matn.id)?.description || '';
+                                  setEditingText(currentDescription);
+                                  setEditingMatnId(matn.id);
+                                }}
+                                style={{ 
+                                  background: colors.background, 
+                                  padding: '10px', 
+                                  borderRadius: '8px',
+                                  border: `1px solid ${colors.border}`,
+                                  cursor: 'text',
+                                  minHeight: '40px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  userSelect: 'none'
+                                }}
+                              >
+                                <span style={{ color: matn.description ? colors.text : colors.textSecondary, fontSize: '0.9rem', fontStyle: matn.description ? 'normal' : 'italic' }}>
+                                  {matn.description || 'انقر لإضافة ملاحظة...'}
+                                </span>
+                              </div>
+                            )}
+                          </div>
                        
                        {/* Action Buttons */}
                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
