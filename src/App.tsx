@@ -1094,10 +1094,31 @@ const App: React.FC = () => {
       
       return (
         <div style={{ padding: '20px' }}>
-          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-            <h1 style={{ color: colors.primary, fontSize: '2rem', marginBottom: '10px' }}>مرحباً، {currentUser?.name}</h1>
+                  {/* App Header with Logo */}
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', marginBottom: '20px' }}>
+            <img 
+              src="/logo.jpg" 
+              alt="معونة المتعلم"
+              style={{ 
+                width: '60px', 
+                height: '60px', 
+                borderRadius: '16px',
+                objectFit: 'cover',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                border: `2px solid ${colors.primary}20`
+              }} 
+            />
+            <div>
+              <h1 style={{ color: colors.primary, fontSize: '1.8rem', margin: '0 0 4px 0', fontWeight: '700' }}>معونة المتعلم</h1>
+              <p style={{ color: colors.textSecondary, fontSize: '0.9rem', margin: 0 }}>نظام إدارة التعلم الإسلامي</p>
+            </div>
+          </div>
+          <div>
+            <h2 style={{ color: colors.text, fontSize: '1.4rem', marginBottom: '8px' }}>مرحباً، {currentUser?.name}</h2>
             <p style={{ color: colors.textSecondary, fontSize: '1rem' }}>حلقاتي ومتابعة الطلاب</p>
           </div>
+        </div>
 
           {/* My Status */}
           <div style={{ background: colors.surface, borderRadius: '15px', padding: '20px', marginBottom: '20px', border: `1px solid ${colors.border}` }}>
@@ -1199,9 +1220,30 @@ const App: React.FC = () => {
 
     return (
       <div style={{ padding: '20px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <h1 style={{ color: colors.primary, fontSize: '2rem', marginBottom: '10px' }}>مرحباً، {currentUser?.name}</h1>
-          <p style={{ color: colors.textSecondary, fontSize: '1rem' }}>لوحة التحكم الرئيسية</p>
+        {/* App Header with Logo */}
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', marginBottom: '20px' }}>
+            <img 
+              src="/logo.jpg" 
+              alt="معونة المتعلم"
+              style={{ 
+                width: '60px', 
+                height: '60px', 
+                borderRadius: '16px',
+                objectFit: 'cover',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                border: `2px solid ${colors.primary}20`
+              }} 
+            />
+            <div>
+              <h1 style={{ color: colors.primary, fontSize: '1.8rem', margin: '0 0 4px 0', fontWeight: '700' }}>معونة المتعلم</h1>
+              <p style={{ color: colors.textSecondary, fontSize: '0.9rem', margin: 0 }}>نظام إدارة التعلم الإسلامي</p>
+            </div>
+          </div>
+          <div>
+            <h2 style={{ color: colors.text, fontSize: '1.4rem', marginBottom: '8px' }}>مرحباً، {currentUser?.name}</h2>
+            <p style={{ color: colors.textSecondary, fontSize: '1rem' }}>لوحة التحكم الرئيسية</p>
+          </div>
         </div>
 
         {/* Statistics Cards */}
@@ -1638,140 +1680,30 @@ const App: React.FC = () => {
         background: `linear-gradient(135deg, ${colors.background} 0%, ${theme === 'light' ? '#f8f9fa' : '#1a1d29'} 100%)`,
         minHeight: 'calc(100vh - 80px)'
       }}>
-        {/* Elegant Header with Islamic Pattern */}
+        {/* Simple Header */}
         <div style={{ 
           textAlign: 'center', 
-          marginBottom: '32px',
-          position: 'relative',
-          padding: '40px 20px',
-          background: `linear-gradient(135deg, ${colors.primary}15 0%, ${colors.secondary}15 100%)`,
-          borderRadius: '24px',
-          border: `1px solid ${colors.primary}20`,
-          boxShadow: theme === 'light' ? '0 8px 32px rgba(0,0,0,0.06)' : '0 8px 32px rgba(0,0,0,0.2)'
+          marginBottom: '24px',
+          padding: '20px'
         }}>
-          <div style={{ 
-            fontSize: '3.5rem', 
-            marginBottom: '12px',
-            background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
-          }}>
-            ⚙️
-          </div>
           <h1 style={{ 
             color: colors.text, 
-            fontSize: '2.2rem', 
-            fontWeight: '700',
-            margin: '0 0 8px 0',
-            textShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            fontSize: '1.8rem', 
+            fontWeight: '600',
+            margin: '0 0 8px 0'
           }}>
             {t.more}
           </h1>
           <p style={{ 
             color: colors.textSecondary, 
-            fontSize: '1rem',
-            margin: 0,
-            fontStyle: 'italic'
+            fontSize: '0.9rem',
+            margin: 0
           }}>
             إعدادات ومعلومات التطبيق
           </p>
         </div>
         
         <div style={{ display: 'grid', gap: '20px', maxWidth: '600px', margin: '0 auto' }}>
-          {/* User Profile Card - Premium */}
-          <div style={{ 
-            background: `linear-gradient(135deg, ${colors.surface} 0%, ${theme === 'light' ? '#ffffff' : '#2a2d3a'} 100%)`,
-            borderRadius: '20px', 
-            padding: '28px', 
-            border: `1px solid ${colors.primary}20`,
-            boxShadow: theme === 'light' ? '0 12px 40px rgba(0,0,0,0.08)' : '0 12px 40px rgba(0,0,0,0.3)',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            {/* Decorative Background Pattern */}
-            <div style={{
-              position: 'absolute',
-              top: '-50px',
-              right: '-50px',
-              width: '120px',
-              height: '120px',
-              background: `linear-gradient(135deg, ${colors.primary}10, ${colors.secondary}10)`,
-              borderRadius: '50%',
-              opacity: 0.6
-            }} />
-            
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
-              <div style={{
-                width: '80px',
-                height: '80px',
-                background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '2.5rem',
-                color: 'white',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-                border: '3px solid white'
-              }}>
-                👤
-              </div>
-              <div>
-                <h3 style={{ 
-                  color: colors.text, 
-                  fontSize: '1.4rem', 
-                  margin: '0 0 8px 0',
-                  fontWeight: '600'
-                }}>
-                  {currentUser?.name}
-                </h3>
-                <div style={{ 
-                  display: 'inline-block',
-                  background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                  color: 'white',
-                  padding: '6px 16px',
-                  borderRadius: '20px',
-                  fontSize: '0.85rem',
-                  fontWeight: '600',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-                }}>
-                  {getRoleDisplayName(currentUser?.role || '')}
-                </div>
-              </div>
-            </div>
-            
-            <div style={{ 
-              background: theme === 'light' ? '#f8f9fa' : '#353849',
-              borderRadius: '16px', 
-              padding: '20px',
-              position: 'relative',
-              zIndex: 1
-            }}>
-              <div style={{ display: 'grid', gap: '12px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ color: colors.textSecondary, fontSize: '0.9rem', fontWeight: '500' }}>تاريخ التسجيل</span>
-                  <span style={{ color: colors.text, fontWeight: '600' }}>{new Date(currentUser?.created_at || '').toLocaleDateString('ar-SA')}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ color: colors.textSecondary, fontSize: '0.9rem', fontWeight: '500' }}>حالة الاتصال</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ 
-                      width: '8px', 
-                      height: '8px', 
-                      borderRadius: '50%', 
-                      background: currentUser?.isOnline ? '#10b981' : '#6b7280',
-                      boxShadow: currentUser?.isOnline ? '0 0 8px #10b98150' : 'none'
-                    }} />
-                    <span style={{ color: colors.text, fontWeight: '600' }}>
-                      {currentUser?.isOnline ? 'متصل' : 'غير متصل'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Settings Section - Premium */}
           <div style={{ 
             background: `linear-gradient(135deg, ${colors.surface} 0%, ${theme === 'light' ? '#ffffff' : '#2a2d3a'} 100%)`,
@@ -1875,6 +1807,69 @@ const App: React.FC = () => {
             </div>
           </div>
 
+          {/* User Info - Simple */}
+          <div style={{ 
+            background: `linear-gradient(135deg, ${colors.surface} 0%, ${theme === 'light' ? '#ffffff' : '#2a2d3a'} 100%)`,
+            borderRadius: '20px', 
+            padding: '28px', 
+            border: `1px solid ${colors.primary}20`,
+            boxShadow: theme === 'light' ? '0 12px 40px rgba(0,0,0,0.08)' : '0 12px 40px rgba(0,0,0,0.3)'
+          }}>
+            <h3 style={{ 
+              color: colors.text, 
+              marginBottom: '24px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '12px',
+              fontSize: '1.3rem',
+              fontWeight: '600'
+            }}>
+              <span style={{ 
+                fontSize: '1.8rem',
+                background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent'
+              }}>👤</span>
+              معلومات المستخدم
+            </h3>
+            
+            <div style={{ 
+              background: theme === 'light' ? '#f8f9fa' : '#353849',
+              borderRadius: '16px',
+              padding: '20px'
+            }}>
+              <div style={{ display: 'grid', gap: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: colors.textSecondary, fontWeight: '500' }}>الاسم</span>
+                  <span style={{ color: colors.text, fontWeight: '600' }}>{currentUser?.name}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: colors.textSecondary, fontWeight: '500' }}>الدور</span>
+                  <span style={{ color: colors.text, fontWeight: '600' }}>{getRoleDisplayName(currentUser?.role || '')}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: colors.textSecondary, fontWeight: '500' }}>تاريخ التسجيل</span>
+                  <span style={{ color: colors.text, fontWeight: '600' }}>{new Date(currentUser?.created_at || '').toLocaleDateString('ar-SA')}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: colors.textSecondary, fontWeight: '500' }}>حالة الاتصال</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ 
+                      width: '8px', 
+                      height: '8px', 
+                      borderRadius: '50%', 
+                      background: currentUser?.isOnline ? '#10b981' : '#6b7280',
+                      boxShadow: currentUser?.isOnline ? '0 0 8px #10b98150' : 'none'
+                    }} />
+                    <span style={{ color: colors.text, fontWeight: '600' }}>
+                      {currentUser?.isOnline ? 'متصل' : 'غير متصل'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* App Info - Premium */}
           <div style={{ 
             background: `linear-gradient(135deg, ${colors.surface} 0%, ${theme === 'light' ? '#ffffff' : '#2a2d3a'} 100%)`,
@@ -1913,14 +1908,7 @@ const App: React.FC = () => {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ color: colors.textSecondary, fontWeight: '500' }}>الإصدار</span>
-                  <span style={{ 
-                    background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                    color: 'white',
-                    padding: '4px 12px',
-                    borderRadius: '12px',
-                    fontSize: '0.8rem',
-                    fontWeight: '600'
-                  }}>v2.0.0</span>
+                  <span style={{ color: colors.text, fontWeight: '600' }}>v2.0.0</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ color: colors.textSecondary, fontWeight: '500' }}>المطور</span>
