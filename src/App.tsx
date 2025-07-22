@@ -73,7 +73,7 @@ const mutunTemplate = [
   {
     title: 'المستوى الأول',
     items: [
-      { name: 'ثلاثة الأصول وأدلتها', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://drive.google.com/uc?export=download&id=1MGzggNyA4l5prN6XL2ah7jSByi4spcpV', explanation_pdf_link: 'https://drive.google.com/file/d/1MGzggNyA4l5prN6XL2ah7jSByi4spcpV/view?usp=sharing', explanation_audio_link: 'https://drive.google.com/uc?export=download&id=1MGzggNyA4l5prN6XL2ah7jSByi4spcpV' },
+      { name: 'ثلاثة الأصول وأدلتها', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://docs.google.com/uc?export=open&id=1MGzggNyA4l5prN6XL2ah7jSByi4spcpV', explanation_pdf_link: 'https://drive.google.com/file/d/1MGzggNyA4l5prN6XL2ah7jSByi4spcpV/view?usp=sharing', explanation_audio_link: 'https://docs.google.com/uc?export=open&id=1MGzggNyA4l5prN6XL2ah7jSByi4spcpV' },
       { name: 'المفتاح في الفقه', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand3.wav', explanation_pdf_link: 'https://drive.google.com/file/d/1MGzggNyA4l5prN6XL2ah7jSByi4spcpV/view?usp=sharing', explanation_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand3.wav' },
       { name: 'معاني الفاتحة وقصار المفصل', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch3.wav', explanation_pdf_link: 'https://drive.google.com/file/d/1MGzggNyA4l5prN6XL2ah7jSByi4spcpV/view?usp=sharing', explanation_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch3.wav' },
       { name: 'الأربعين النووية', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/PinkPanther30.wav', explanation_pdf_link: 'https://drive.google.com/file/d/1MGzggNyA4l5prN6XL2ah7jSByi4spcpV/view?usp=sharing', explanation_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/PinkPanther30.wav' },
@@ -470,7 +470,20 @@ const App: React.FC = () => {
           <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', width: '30px', height: '30px', borderRadius: '50%', cursor: 'pointer', fontSize: '16px' }}>✕</button>
         </div>
 
-        <audio ref={audioRef} src={audioUrl} onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)} onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)} onCanPlay={() => setIsLoading(false)} onEnded={() => setIsPlaying(false)} />
+        <audio 
+          ref={audioRef} 
+          src={audioUrl} 
+          crossOrigin="anonymous"
+          onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)} 
+          onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)} 
+          onCanPlay={() => setIsLoading(false)} 
+          onEnded={() => setIsPlaying(false)}
+          onError={(e) => {
+            console.error('Audio Error:', e);
+            setIsLoading(false);
+          }}
+          onLoadStart={() => console.log('Loading audio:', audioUrl)}
+        />
 
         <div style={{ background: 'rgba(255,255,255,0.2)', height: '6px', borderRadius: '3px', marginBottom: '15px', cursor: 'pointer' }} onClick={(e) => {
           if (audioRef.current && duration) {
