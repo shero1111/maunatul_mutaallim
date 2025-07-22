@@ -202,7 +202,8 @@ const App: React.FC = () => {
   const [levelFilter, setLevelFilter] = useState<string>('all');
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
   const [audioPlayer, setAudioPlayer] = useState<{url: string, title: string} | null>(null);
-
+  const [editingMatnId, setEditingMatnId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState<string>('');
   const [thresholdModalMatn, setThresholdModalMatn] = useState<Matn | null>(null);
   const [tempThreshold, setTempThreshold] = useState<number>(7);
   // PDF Viewer removed - only external opening
@@ -1467,37 +1468,151 @@ const App: React.FC = () => {
                          </div>
                        </div>
                        
-                                                                                                                                               {/* Description Field - Simple Prompt */}
-                            <div style={{ marginBottom: '12px' }}>
-                              <div 
-                                onClick={() => {
-                                  const currentDescription = mutunData.find(m => m.id === matn.id)?.description || '';
-                                  const newDescription = window.prompt('تعديل الملاحظة:', currentDescription);
-                                  if (newDescription !== null) {
-                                    updateMatnDescription(matn.id, newDescription);
-                                  }
-                                }}
-                                style={{ 
-                                  background: colors.background, 
-                                  padding: '12px', 
-                                  borderRadius: '8px',
-                                  border: `1px solid ${colors.border}`,
-                                  cursor: 'pointer',
-                                  minHeight: '45px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'space-between',
-                                  transition: 'all 0.2s'
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.borderColor = colors.primary}
-                                onMouseLeave={(e) => e.currentTarget.style.borderColor = colors.border}
-                              >
-                                <span style={{ color: matn.description ? colors.text : colors.textSecondary, fontSize: '0.9rem', fontStyle: matn.description ? 'normal' : 'italic', flex: 1 }}>
-                                  {matn.description || 'انقر لإضافة ملاحظة...'}
-                                </span>
-                                <span style={{ color: colors.textSecondary, fontSize: '1.2rem', marginLeft: '8px' }}>✏️</span>
-                              </div>
-                            </div>
+                                                                                                                                                                       {/* Description Field - Beautiful Inline Editing */}
+                             <div style={{ marginBottom: '12px' }}>
+                               {editingMatnId === matn.id ? (
+                                 <div style={{ 
+                                   background: colors.background, 
+                                   padding: '12px', 
+                                   borderRadius: '12px',
+                                   border: `2px solid ${colors.primary}`,
+                                   boxShadow: `0 0 0 3px ${colors.primary}20`
+                                 }}>
+                                   <textarea
+                                     ref={(el) => el && el.focus()}
+                                     value={editingText}
+                                     onChange={(e) => setEditingText(e.target.value)}
+                                     placeholder="أضف ملاحظة للمتن..."
+                                     style={{
+                                       width: '100%',
+                                       minHeight: '80px',
+                                       padding: '12px',
+                                       border: 'none',
+                                       borderRadius: '8px',
+                                       fontSize: '0.9rem',
+                                       fontFamily: 'inherit',
+                                       backgroundColor: 'transparent',
+                                       color: colors.text,
+                                       resize: 'vertical',
+                                       outline: 'none',
+                                       direction: 'rtl',
+                                       textAlign: 'right'
+                                     }}
+                                   />
+                                   <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '8px' }}>
+                                     <button
+                                       onClick={() => {
+                                         updateMatnDescription(matn.id, editingText);
+                                         setEditingMatnId(null);
+                                         setEditingText('');
+                                       }}
+                                       style={{
+                                         background: `linear-gradient(135deg, ${colors.success}, #2ed573)`,
+                                         color: 'white',
+                                         border: 'none',
+                                         borderRadius: '8px',
+                                         padding: '8px 16px',
+                                         cursor: 'pointer',
+                                         fontSize: '0.9rem',
+                                         fontWeight: '600',
+                                         display: 'flex',
+                                         alignItems: 'center',
+                                         gap: '4px',
+                                         boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                                         transition: 'all 0.2s'
+                                       }}
+                                       onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
+                                       onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                     >
+                                       <span>💾</span>
+                                       حفظ
+                                     </button>
+                                     <button
+                                       onClick={() => {
+                                         setEditingMatnId(null);
+                                         setEditingText('');
+                                       }}
+                                       style={{
+                                         background: colors.background,
+                                         color: colors.text,
+                                         border: `1px solid ${colors.border}`,
+                                         borderRadius: '8px',
+                                         padding: '8px 16px',
+                                         cursor: 'pointer',
+                                         fontSize: '0.9rem',
+                                         fontWeight: '500',
+                                         display: 'flex',
+                                         alignItems: 'center',
+                                         gap: '4px',
+                                         transition: 'all 0.2s'
+                                       }}
+                                       onMouseEnter={(e) => e.currentTarget.style.borderColor = colors.error}
+                                       onMouseLeave={(e) => e.currentTarget.style.borderColor = colors.border}
+                                     >
+                                       <span>❌</span>
+                                       إلغاء
+                                     </button>
+                                   </div>
+                                 </div>
+                               ) : (
+                                 <div 
+                                   onClick={() => {
+                                     const currentDescription = mutunData.find(m => m.id === matn.id)?.description || '';
+                                     setEditingText(currentDescription);
+                                     setEditingMatnId(matn.id);
+                                   }}
+                                   style={{ 
+                                     background: colors.background, 
+                                     padding: '16px', 
+                                     borderRadius: '12px',
+                                     border: `1px solid ${colors.border}`,
+                                     cursor: 'pointer',
+                                     minHeight: '60px',
+                                     display: 'flex',
+                                     alignItems: 'center',
+                                     justifyContent: 'space-between',
+                                     transition: 'all 0.3s ease',
+                                     position: 'relative',
+                                     overflow: 'hidden'
+                                   }}
+                                   onMouseEnter={(e) => {
+                                     e.currentTarget.style.borderColor = colors.primary;
+                                     e.currentTarget.style.transform = 'translateY(-1px)';
+                                     e.currentTarget.style.boxShadow = `0 4px 12px ${colors.primary}20`;
+                                   }}
+                                   onMouseLeave={(e) => {
+                                     e.currentTarget.style.borderColor = colors.border;
+                                     e.currentTarget.style.transform = 'translateY(0)';
+                                     e.currentTarget.style.boxShadow = 'none';
+                                   }}
+                                 >
+                                   <span style={{ 
+                                     color: matn.description ? colors.text : colors.textSecondary, 
+                                     fontSize: '0.9rem', 
+                                     fontStyle: matn.description ? 'normal' : 'italic', 
+                                     flex: 1,
+                                     lineHeight: '1.4'
+                                   }}>
+                                     {matn.description || 'انقر لإضافة ملاحظة...'}
+                                   </span>
+                                   <div style={{
+                                     background: `${colors.primary}15`,
+                                     color: colors.primary,
+                                     borderRadius: '50%',
+                                     width: '32px',
+                                     height: '32px',
+                                     display: 'flex',
+                                     alignItems: 'center',
+                                     justifyContent: 'center',
+                                     fontSize: '1rem',
+                                     marginLeft: '12px',
+                                     transition: 'all 0.2s'
+                                   }}>
+                                     ✏️
+                                   </div>
+                                 </div>
+                               )}
+                             </div>
                        
                        {/* Action Buttons */}
                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
