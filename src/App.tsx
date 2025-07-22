@@ -202,10 +202,9 @@ const App: React.FC = () => {
   const [levelFilter, setLevelFilter] = useState<string>('all');
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
   const [audioPlayer, setAudioPlayer] = useState<{url: string, title: string} | null>(null);
-  const [selectedMatn, setSelectedMatn] = useState<Matn | null>(null);
-  const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
-  const [editingDescription, setEditingDescription] = useState(false);
-  const [newDescription, setNewDescription] = useState('');
+  const [editingMatnId, setEditingMatnId] = useState<string | null>(null);
+  const [thresholdModalMatn, setThresholdModalMatn] = useState<Matn | null>(null);
+  const [tempThreshold, setTempThreshold] = useState<number>(7);
   // PDF Viewer removed - only external opening
   
   // Timer State
@@ -430,24 +429,20 @@ const App: React.FC = () => {
     });
   };
 
-  const openMatnBottomSheet = (matn: Matn) => {
-    setSelectedMatn(matn);
-    setNewDescription(matn.description);
-    setBottomSheetOpen(true);
+  const openThresholdModal = (matn: Matn) => {
+    setThresholdModalMatn(matn);
+    setTempThreshold(matn.threshold);
   };
 
-  const closeBottomSheet = () => {
-    setBottomSheetOpen(false);
-    setEditingDescription(false);
-    setSelectedMatn(null);
-    setNewDescription('');
+  const closeThresholdModal = () => {
+    setThresholdModalMatn(null);
+    setTempThreshold(7);
   };
 
-  const saveDescription = () => {
-    if (selectedMatn) {
-      updateMatnDescription(selectedMatn.id, newDescription);
-      setSelectedMatn(prev => prev ? { ...prev, description: newDescription } : null);
-      setEditingDescription(false);
+  const saveThreshold = () => {
+    if (thresholdModalMatn) {
+      updateMatnThreshold(thresholdModalMatn.id, tempThreshold);
+      closeThresholdModal();
     }
   };
 
@@ -470,7 +465,115 @@ const App: React.FC = () => {
     );
   };
 
-  // PDF Viewer Component removed - only external opening
+  // Threshold Modal Component
+  const ThresholdModal: React.FC = () => {
+    if (!thresholdModalMatn) return null;
+    
+    // Use current theme colors and language
+    const currentColors = themeColors[theme];
+    const currentLang = language;
+    const currentT = translations[currentLang];
+
+    return (
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: currentColors.overlay, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1003, padding: '20px' }}>
+        <div style={{ background: currentColors.surface, borderRadius: '15px', padding: '25px', maxWidth: '350px', width: '100%', direction: currentLang === 'ar' ? 'rtl' : 'ltr' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <h3 style={{ margin: 0, color: currentColors.text, fontSize: '1.2rem' }}>⚙️ إعداد عتبة الإعادة</h3>
+            <button onClick={closeThresholdModal} style={{ background: 'none', border: 'none', fontSize: '20px', color: currentColors.textSecondary, cursor: 'pointer' }}>✕</button>
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <p style={{ color: currentColors.text, fontSize: '1rem', marginBottom: '10px', fontWeight: 'bold' }}>
+              {thresholdModalMatn.name}
+            </p>
+            <p style={{ color: currentColors.textSecondary, fontSize: '0.9rem', marginBottom: '15px' }}>
+              عدد الأيام قبل إعادة تعيين اللون إلى الأحمر
+            </p>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', justifyContent: 'center' }}>
+              <button onClick={() => setTempThreshold(Math.max(1, tempThreshold - 1))} style={{ 
+                background: currentColors.primary, 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '8px', 
+                padding: '10px 15px', 
+                cursor: 'pointer', 
+                fontSize: '16px',
+                fontWeight: 'bold'
+              }}>-</button>
+              
+              <div style={{ 
+                background: currentColors.background, 
+                border: `2px solid ${currentColors.border}`, 
+                borderRadius: '8px', 
+                padding: '10px 20px', 
+                minWidth: '60px', 
+                textAlign: 'center' 
+              }}>
+                <span style={{ color: currentColors.text, fontSize: '1.5rem', fontWeight: 'bold' }}>
+                  {tempThreshold}
+                </span>
+                <div style={{ color: currentColors.textSecondary, fontSize: '0.8rem' }}>أيام</div>
+              </div>
+              
+              <button onClick={() => setTempThreshold(Math.min(365, tempThreshold + 1))} style={{ 
+                background: currentColors.primary, 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '8px', 
+                padding: '10px 15px', 
+                cursor: 'pointer', 
+                fontSize: '16px',
+                fontWeight: 'bold'
+              }}>+</button>
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px', marginTop: '15px', justifyContent: 'center' }}>
+              {[3, 7, 14, 30].map(days => (
+                <button key={days} onClick={() => setTempThreshold(days)} style={{ 
+                  padding: '6px 12px', 
+                  background: tempThreshold === days ? currentColors.primary : currentColors.border, 
+                  color: tempThreshold === days ? 'white' : currentColors.text, 
+                  border: 'none', 
+                  borderRadius: '6px', 
+                  cursor: 'pointer', 
+                  fontSize: '12px' 
+                }}>
+                  {days}د
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button onClick={saveThreshold} style={{ 
+              flex: 1, 
+              padding: '12px', 
+              background: currentColors.success, 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '8px', 
+              cursor: 'pointer', 
+              fontWeight: 'bold' 
+            }}>
+              حفظ
+            </button>
+            <button onClick={closeThresholdModal} style={{ 
+              flex: 1, 
+              padding: '12px', 
+              background: currentColors.border, 
+              color: currentColors.text, 
+              border: 'none', 
+              borderRadius: '8px', 
+              cursor: 'pointer' 
+            }}>
+              إلغاء
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   // Audio Player Component (Fixed scope)
   const AudioPlayer: React.FC<{ audioUrl: string; title: string; onClose: () => void }> = ({ audioUrl, title, onClose }) => {
@@ -1098,143 +1201,155 @@ const App: React.FC = () => {
               
               {/* Section Content */}
               {!isCollapsed && (
-                <div style={{ display: 'grid', gap: '12px' }}>
-                  {mutun.map(matn => (
-                    <div key={matn.id} onClick={() => openMatnBottomSheet(matn)} style={{ 
-                      background: colors.surface, 
-                      borderRadius: '12px', 
-                      padding: '16px', 
-                      border: `2px solid ${getMatnColor(matn.status)}`, 
-                      cursor: 'pointer', 
-                      transition: 'all 0.2s',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                    }}>
-                      {/* Enhanced Header */}
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                        <h3 style={{ color: colors.text, fontSize: '1.1rem', margin: 0, flex: 1, fontWeight: 'bold' }}>{matn.name}</h3>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <div style={{ 
-                            background: getMatnColor(matn.status), 
-                            color: 'white', 
-                            padding: '4px 8px', 
-                            borderRadius: '12px', 
-                            fontSize: '0.75rem', 
-                            fontWeight: 'bold',
-                            minWidth: '90px',
-                            textAlign: 'center'
-                          }}>
-                            {matn.status === 'red' ? 'يحتاج مراجعة' : matn.status === 'orange' ? 'قريب الانتهاء' : 'تم المراجعة'}
-                          </div>
-                          <button onClick={(e) => { e.stopPropagation(); changeMatnStatus(matn.id); }} style={{ 
-                            background: colors.border, 
-                            border: 'none', 
-                            borderRadius: '6px', 
-                            padding: '6px 8px', 
-                            cursor: 'pointer', 
-                            fontSize: '14px',
-                            transition: 'background 0.2s'
-                          }}>🔄</button>
-                        </div>
-                      </div>
-                      
-                      {/* Enhanced Status Info */}
-                      <div style={{ marginBottom: '12px' }}>
-                        <div style={{ 
-                          background: colors.background, 
-                          padding: '10px', 
-                          borderRadius: '8px', 
-                          marginBottom: '8px',
-                          border: `1px solid ${colors.border}`
-                        }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                            <span style={{ color: colors.text, fontSize: '0.9rem', fontWeight: 'bold' }}>
-                              📅 آخر مراجعة: {matn.days_since_last_revision} {matn.days_since_last_revision === 1 ? t.day : t.days}
-                            </span>
-                            <span style={{ 
-                              color: matn.days_since_last_revision > matn.threshold ? colors.error : colors.success, 
-                              fontSize: '0.8rem',
-                              fontWeight: 'bold'
-                            }}>
-                              {matn.days_since_last_revision > matn.threshold ? '⚠️ متأخر' : '✅ في الوقت'}
-                            </span>
-                          </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ color: colors.textSecondary, fontSize: '0.8rem' }}>
-                              ⚙️ إعادة التعيين: <strong>{matn.threshold} أيام</strong>
-                            </span>
-                            {matn.threshold > 0 && (
-                              <span style={{ color: colors.textSecondary, fontSize: '0.8rem' }}>
-                                باقي: <strong>{Math.max(0, matn.threshold - matn.days_since_last_revision)} أيام</strong>
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        
-                        {matn.description && (
-                          <div style={{ 
-                            background: colors.background, 
-                            padding: '8px', 
-                            borderRadius: '6px',
-                            border: `1px solid ${colors.border}`
-                          }}>
-                            <p style={{ color: colors.text, fontSize: '0.9rem', margin: 0, fontStyle: 'italic' }}>
-                              📝 "{matn.description.substring(0, 80)}{matn.description.length > 80 ? '...' : ''}"
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* Enhanced Action Buttons */}
-                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                        {matn.memorization_pdf_link && (
-                          <button onClick={(e) => { e.stopPropagation(); window.open(matn.memorization_pdf_link, '_blank'); }} style={{ 
-                            padding: '6px 12px', 
-                            background: colors.primary, 
-                            color: 'white', 
-                            border: 'none', 
-                            borderRadius: '6px', 
-                            cursor: 'pointer', 
-                            fontSize: '12px',
-                            fontWeight: 'bold',
-                            transition: 'transform 0.1s'
-                          }}>
-                            📄 {t.memorizationPdf}
-                          </button>
-                        )}
-                        {matn.explanation_pdf_link && (
-                          <button onClick={(e) => { e.stopPropagation(); window.open(matn.explanation_pdf_link, '_blank'); }} style={{ 
-                            padding: '6px 12px', 
-                            background: colors.secondary, 
-                            color: 'white', 
-                            border: 'none', 
-                            borderRadius: '6px', 
-                            cursor: 'pointer', 
-                            fontSize: '12px',
-                            fontWeight: 'bold',
-                            transition: 'transform 0.1s'
-                          }}>
-                            📖 {t.explanationPdf}
-                          </button>
-                        )}
-                        {matn.memorization_audio_link && (
-                          <button onClick={(e) => { e.stopPropagation(); setAudioPlayer({ url: matn.memorization_audio_link, title: matn.name }); }} style={{ 
-                            padding: '6px 12px', 
-                            background: colors.success, 
-                            color: 'white', 
-                            border: 'none', 
-                            borderRadius: '6px', 
-                            cursor: 'pointer', 
-                            fontSize: '12px',
-                            fontWeight: 'bold',
-                            transition: 'transform 0.1s'
-                          }}>
-                            🎧 {t.audio}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                                 <div style={{ display: 'grid', gap: '12px' }}>
+                   {mutun.map(matn => (
+                     <div key={matn.id} style={{ 
+                       background: colors.surface, 
+                       borderRadius: '12px', 
+                       padding: '16px', 
+                       border: `2px solid ${getMatnColor(matn.status)}`, 
+                       transition: 'all 0.2s',
+                       boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                     }}>
+                       {/* Header with Clickable Status Badge */}
+                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                         <h3 style={{ color: colors.text, fontSize: '1.1rem', margin: 0, flex: 1, fontWeight: 'bold' }}>{matn.name}</h3>
+                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                           <button onClick={() => changeMatnStatus(matn.id)} style={{ 
+                             background: getMatnColor(matn.status), 
+                             color: 'white', 
+                             padding: '6px 12px', 
+                             borderRadius: '12px', 
+                             fontSize: '0.75rem', 
+                             fontWeight: 'bold',
+                             border: 'none',
+                             cursor: 'pointer',
+                             minWidth: '100px',
+                             textAlign: 'center',
+                             transition: 'transform 0.1s'
+                           }}>
+                             {matn.status === 'red' ? 'يحتاج مراجعة' : matn.status === 'orange' ? 'قريب الانتهاء' : 'تم المراجعة'}
+                           </button>
+                           <button onClick={() => openThresholdModal(matn)} style={{ 
+                             background: colors.border, 
+                             border: 'none', 
+                             borderRadius: '6px', 
+                             padding: '6px 8px', 
+                             cursor: 'pointer', 
+                             fontSize: '14px',
+                             transition: 'background 0.2s'
+                           }}>⚙️</button>
+                         </div>
+                       </div>
+                       
+                       {/* Days Since Last Completion */}
+                       <div style={{ marginBottom: '12px' }}>
+                         <div style={{ 
+                           background: colors.background, 
+                           padding: '10px', 
+                           borderRadius: '8px',
+                           border: `1px solid ${colors.border}`
+                         }}>
+                           <span style={{ color: colors.text, fontSize: '0.9rem' }}>
+                             منذ آخر ختمة: <strong>{matn.days_since_last_revision} أيام</strong>
+                           </span>
+                         </div>
+                       </div>
+                       
+                       {/* Description Field - Always Visible */}
+                       <div style={{ marginBottom: '12px' }}>
+                         {editingMatnId === matn.id ? (
+                           <div>
+                             <textarea 
+                               value={matn.description || ''} 
+                               onChange={(e) => updateMatnDescription(matn.id, e.target.value)}
+                               onBlur={() => setEditingMatnId(null)}
+                               autoFocus
+                               placeholder="أضف ملاحظة..."
+                               style={{ 
+                                 width: '100%', 
+                                 padding: '10px', 
+                                 border: `2px solid ${colors.primary}`, 
+                                 borderRadius: '8px', 
+                                 fontSize: '0.9rem', 
+                                 backgroundColor: colors.background, 
+                                 color: colors.text, 
+                                 minHeight: '60px', 
+                                 resize: 'vertical',
+                                 outline: 'none',
+                                 fontFamily: 'inherit'
+                               }} 
+                             />
+                           </div>
+                         ) : (
+                           <div 
+                             onClick={() => setEditingMatnId(matn.id)}
+                             style={{ 
+                               background: colors.background, 
+                               padding: '10px', 
+                               borderRadius: '8px',
+                               border: `1px solid ${colors.border}`,
+                               cursor: 'text',
+                               minHeight: '40px',
+                               display: 'flex',
+                               alignItems: 'center'
+                             }}
+                           >
+                             <span style={{ color: matn.description ? colors.text : colors.textSecondary, fontSize: '0.9rem', fontStyle: matn.description ? 'normal' : 'italic' }}>
+                               {matn.description || 'انقر لإضافة ملاحظة...'}
+                             </span>
+                           </div>
+                         )}
+                       </div>
+                       
+                       {/* Action Buttons */}
+                       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                         {matn.memorization_pdf_link && (
+                           <button onClick={() => window.open(matn.memorization_pdf_link, '_blank')} style={{ 
+                             padding: '6px 12px', 
+                             background: colors.primary, 
+                             color: 'white', 
+                             border: 'none', 
+                             borderRadius: '6px', 
+                             cursor: 'pointer', 
+                             fontSize: '12px',
+                             fontWeight: 'bold'
+                           }}>
+                             📄 {t.memorizationPdf}
+                           </button>
+                         )}
+                         {matn.explanation_pdf_link && (
+                           <button onClick={() => window.open(matn.explanation_pdf_link, '_blank')} style={{ 
+                             padding: '6px 12px', 
+                             background: colors.secondary, 
+                             color: 'white', 
+                             border: 'none', 
+                             borderRadius: '6px', 
+                             cursor: 'pointer', 
+                             fontSize: '12px',
+                             fontWeight: 'bold'
+                           }}>
+                             📖 {t.explanationPdf}
+                           </button>
+                         )}
+                         {matn.memorization_audio_link && (
+                           <button onClick={() => setAudioPlayer({ url: matn.memorization_audio_link, title: matn.name })} style={{ 
+                             padding: '6px 12px', 
+                             background: colors.success, 
+                             color: 'white', 
+                             border: 'none', 
+                             borderRadius: '6px', 
+                             cursor: 'pointer', 
+                             fontSize: '12px',
+                             fontWeight: 'bold'
+                           }}>
+                             🎧 {t.audio}
+                           </button>
+                         )}
+                       </div>
+                     </div>
+                   ))}
+                 </div>
               )}
             </div>
           );
@@ -1414,81 +1529,8 @@ const App: React.FC = () => {
       {/* Timer Modal */}
       <TimerModal />
 
-      {/* Bottom Sheet for Matn Details */}
-      <BottomSheet isOpen={bottomSheetOpen} onClose={closeBottomSheet}>
-        {selectedMatn && (
-          <div>
-            <h2 style={{ color: colors.text, marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: getMatnColor(selectedMatn.status) }} />
-              {selectedMatn.name}
-            </h2>
-            
-            <div style={{ marginBottom: '20px' }}>
-              <p style={{ color: colors.textSecondary, marginBottom: '10px' }}>المستوى: {selectedMatn.section}</p>
-              <p style={{ color: colors.textSecondary, marginBottom: '10px' }}>آخر تحديث: {new Date(selectedMatn.lastChange_date).toLocaleDateString('ar-SA')}</p>
-              <p style={{ color: colors.textSecondary, marginBottom: '10px' }}>أيام منذ آخر مراجعة: {selectedMatn.days_since_last_revision}</p>
-              <p style={{ color: colors.textSecondary, marginBottom: '10px' }}>حد الإعادة: {selectedMatn.threshold} أيام</p>
-            </div>
-
-            {/* Status Change */}
-            <div style={{ marginBottom: '20px' }}>
-              <h4 style={{ color: colors.text, marginBottom: '10px' }}>تغيير الحالة:</h4>
-              <button onClick={() => changeMatnStatus(selectedMatn.id)} style={{ padding: '10px 20px', background: colors.primary, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', width: '100%' }}>
-                تغيير إلى {selectedMatn.status === 'red' ? 'برتقالي' : selectedMatn.status === 'orange' ? 'أخضر' : 'أحمر'}
-              </button>
-            </div>
-
-            {/* Description */}
-            <div style={{ marginBottom: '20px' }}>
-              <h4 style={{ color: colors.text, marginBottom: '10px' }}>الملاحظات:</h4>
-              {editingDescription ? (
-                <div>
-                  <textarea value={newDescription} onChange={(e) => setNewDescription(e.target.value)} placeholder={t.writeNote} style={{ width: '100%', padding: '12px', border: `1px solid ${colors.border}`, borderRadius: '8px', fontSize: '14px', backgroundColor: colors.background, color: colors.text, minHeight: '80px', resize: 'vertical' }} />
-                  <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                    <button onClick={saveDescription} style={{ padding: '8px 16px', background: colors.success, color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>{t.save}</button>
-                    <button onClick={() => setEditingDescription(false)} style={{ padding: '8px 16px', background: colors.border, color: colors.text, border: 'none', borderRadius: '6px', cursor: 'pointer' }}>{t.cancel}</button>
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <p style={{ color: colors.text, padding: '12px', background: colors.background, borderRadius: '8px', minHeight: '60px', border: `1px solid ${colors.border}` }}>
-                    {selectedMatn.description || 'لا توجد ملاحظات'}
-                  </p>
-                  <button onClick={() => setEditingDescription(true)} style={{ padding: '8px 16px', background: colors.primary, color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', marginTop: '10px' }}>{t.edit}</button>
-                </div>
-              )}
-            </div>
-
-            {/* Materials */}
-            <div style={{ marginBottom: '20px' }}>
-              <h4 style={{ color: colors.text, marginBottom: '10px' }}>{t.materials}:</h4>
-              <div style={{ display: 'grid', gap: '10px' }}>
-                {selectedMatn.memorization_pdf_link && (
-                  <button onClick={() => window.open(selectedMatn.memorization_pdf_link, '_blank')} style={{ padding: '12px', background: colors.primary, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', textAlign: 'left' }}>
-                    📄 {t.memorizationPdf}
-                  </button>
-                )}
-                {selectedMatn.explanation_pdf_link && (
-                  <button onClick={() => window.open(selectedMatn.explanation_pdf_link, '_blank')} style={{ padding: '12px', background: colors.secondary, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', textAlign: 'left' }}>
-                    📖 {t.explanationPdf}
-                  </button>
-                )}
-                {selectedMatn.memorization_audio_link && (
-                  <button onClick={() => setAudioPlayer({ url: selectedMatn.memorization_audio_link, title: selectedMatn.name })} style={{ padding: '12px', background: colors.success, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', textAlign: 'left' }}>
-                    🎧 {t.audio}
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Threshold Setting */}
-            <div style={{ marginBottom: '20px' }}>
-              <h4 style={{ color: colors.text, marginBottom: '10px' }}>{t.threshold}:</h4>
-              <input type="number" value={selectedMatn.threshold} onChange={(e) => updateMatnThreshold(selectedMatn.id, parseInt(e.target.value))} min="1" max="30" style={{ width: '100%', padding: '12px', border: `1px solid ${colors.border}`, borderRadius: '8px', fontSize: '16px', backgroundColor: colors.background, color: colors.text }} />
-            </div>
-          </div>
-        )}
-      </BottomSheet>
+      {/* Threshold Modal */}
+      <ThresholdModal />
 
       {/* Bottom Navigation */}
       <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: colors.surface, borderTop: `1px solid ${colors.border}`, padding: '10px 0', display: 'flex', justifyContent: 'space-around', alignItems: 'center', zIndex: 1000, direction: 'ltr' }}>
