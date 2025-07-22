@@ -851,7 +851,7 @@ const App: React.FC = () => {
                 <h2 style={{ color: colors.text, fontSize: '1.2rem', marginBottom: '10px' }}>{news.title}</h2>
                 <p style={{ color: colors.textSecondary, marginBottom: '15px', lineHeight: '1.6' }}>{news.description}</p>
                 
-                <div style={{ display: 'flex', justify: 'space-between', alignItems: 'center', fontSize: '0.9rem', color: colors.textSecondary }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', color: colors.textSecondary }}>
                   <span>📅 {new Date(news.publication_date).toLocaleDateString('ar-SA')}</span>
                   <span>👁️ {news.read_by.length} قراءة</span>
                 </div>
