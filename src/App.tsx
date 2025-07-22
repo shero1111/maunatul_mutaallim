@@ -645,6 +645,30 @@ const App: React.FC = () => {
 
 
 
+  // Search Component (Available for other pages if needed)
+  const SearchBar: React.FC<{ onSearch: (query: string) => void; placeholder?: string; }> = ({ onSearch, placeholder = t.search }) => {
+    const [query, setQuery] = useState('');
+    
+    // Use current theme colors and language
+    const currentColors = themeColors[theme];
+    const currentLang = language;
+
+    const handleSearch = (value: string) => {
+      setQuery(value);
+      onSearch(value);
+    };
+
+    return (
+      <div style={{ position: 'relative', marginBottom: '20px' }}>
+        <input type="text" value={query} onChange={(e) => handleSearch(e.target.value)} placeholder={placeholder} style={{ width: '100%', padding: currentLang === 'ar' ? '12px 80px 12px 40px' : '12px 80px 12px 40px', border: `2px solid ${currentColors.border}`, borderRadius: '25px', fontSize: '16px', outline: 'none', backgroundColor: currentColors.surface, color: currentColors.text, direction: currentLang === 'ar' ? 'rtl' : 'ltr', transition: 'border-color 0.2s' }} onFocus={(e) => e.target.style.borderColor = currentColors.primary} onBlur={(e) => e.target.style.borderColor = currentColors.border} />
+        <span style={{ position: 'absolute', [currentLang === 'ar' ? 'right' : 'left']: '15px', top: '50%', transform: 'translateY(-50%)', color: currentColors.primary, fontSize: '18px' }}>🔍</span>
+        {query && (
+          <button onClick={() => handleSearch('')} style={{ position: 'absolute', [currentLang === 'ar' ? 'left' : 'right']: '15px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: currentColors.textSecondary, cursor: 'pointer', fontSize: '18px', padding: '2px' }}>✕</button>
+        )}
+      </div>
+    );
+  };
+
   // Timer Modal Component - iPhone Style Redesign
   const TimerModal: React.FC = () => {
     if (!timerState.isOpen) return null;
