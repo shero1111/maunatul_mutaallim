@@ -176,7 +176,9 @@ const translations = {
     memorizing: 'تحفيظ', explanation: 'شرح', memorizingIntensive: 'تحفيظ مكثف', explanationIntensive: 'شرح مكثف',
     createUser: 'إنشاء مستخدم جديد', name: 'الاسم', role: 'الدور', status: 'الحالة', createdAt: 'تاريخ الإنشاء', lastSeen: 'آخر ظهور',
     superuser: 'المدير العام', leitung: 'قائد الحلقات', lehrer: 'المعلم', student: 'الطالب', online: 'متصل', offline: 'غير متصل',
-    assignToHalaqa: 'إضافة إلى حلقة', removeFromHalaqa: 'إزالة من حلقة', noStudentsAssigned: 'لا يوجد طلاب مسجلون', noHalaqatAvailable: 'لا توجد حلقات متاحة'
+    assignToHalaqa: 'إضافة إلى حلقة', removeFromHalaqa: 'إزالة من حلقة', noStudentsAssigned: 'لا يوجد طلاب مسجلون', noHalaqatAvailable: 'لا توجد حلقات متاحة',
+    // News management translations
+    createNews: 'إنشاء خبر جديد', editNews: 'تعديل الخبر', newsTitle: 'عنوان الخبر', newsDescription: 'وصف الخبر', publish: 'نشر', draft: 'مسودة', published: 'منشور'
   },
   en: {
     appName: 'Maunatul Mutaallim', username: 'Username', password: 'Password', login: 'Login', home: 'Home', mutuun: 'Mutun', halaqat: 'Halaqat', users: 'Users', news: 'News', more: 'More',
@@ -190,7 +192,9 @@ const translations = {
     memorizing: 'Memorizing', explanation: 'Explanation', memorizingIntensive: 'Intensive Memorizing', explanationIntensive: 'Intensive Explanation',
     createUser: 'Create New User', name: 'Name', role: 'Role', status: 'Status', createdAt: 'Created At', lastSeen: 'Last Seen',
     superuser: 'Super Admin', leitung: 'Halaqa Leader', lehrer: 'Teacher', student: 'Student', online: 'Online', offline: 'Offline',
-    assignToHalaqa: 'Assign to Halaqa', removeFromHalaqa: 'Remove from Halaqa', noStudentsAssigned: 'No students assigned', noHalaqatAvailable: 'No halaqat available'
+    assignToHalaqa: 'Assign to Halaqa', removeFromHalaqa: 'Remove from Halaqa', noStudentsAssigned: 'No students assigned', noHalaqatAvailable: 'No halaqat available',
+    // News management translations
+    createNews: 'Create New Article', editNews: 'Edit Article', newsTitle: 'Article Title', newsDescription: 'Article Description', publish: 'Publish', draft: 'Draft', published: 'Published'
   }
 };
 
@@ -204,7 +208,7 @@ const App: React.FC = () => {
   
   // Data State
   const [usersData, setUsersData] = useState(demoUsers);
-  const [halaqatData] = useState(demoHalaqat);
+  const [halaqatData, setHalaqatData] = useState(demoHalaqat);
   const [newsData, setNewsData] = useState(demoNews);
   const [mutunData, setMutunData] = useState<Matn[]>([]);
   
@@ -237,6 +241,11 @@ const App: React.FC = () => {
     targetTime: 600,
     isMinimized: false
   });
+
+  // News management state
+  const [isCreatingNews, setIsCreatingNews] = useState(false);
+  const [editingNewsId, setEditingNewsId] = useState<string | null>(null);
+  const [newsForm, setNewsForm] = useState({ title: '', description: '' });
 
   const t = translations[language];
 
@@ -1625,31 +1634,531 @@ const App: React.FC = () => {
     );
   };
 
-  // News Page Component
-  const NewsPage: React.FC = () => {
+  // Halaqat Page Component
+  const HalaqatPage: React.FC = () => {
+    const canManageHalaqat = currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
+
     return (
       <div style={{ padding: '20px' }}>
-        <h1 style={{ color: colors.primary, fontSize: '1.8rem', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span>📢</span>
-          {t.news}
-        </h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h1 style={{ color: colors.primary, fontSize: '1.8rem', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span>🔵</span>
+            {t.halaqat}
+          </h1>
+          {canManageHalaqat && (
+            <button 
+              style={{
+                background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+                color: 'white',
+                border: 'none',
+                borderRadius: '12px',
+                padding: '12px 20px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontWeight: '600'
+              }}
+            >
+              <span>➕</span>
+              {t.createHalaqa}
+            </button>
+          )}
+        </div>
+        
+        <div style={{ display: 'grid', gap: '20px' }}>
+          {halaqatData.map(halaqa => {
+            const teacher = usersData.find(u => u.id === halaqa.teacher_id);
+            const students = usersData.filter(u => halaqa.student_ids.includes(u.id));
+            
+            return (
+              <div key={halaqa.id} style={{ 
+                background: colors.surface, 
+                borderRadius: '16px', 
+                padding: '24px', 
+                border: `1px solid ${colors.border}`,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                  <div>
+                    <h3 style={{ color: colors.text, fontSize: '1.3rem', margin: '0 0 8px 0', fontWeight: '600' }}>
+                      {halaqa.name}
+                    </h3>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <span style={{ 
+                        background: colors.primary + '20', 
+                        color: colors.primary, 
+                        padding: '4px 12px', 
+                        borderRadius: '8px', 
+                        fontSize: '0.8rem',
+                        fontWeight: '600'
+                      }}>
+                        {halaqa.type === 'memorizing' ? t.memorizing : 
+                         halaqa.type === 'explanation' ? t.explanation :
+                         halaqa.type === 'memorizing_intensive' ? t.memorizingIntensive :
+                         t.explanationIntensive}
+                      </span>
+                      <span style={{ 
+                        background: halaqa.isActive ? colors.success + '20' : colors.error + '20',
+                        color: halaqa.isActive ? colors.success : colors.error,
+                        padding: '4px 12px', 
+                        borderRadius: '8px', 
+                        fontSize: '0.8rem',
+                        fontWeight: '600'
+                      }}>
+                        {halaqa.isActive ? t.active : t.inactive}
+                      </span>
+                    </div>
+                  </div>
+                  {canManageHalaqat && (
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button style={{
+                        background: colors.border,
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '8px',
+                        cursor: 'pointer'
+                      }}>
+                        ✏️
+                      </button>
+                      <button style={{
+                        background: colors.error + '20',
+                        color: colors.error,
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '8px',
+                        cursor: 'pointer'
+                      }}>
+                        🗑️
+                      </button>
+                    </div>
+                  )}
+                </div>
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <p style={{ color: colors.textSecondary, fontSize: '0.9rem', margin: '0 0 4px 0' }}>
+                    <strong>{t.teacher}:</strong> {teacher?.name || 'غير محدد'}
+                  </p>
+                  <p style={{ color: colors.textSecondary, fontSize: '0.9rem', margin: 0 }}>
+                    <strong>رقم الحلقة:</strong> {halaqa.internal_number}
+                  </p>
+                </div>
+                
+                <div>
+                  <h4 style={{ color: colors.text, fontSize: '1rem', margin: '0 0 12px 0' }}>
+                    {t.students} ({students.length})
+                  </h4>
+                  {students.length > 0 ? (
+                    <div style={{ display: 'grid', gap: '8px' }}>
+                      {students.map(student => (
+                        <div key={student.id} style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '12px',
+                          background: colors.background,
+                          borderRadius: '8px',
+                          border: `1px solid ${colors.border}`
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{
+                              width: '8px',
+                              height: '8px',
+                              borderRadius: '50%',
+                              background: student.isOnline ? colors.success : colors.textSecondary
+                            }} />
+                            <span style={{ color: colors.text, fontWeight: '500' }}>{student.name}</span>
+                          </div>
+                          <span style={{ color: colors.textSecondary, fontSize: '0.8rem' }}>
+                            {student.isOnline ? t.online : t.offline}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p style={{ color: colors.textSecondary, fontStyle: 'italic' }}>{t.noStudentsAssigned}</p>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        
+        {halaqatData.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '40px', color: colors.textSecondary }}>
+            <div style={{ fontSize: '3rem', marginBottom: '10px' }}>🔵</div>
+            <p>{t.noHalaqatAvailable}</p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Users Page Component
+  const UsersPage: React.FC = () => {
+    const canManageUsers = currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
+
+    return (
+      <div style={{ padding: '20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h1 style={{ color: colors.primary, fontSize: '1.8rem', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span>👥</span>
+            {t.users}
+          </h1>
+          {canManageUsers && (
+            <button 
+              style={{
+                background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+                color: 'white',
+                border: 'none',
+                borderRadius: '12px',
+                padding: '12px 20px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontWeight: '600'
+              }}
+            >
+              <span>➕</span>
+              {t.createUser}
+            </button>
+          )}
+        </div>
+        
+        <div style={{ display: 'grid', gap: '16px' }}>
+          {usersData.map(user => (
+            <div key={user.id} style={{ 
+              background: colors.surface, 
+              borderRadius: '12px', 
+              padding: '20px', 
+              border: `1px solid ${colors.border}`,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    fontWeight: 'bold'
+                  }}>
+                    {user.name.charAt(0)}
+                  </div>
+                  <div>
+                    <h3 style={{ color: colors.text, fontSize: '1.1rem', margin: '0 0 4px 0', fontWeight: '600' }}>
+                      {user.name}
+                    </h3>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <span style={{ 
+                        background: colors.secondary + '20', 
+                        color: colors.secondary, 
+                        padding: '2px 8px', 
+                        borderRadius: '6px', 
+                        fontSize: '0.75rem',
+                        fontWeight: '600'
+                      }}>
+                        {user.role === 'superuser' ? t.superuser :
+                         user.role === 'leitung' ? t.leitung :
+                         user.role === 'lehrer' ? t.lehrer : t.student}
+                      </span>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}>
+                        <div style={{
+                          width: '6px',
+                          height: '6px',
+                          borderRadius: '50%',
+                          background: user.isOnline ? colors.success : colors.textSecondary
+                        }} />
+                        <span style={{ color: colors.textSecondary, fontSize: '0.8rem' }}>
+                          {user.isOnline ? t.online : t.offline}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {canManageUsers && user.id !== currentUser?.id && (
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button style={{
+                      background: colors.border,
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '8px',
+                      cursor: 'pointer'
+                    }}>
+                      ✏️
+                    </button>
+                    <button style={{
+                      background: colors.error + '20',
+                      color: colors.error,
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '8px',
+                      cursor: 'pointer'
+                    }}>
+                      🗑️
+                    </button>
+                  </div>
+                )}
+              </div>
+              
+              <div style={{ marginTop: '12px', fontSize: '0.85rem', color: colors.textSecondary }}>
+                <p style={{ margin: '0 0 4px 0' }}>
+                  <strong>{t.createdAt}:</strong> {new Date(user.created_at).toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US')}
+                </p>
+                {user.lastPage && (
+                  <p style={{ margin: 0 }}>
+                    <strong>{t.lastSeen}:</strong> {user.lastPage}
+                  </p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // News Page Component
+  const NewsPage: React.FC = () => {
+    const canManageNews = currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
+
+    const handleCreateNews = () => {
+      if (newsForm.title.trim() && newsForm.description.trim()) {
+        const newNews: News = {
+          id: `news_${Date.now()}`,
+          title: newsForm.title,
+          description: newsForm.description,
+          images: [],
+          files: [],
+          publication_date: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+          read_by: []
+        };
+        setNewsData(prev => [newNews, ...prev]);
+        setNewsForm({ title: '', description: '' });
+        setIsCreatingNews(false);
+      }
+    };
+
+    const handleEditNews = (newsId: string) => {
+      const news = newsData.find(n => n.id === newsId);
+      if (news) {
+        setNewsForm({ title: news.title, description: news.description });
+        setEditingNewsId(newsId);
+        setIsCreatingNews(true);
+      }
+    };
+
+    const handleUpdateNews = () => {
+      if (editingNewsId && newsForm.title.trim() && newsForm.description.trim()) {
+        setNewsData(prev => prev.map(news => 
+          news.id === editingNewsId 
+            ? { ...news, title: newsForm.title, description: newsForm.description }
+            : news
+        ));
+        setNewsForm({ title: '', description: '' });
+        setEditingNewsId(null);
+        setIsCreatingNews(false);
+      }
+    };
+
+    const handleDeleteNews = (newsId: string) => {
+      setNewsData(prev => prev.filter(news => news.id !== newsId));
+    };
+
+    return (
+      <div style={{ padding: '20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h1 style={{ color: colors.primary, fontSize: '1.8rem', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span>📢</span>
+            {t.news}
+          </h1>
+          {canManageNews && (
+            <button 
+              onClick={() => setIsCreatingNews(true)}
+              style={{
+                background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+                color: 'white',
+                border: 'none',
+                borderRadius: '12px',
+                padding: '12px 20px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontWeight: '600'
+              }}
+            >
+              <span>➕</span>
+              {t.createNews}
+            </button>
+          )}
+        </div>
+
+        {/* Create/Edit News Form */}
+        {isCreatingNews && (
+          <div style={{
+            background: colors.surface,
+            borderRadius: '16px',
+            padding: '24px',
+            marginBottom: '20px',
+            border: `1px solid ${colors.border}`,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+          }}>
+            <h3 style={{ color: colors.text, marginBottom: '16px', fontSize: '1.2rem' }}>
+              {editingNewsId ? t.editNews : t.createNews}
+            </h3>
+            
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', color: colors.text, fontWeight: '600' }}>
+                {t.newsTitle}
+              </label>
+              <input
+                type="text"
+                value={newsForm.title}
+                onChange={(e) => setNewsForm(prev => ({ ...prev, title: e.target.value }))}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: `1px solid ${colors.border}`,
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  backgroundColor: colors.background,
+                  color: colors.text,
+                  direction: language === 'ar' ? 'rtl' : 'ltr'
+                }}
+                placeholder={language === 'ar' ? 'أدخل عنوان الخبر...' : 'Enter news title...'}
+              />
+            </div>
+            
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', color: colors.text, fontWeight: '600' }}>
+                {t.newsDescription}
+              </label>
+              <textarea
+                value={newsForm.description}
+                onChange={(e) => setNewsForm(prev => ({ ...prev, description: e.target.value }))}
+                rows={4}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: `1px solid ${colors.border}`,
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  backgroundColor: colors.background,
+                  color: colors.text,
+                  resize: 'vertical',
+                  fontFamily: 'inherit',
+                  direction: language === 'ar' ? 'rtl' : 'ltr'
+                }}
+                placeholder={language === 'ar' ? 'أدخل محتوى الخبر...' : 'Enter news content...'}
+              />
+            </div>
+            
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={editingNewsId ? handleUpdateNews : handleCreateNews}
+                style={{
+                  background: `linear-gradient(135deg, ${colors.success}, #2ed573)`,
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '10px 20px',
+                  cursor: 'pointer',
+                  fontWeight: '600'
+                }}
+              >
+                {editingNewsId ? t.save : t.publish}
+              </button>
+              <button
+                onClick={() => {
+                  setIsCreatingNews(false);
+                  setEditingNewsId(null);
+                  setNewsForm({ title: '', description: '' });
+                }}
+                style={{
+                  background: colors.border,
+                  color: colors.text,
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '10px 20px',
+                  cursor: 'pointer'
+                }}
+              >
+                {t.cancel}
+              </button>
+            </div>
+          </div>
+        )}
         
         <div style={{ display: 'grid', gap: '20px' }}>
           {newsData.map(news => {
             const isRead = news.read_by.includes(currentUser?.id || '');
             
             return (
-              <div key={news.id} style={{ background: colors.surface, borderRadius: '15px', padding: '20px', border: `1px solid ${isRead ? colors.border : colors.primary}`, position: 'relative' }}>
+              <div key={news.id} style={{ 
+                background: colors.surface, 
+                borderRadius: '15px', 
+                padding: '20px', 
+                border: `1px solid ${isRead ? colors.border : colors.primary}`, 
+                position: 'relative',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+              }}>
                 {!isRead && (
                   <div style={{ position: 'absolute', top: '15px', right: '15px', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: colors.primary }} />
                 )}
                 
-                <h2 style={{ color: colors.text, fontSize: '1.2rem', marginBottom: '10px' }}>{news.title}</h2>
-                <p style={{ color: colors.textSecondary, marginBottom: '15px', lineHeight: '1.6' }}>{news.description}</p>
+                {canManageNews && (
+                  <div style={{ position: 'absolute', top: '15px', left: '15px', display: 'flex', gap: '8px' }}>
+                    <button
+                      onClick={() => handleEditNews(news.id)}
+                      style={{
+                        background: colors.border,
+                        border: 'none',
+                        borderRadius: '6px',
+                        padding: '6px',
+                        cursor: 'pointer',
+                        fontSize: '12px'
+                      }}
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      onClick={() => handleDeleteNews(news.id)}
+                      style={{
+                        background: colors.error + '20',
+                        color: colors.error,
+                        border: 'none',
+                        borderRadius: '6px',
+                        padding: '6px',
+                        cursor: 'pointer',
+                        fontSize: '12px'
+                      }}
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                )}
+                
+                <h2 style={{ color: colors.text, fontSize: '1.2rem', marginBottom: '10px', marginTop: canManageNews ? '20px' : '0' }}>
+                  {news.title}
+                </h2>
+                <p style={{ color: colors.textSecondary, marginBottom: '15px', lineHeight: '1.6' }}>
+                  {news.description}
+                </p>
                 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', color: colors.textSecondary }}>
-                  <span>📅 {new Date(news.publication_date).toLocaleDateString('ar-SA')}</span>
-                  <span>👁️ {news.read_by.length} قراءة</span>
+                  <span>📅 {new Date(news.publication_date).toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US')}</span>
+                  <span>👁️ {news.read_by.length} {language === 'ar' ? 'قراءة' : 'reads'}</span>
                 </div>
               </div>
             );
@@ -1659,7 +2168,7 @@ const App: React.FC = () => {
         {newsData.length === 0 && (
           <div style={{ textAlign: 'center', padding: '40px', color: colors.textSecondary }}>
             <div style={{ fontSize: '3rem', marginBottom: '10px' }}>📢</div>
-            <p>لا توجد أخبار حالياً</p>
+            <p>{language === 'ar' ? 'لا توجد أخبار حالياً' : 'No news available'}</p>
           </div>
         )}
       </div>
@@ -1986,6 +2495,8 @@ const App: React.FC = () => {
     switch (currentPage) {
       case 'home': return <HomePage />;
       case 'mutuun': return <MutunPage />;
+      case 'halaqat': return <HalaqatPage />;
+      case 'users': return <UsersPage />;
       case 'news': return <NewsPage />;
       case 'more': return <MorePage />;
       default: return <HomePage />;
