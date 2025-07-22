@@ -1432,23 +1432,7 @@ const App: React.FC = () => {
                          </div>
                        </div>
                        
-                                               {/* Threshold Info as Simple Text */}
-                         <div style={{ marginBottom: '12px' }}>
-                           <div style={{ 
-                             background: colors.background, 
-                             padding: '10px', 
-                             borderRadius: '8px',
-                             border: `1px solid ${colors.border}`,
-                             textAlign: 'center'
-                           }}>
-                             <span style={{ color: colors.textSecondary, fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                               <span>⚙️</span>
-                               العتبة: {matn.threshold} أيام
-                             </span>
-                           </div>
-                         </div>
-                       
-                                                                                                                                                                                                                       {/* Description Field - Simple Input + Save Button */}
+                                               {/* Description Field - Simple Input + Save Button */}
                                <div style={{ marginBottom: '12px' }}>
                                  <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
                                    <input
@@ -1458,14 +1442,18 @@ const App: React.FC = () => {
                                        setEditingText(e.target.value);
                                        if (editingMatnId !== matn.id) {
                                          setEditingMatnId(matn.id);
+                                         setEditingText(e.target.value);
                                        }
                                      }}
                                      onFocus={() => {
                                        if (editingMatnId !== matn.id) {
-                                         const currentDescription = mutunData.find(m => m.id === matn.id)?.description || '';
-                                         setEditingText(currentDescription);
                                          setEditingMatnId(matn.id);
+                                         setEditingText(matn.description || '');
                                        }
+                                     }}
+                                     onBlur={(e) => {
+                                       // Keep border color change only
+                                       e.target.style.borderColor = colors.border;
                                      }}
                                      placeholder="أضف ملاحظة للمتن..."
                                      style={{
@@ -1479,10 +1467,10 @@ const App: React.FC = () => {
                                        color: colors.text,
                                        outline: 'none',
                                        direction: 'rtl',
-                                       textAlign: 'right'
+                                       textAlign: 'right',
+                                       transition: 'border-color 0.2s'
                                      }}
-                                     onFocusCapture={(e) => e.target.style.borderColor = colors.primary}
-                                     onBlur={(e) => e.target.style.borderColor = colors.border}
+                                                                            onFocusCapture={(e) => e.target.style.borderColor = colors.primary}
                                    />
                                    <button
                                      onClick={() => {
@@ -1557,6 +1545,13 @@ const App: React.FC = () => {
                              🎧 {t.audio}
                            </button>
                          )}
+                       </div>
+                       
+                       {/* Threshold Info as Simple Text at Bottom */}
+                       <div style={{ textAlign: 'center', marginTop: '8px' }}>
+                         <span style={{ color: colors.textSecondary, fontSize: '0.75rem' }}>
+                           ⚙️ العتبة: {matn.threshold} أيام
+                         </span>
                        </div>
                      </div>
                    ))}
@@ -1745,13 +1740,13 @@ const App: React.FC = () => {
       {/* Threshold Modal */}
       <ThresholdModal />
 
-      {/* Bottom Navigation */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: colors.surface, borderTop: `1px solid ${colors.border}`, padding: '10px 0', display: 'flex', justifyContent: 'space-around', alignItems: 'center', zIndex: 1000, direction: 'ltr' }}>
+      {/* Bottom Navigation - Smaller Height */}
+      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: colors.surface, borderTop: `1px solid ${colors.border}`, padding: '6px 0', display: 'flex', justifyContent: 'space-around', alignItems: 'center', zIndex: 1000, direction: 'ltr' }}>
         {getNavigationItems(currentUser?.role || '').map(item => {
           const unreadNews = newsData.filter(n => !n.read_by.includes(currentUser?.id || '')).length;
           
           return (
-            <button key={item.id} onClick={() => setCurrentPage(item.id)} style={{ background: 'none', border: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', cursor: 'pointer', color: currentPage === item.id ? colors.primary : colors.textSecondary, fontSize: '12px', position: 'relative', padding: '5px', transition: 'color 0.2s' }}>
+            <button key={item.id} onClick={() => setCurrentPage(item.id)} style={{ background: 'none', border: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', cursor: 'pointer', color: currentPage === item.id ? colors.primary : colors.textSecondary, fontSize: '11px', position: 'relative', padding: '3px', transition: 'color 0.2s' }}>
               <span style={{ fontSize: '20px' }}>{item.icon}</span>
               <span>{item.label}</span>
               {item.id === 'news' && unreadNews > 0 && (
