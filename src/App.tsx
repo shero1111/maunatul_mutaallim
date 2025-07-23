@@ -1573,14 +1573,24 @@ const App: React.FC = () => {
                          </div>
                        </div>
                        
-                                               {/* Note Field - Uncontrolled for better mobile behavior */}
-                               <div style={{ marginBottom: '12px' }}>
+                                               {/* Note Field - Completely Isolated */}
+                               <div 
+                                 style={{ marginBottom: '12px' }}
+                                 onClick={(e) => e.stopPropagation()}
+                                 onTouchStart={(e) => e.stopPropagation()}
+                               >
                                  <input
+                                   key={`note-${matn.id}-${matn.description}`}
                                    type="text"
                                    defaultValue={matn.description || ''}
                                    onBlur={(e) => {
+                                     e.stopPropagation();
                                      updateMatnDescription(matn.id, e.target.value);
                                    }}
+                                   onFocus={(e) => e.stopPropagation()}
+                                   onClick={(e) => e.stopPropagation()}
+                                   onTouchStart={(e) => e.stopPropagation()}
+                                   onTouchEnd={(e) => e.stopPropagation()}
                                    placeholder={language === 'ar' ? 'اكتب ملاحظة...' : 'Write a note...'}
                                    style={{
                                      width: '100%',
@@ -1594,7 +1604,9 @@ const App: React.FC = () => {
                                      outline: 'none',
                                      direction: language === 'ar' ? 'rtl' : 'ltr',
                                      textAlign: language === 'ar' ? 'right' : 'left',
-                                     boxSizing: 'border-box'
+                                     boxSizing: 'border-box',
+                                     touchAction: 'manipulation',
+                                     WebkitTapHighlightColor: 'transparent'
                                    }}
                                  />
                                </div>
