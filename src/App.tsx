@@ -143,9 +143,9 @@ const generatePersonalMutuun = (userId: string): Matn[] => {
 };
 
 const demoUsers: (Student | Teacher | User)[] = [
-  { id: 'admin', username: 'superadmin1', password: 'test', role: 'superuser', name: 'superadmin1', isActive: true, created_at: '2024-01-01', lastPage: 'home', isOnline: true },
-  { id: 'leiter', username: 'leader1', password: 'test', role: 'leitung', name: 'leader1', isActive: true, created_at: '2024-01-01', lastPage: 'home', isOnline: true },
-  { id: 'lehrer', username: 'teacher1', password: 'test', role: 'lehrer', name: 'teacher1', isActive: true, created_at: '2024-01-01', halaqat_ids: ['halaqa1', 'halaqa2'], favorites: ['student1', 'student2'], lastPage: 'home', isOnline: false } as Teacher,
+  { id: 'admin', username: 'admin1', password: 'test', role: 'superuser', name: 'admin1', isActive: true, created_at: '2024-01-01', lastPage: 'home', isOnline: true },
+  { id: 'leiter', username: 'leitung1', password: 'test', role: 'leitung', name: 'leitung1', isActive: true, created_at: '2024-01-01', lastPage: 'home', isOnline: true },
+  { id: 'lehrer', username: 'lehrer1', password: 'test', role: 'lehrer', name: 'lehrer1', isActive: true, created_at: '2024-01-01', halaqat_ids: ['halaqa1', 'halaqa2'], favorites: ['student1', 'student2'], lastPage: 'home', isOnline: false } as Teacher,
   { id: 'student1', username: 'student1', password: 'test', role: 'student', name: 'student1', isActive: true, created_at: '2024-01-01', status: 'revising', status_changed_at: '2024-01-15T10:30:00Z', halaqat_ids: ['halaqa1'], favorites: ['student2'], lastPage: 'home', isOnline: true } as Student,
   { id: 'student2', username: 'student2', password: 'test', role: 'student', name: 'student2', isActive: true, created_at: '2024-01-01', status: 'khatamat', status_changed_at: '2024-01-14T09:15:00Z', halaqat_ids: ['halaqa1', 'halaqa2'], favorites: [], lastPage: 'home', isOnline: true } as Student
 ];
