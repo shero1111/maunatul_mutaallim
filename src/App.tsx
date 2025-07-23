@@ -181,7 +181,7 @@ const translations = {
     createNews: 'إنشاء خبر جديد', editNews: 'تعديل الخبر', newsTitle: 'عنوان الخبر', newsDescription: 'وصف الخبر', publish: 'نشر', draft: 'مسودة', published: 'منشور',
     // User management translations
     editUser: 'تعديل المستخدم', deleteUser: 'حذف المستخدم', confirmDelete: 'هل أنت متأكد من حذف هذا المستخدم؟', userDeleted: 'تم حذف المستخدم بنجاح',
-    searchUsers: 'البحث في المستخدمين', noUsersFound: 'لا يوجد مستخدمون', username: 'اسم المستخدم', newPassword: 'كلمة المرور الجديدة'
+    searchUsers: 'البحث في المستخدمين', noUsersFound: 'لا يوجد مستخدمون', newPassword: 'كلمة المرور الجديدة'
   },
   en: {
     appName: 'Maunatul Mutaallim', username: 'Username', password: 'Password', login: 'Login', home: 'Home', mutuun: 'Mutun', halaqat: 'Halaqat', users: 'Users', news: 'News', more: 'More',
@@ -200,7 +200,7 @@ const translations = {
     createNews: 'Create New Article', editNews: 'Edit Article', newsTitle: 'Article Title', newsDescription: 'Article Description', publish: 'Publish', draft: 'Draft', published: 'Published',
     // User management translations
     editUser: 'Edit User', deleteUser: 'Delete User', confirmDelete: 'Are you sure you want to delete this user?', userDeleted: 'User deleted successfully',
-    searchUsers: 'Search Users', noUsersFound: 'No users found', username: 'Username', newPassword: 'New Password'
+    searchUsers: 'Search Users', noUsersFound: 'No users found', newPassword: 'New Password'
   }
 };
 
