@@ -1684,6 +1684,98 @@ const App: React.FC = () => {
   // Halaqat Page Component
   const HalaqatPage: React.FC = () => {
     const canManageHalaqat = currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
+    
+    // Halaqat management state
+    const [isCreatingHalaqa, setIsCreatingHalaqa] = useState(false);
+    const [editingHalaqaId, setEditingHalaqaId] = useState<string | null>(null);
+    const [halaqaForm, setHalaqaForm] = useState({
+      name: '',
+      type: 'memorizing' as Halaqa['type'],
+      teacher_id: '',
+      student_ids: [] as string[],
+      internal_number: 0,
+      isActive: true
+    });
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+
+    const handleCreateHalaqa = () => {
+      if (halaqaForm.name.trim() && halaqaForm.teacher_id && halaqaForm.internal_number > 0) {
+        const newHalaqa: Halaqa = {
+          id: `halaqa_${Date.now()}`,
+          name: halaqaForm.name,
+          type: halaqaForm.type,
+          teacher_id: halaqaForm.teacher_id,
+          student_ids: halaqaForm.student_ids,
+          internal_number: halaqaForm.internal_number,
+          isActive: halaqaForm.isActive,
+          created_at: new Date().toISOString()
+        };
+        
+        setHalaqatData(prev => {
+          const updated = [...prev, newHalaqa];
+          localStorage.setItem('halaqatData', JSON.stringify(updated));
+          return updated;
+        });
+        
+        setHalaqaForm({ name: '', type: 'memorizing', teacher_id: '', student_ids: [], internal_number: 0, isActive: true });
+        setIsCreatingHalaqa(false);
+      }
+    };
+
+    const handleEditHalaqa = (halaqaId: string) => {
+      const halaqa = halaqatData.find(h => h.id === halaqaId);
+      if (halaqa) {
+        setHalaqaForm({
+          name: halaqa.name,
+          type: halaqa.type,
+          teacher_id: halaqa.teacher_id,
+          student_ids: halaqa.student_ids,
+          internal_number: halaqa.internal_number,
+          isActive: halaqa.isActive
+        });
+        setEditingHalaqaId(halaqaId);
+        setIsCreatingHalaqa(true);
+      }
+    };
+
+    const handleUpdateHalaqa = () => {
+      if (editingHalaqaId && halaqaForm.name.trim() && halaqaForm.teacher_id && halaqaForm.internal_number > 0) {
+        setHalaqatData(prev => {
+          const updated = prev.map(halaqa => 
+            halaqa.id === editingHalaqaId 
+              ? {
+                  ...halaqa,
+                  name: halaqaForm.name,
+                  type: halaqaForm.type,
+                  teacher_id: halaqaForm.teacher_id,
+                  student_ids: halaqaForm.student_ids,
+                  internal_number: halaqaForm.internal_number,
+                  isActive: halaqaForm.isActive
+                }
+              : halaqa
+          );
+          localStorage.setItem('halaqatData', JSON.stringify(updated));
+          return updated;
+        });
+        
+        setHalaqaForm({ name: '', type: 'memorizing', teacher_id: '', student_ids: [], internal_number: 0, isActive: true });
+        setEditingHalaqaId(null);
+        setIsCreatingHalaqa(false);
+      }
+    };
+
+    const handleDeleteHalaqa = (halaqaId: string) => {
+      setHalaqatData(prev => {
+        const updated = prev.filter(halaqa => halaqa.id !== halaqaId);
+        localStorage.setItem('halaqatData', JSON.stringify(updated));
+        return updated;
+      });
+      setShowDeleteConfirm(null);
+    };
+
+    // Get available teachers and students
+    const availableTeachers = usersData.filter(user => user.role === 'lehrer');
+    const availableStudents = usersData.filter(user => user.role === 'student');
 
     return (
       <div style={{ padding: '20px' }}>
@@ -1694,6 +1786,7 @@ const App: React.FC = () => {
           </h1>
           {canManageHalaqat && (
             <button 
+              onClick={() => setIsCreatingHalaqa(true)}
               style={{
                 background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
                 color: 'white',
@@ -1759,23 +1852,29 @@ const App: React.FC = () => {
                   </div>
                   {canManageHalaqat && (
                     <div style={{ display: 'flex', gap: '8px' }}>
-                      <button style={{
-                        background: colors.border,
-                        border: 'none',
-                        borderRadius: '8px',
-                        padding: '8px',
-                        cursor: 'pointer'
-                      }}>
+                      <button 
+                        onClick={() => handleEditHalaqa(halaqa.id)}
+                        style={{
+                          background: colors.border,
+                          border: 'none',
+                          borderRadius: '8px',
+                          padding: '8px',
+                          cursor: 'pointer'
+                        }}
+                      >
                         ✏️
                       </button>
-                      <button style={{
-                        background: colors.error + '20',
-                        color: colors.error,
-                        border: 'none',
-                        borderRadius: '8px',
-                        padding: '8px',
-                        cursor: 'pointer'
-                      }}>
+                      <button 
+                        onClick={() => setShowDeleteConfirm(halaqa.id)}
+                        style={{
+                          background: colors.error + '20',
+                          color: colors.error,
+                          border: 'none',
+                          borderRadius: '8px',
+                          padding: '8px',
+                          cursor: 'pointer'
+                        }}
+                      >
                         🗑️
                       </button>
                     </div>
@@ -2953,10 +3052,12 @@ const App: React.FC = () => {
               )}
             </button>
           );
-        })}
+                  })}
+        </div>
+
+
       </div>
-    </div>
-  );
-};
+    );
+  };
 
 export default App;
