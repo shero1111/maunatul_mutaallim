@@ -1526,7 +1526,20 @@ const App: React.FC = () => {
                                <div style={{ marginBottom: '12px' }}>
                                  <textarea
                                    value={matn.description || ''}
-                                   onChange={(e) => updateMatnDescription(matn.id, e.target.value)}
+                                   onChange={(e) => {
+                                     e.stopPropagation();
+                                     updateMatnDescription(matn.id, e.target.value);
+                                   }}
+                                   onFocus={(e) => {
+                                     e.stopPropagation();
+                                     e.target.style.borderColor = colors.primary;
+                                   }}
+                                   onBlur={(e) => {
+                                     e.stopPropagation();
+                                     e.target.style.borderColor = colors.border;
+                                   }}
+                                   onClick={(e) => e.stopPropagation()}
+                                   onTouchStart={(e) => e.stopPropagation()}
                                    placeholder={language === 'ar' ? 'اكتب ملاحظة...' : 'Write a note...'}
                                    rows={2}
                                    style={{
@@ -1534,19 +1547,18 @@ const App: React.FC = () => {
                                      padding: '12px',
                                      border: `1px solid ${colors.border}`,
                                      borderRadius: '8px',
-                                     fontSize: '0.9rem',
+                                     fontSize: '16px', // Prevents zoom on iOS
                                      fontFamily: 'inherit',
                                      backgroundColor: colors.background,
                                      color: colors.text,
                                      outline: 'none',
-                                     resize: 'vertical',
+                                     resize: 'none', // Disable resize to prevent layout issues
                                      direction: language === 'ar' ? 'rtl' : 'ltr',
                                      textAlign: language === 'ar' ? 'right' : 'left',
                                      transition: 'border-color 0.2s ease',
-                                     boxSizing: 'border-box'
+                                     boxSizing: 'border-box',
+                                     touchAction: 'manipulation' // Better touch handling
                                    }}
-                                   onFocus={(e) => e.target.style.borderColor = colors.primary}
-                                   onBlur={(e) => e.target.style.borderColor = colors.border}
                                  />
                                </div>
                        
