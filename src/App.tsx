@@ -235,9 +235,15 @@ const App: React.FC = () => {
   const calculateDaysSinceLastGreen = (lastStatusChangeDate: string): number => {
     const lastChangeDate = new Date(lastStatusChangeDate);
     const today = new Date();
-    const diffTime = Math.abs(today.getTime() - lastChangeDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
+    
+    // Reset time to start of day for accurate day calculation
+    lastChangeDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    
+    const diffTime = today.getTime() - lastChangeDate.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    return Math.max(0, diffDays); // Ensure never negative
   };
   const [thresholdModalMatn, setThresholdModalMatn] = useState<Matn | null>(null);
   const [tempThreshold, setTempThreshold] = useState<number>(7);
