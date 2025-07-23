@@ -713,17 +713,32 @@ const App: React.FC = () => {
 
         <audio 
           ref={audioRef} 
-          src={audioUrl} 
-          crossOrigin="anonymous"
+          src={audioUrl}
+          preload="metadata"
           onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)} 
-          onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)} 
-          onCanPlay={() => setIsLoading(false)} 
+          onLoadedMetadata={() => {
+            console.log('Audio metadata loaded, duration:', audioRef.current?.duration);
+            setDuration(audioRef.current?.duration || 0);
+          }} 
+          onCanPlay={() => {
+            console.log('Audio can play');
+            setIsLoading(false);
+          }} 
           onEnded={() => setIsPlaying(false)}
           onError={(e) => {
-            console.error('Audio Error:', e);
+            console.error('Audio Error Details:', e.currentTarget.error);
+            console.error('Failed URL:', audioUrl);
             setIsLoading(false);
           }}
-          onLoadStart={() => console.log('Loading audio:', audioUrl)}
+          onLoadStart={() => {
+            console.log('Starting to load audio:', audioUrl);
+            setIsLoading(true);
+          }}
+          onProgress={() => {
+            if (audioRef.current) {
+              console.log('Audio loading progress, buffered:', audioRef.current.buffered.length);
+            }
+          }}
         />
 
         <div style={{ background: 'rgba(255,255,255,0.2)', height: '6px', borderRadius: '3px', marginBottom: '15px', cursor: 'pointer' }} onClick={(e) => {
