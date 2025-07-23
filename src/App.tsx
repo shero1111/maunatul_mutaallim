@@ -1951,6 +1951,291 @@ const App: React.FC = () => {
             <p>{t.noHalaqatAvailable}</p>
           </div>
         )}
+
+        {/* Create/Edit Halaqa Modal */}
+        {isCreatingHalaqa && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000
+          }}>
+            <div style={{
+              background: colors.surface,
+              borderRadius: '16px',
+              padding: '24px',
+              width: '90%',
+              maxWidth: '500px',
+              maxHeight: '90vh',
+              overflow: 'auto'
+            }}>
+              <h2 style={{ color: colors.text, marginBottom: '20px' }}>
+                {editingHalaqaId ? 'تعديل الحلقة' : 'إنشاء حلقة جديدة'}
+              </h2>
+
+              {/* Halaqa Name */}
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', color: colors.text, fontWeight: '600' }}>
+                  اسم الحلقة
+                </label>
+                <input
+                  type="text"
+                  defaultValue={halaqaForm.name}
+                  onBlur={(e) => setHalaqaForm(prev => ({ ...prev, name: e.target.value }))}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    backgroundColor: colors.background,
+                    color: colors.text,
+                    direction: 'rtl'
+                  }}
+                  placeholder="مثال: حلقة المبتدئين"
+                />
+              </div>
+
+              {/* Internal Number */}
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', color: colors.text, fontWeight: '600' }}>
+                  رقم الحلقة
+                </label>
+                <input
+                  type="number"
+                  defaultValue={halaqaForm.internal_number || ''}
+                  onBlur={(e) => setHalaqaForm(prev => ({ ...prev, internal_number: parseInt(e.target.value) || 0 }))}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    backgroundColor: colors.background,
+                    color: colors.text,
+                    direction: 'rtl'
+                  }}
+                  placeholder="مثال: 101"
+                />
+              </div>
+
+              {/* Halaqa Type */}
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', color: colors.text, fontWeight: '600' }}>
+                  نوع الحلقة
+                </label>
+                <select
+                  defaultValue={halaqaForm.type}
+                  onBlur={(e) => setHalaqaForm(prev => ({ ...prev, type: e.target.value as Halaqa['type'] }))}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    backgroundColor: colors.background,
+                    color: colors.text,
+                    direction: 'rtl'
+                  }}
+                >
+                  <option value="memorizing">حفظ</option>
+                  <option value="explanation">تفسير</option>
+                  <option value="memorizing_intensive">حفظ مكثف</option>
+                  <option value="explanation_intensive">تفسير مكثف</option>
+                </select>
+              </div>
+
+              {/* Teacher Selection */}
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', color: colors.text, fontWeight: '600' }}>
+                  المعلم
+                </label>
+                <select
+                  defaultValue={halaqaForm.teacher_id}
+                  onBlur={(e) => setHalaqaForm(prev => ({ ...prev, teacher_id: e.target.value }))}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    backgroundColor: colors.background,
+                    color: colors.text,
+                    direction: 'rtl'
+                  }}
+                >
+                  <option value="">اختر المعلم</option>
+                  {availableTeachers.map(teacher => (
+                    <option key={teacher.id} value={teacher.id}>{teacher.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Students Selection */}
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', color: colors.text, fontWeight: '600' }}>
+                  الطلاب ({halaqaForm.student_ids.length})
+                </label>
+                <div style={{ 
+                  maxHeight: '150px', 
+                  overflow: 'auto',
+                  border: `1px solid ${colors.border}`,
+                  borderRadius: '8px',
+                  padding: '8px'
+                }}>
+                  {availableStudents.map(student => (
+                    <label key={student.id} style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '8px',
+                      cursor: 'pointer',
+                      direction: 'rtl'
+                    }}>
+                      <input
+                        type="checkbox"
+                        checked={halaqaForm.student_ids.includes(student.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setHalaqaForm(prev => ({ 
+                              ...prev, 
+                              student_ids: [...prev.student_ids, student.id] 
+                            }));
+                          } else {
+                            setHalaqaForm(prev => ({ 
+                              ...prev, 
+                              student_ids: prev.student_ids.filter(id => id !== student.id) 
+                            }));
+                          }
+                        }}
+                      />
+                      <span style={{ color: colors.text }}>{student.name}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Active Status */}
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  direction: 'rtl'
+                }}>
+                  <input
+                    type="checkbox"
+                    checked={halaqaForm.isActive}
+                    onChange={(e) => setHalaqaForm(prev => ({ ...prev, isActive: e.target.checked }))}
+                  />
+                  <span style={{ color: colors.text, fontWeight: '600' }}>الحلقة نشطة</span>
+                </label>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                <button
+                  onClick={() => {
+                    setIsCreatingHalaqa(false);
+                    setEditingHalaqaId(null);
+                    setHalaqaForm({ name: '', type: 'memorizing', teacher_id: '', student_ids: [], internal_number: 0, isActive: true });
+                  }}
+                  style={{
+                    padding: '12px 20px',
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: '8px',
+                    background: colors.background,
+                    color: colors.text,
+                    cursor: 'pointer'
+                  }}
+                >
+                  إلغاء
+                </button>
+                <button
+                  onClick={editingHalaqaId ? handleUpdateHalaqa : handleCreateHalaqa}
+                  style={{
+                    padding: '12px 20px',
+                    border: 'none',
+                    borderRadius: '8px',
+                    background: colors.primary,
+                    color: 'white',
+                    cursor: 'pointer',
+                    fontWeight: '600'
+                  }}
+                >
+                  {editingHalaqaId ? 'تحديث' : 'إنشاء'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation */}
+        {showDeleteConfirm && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000
+          }}>
+            <div style={{
+              background: colors.surface,
+              borderRadius: '16px',
+              padding: '24px',
+              width: '90%',
+              maxWidth: '400px'
+            }}>
+              <h3 style={{ color: colors.text, marginBottom: '16px', textAlign: 'center' }}>
+                تأكيد الحذف
+              </h3>
+              <p style={{ color: colors.textSecondary, marginBottom: '24px', textAlign: 'center' }}>
+                هل أنت متأكد من حذف هذه الحلقة؟ لا يمكن التراجع عن هذا الإجراء.
+              </p>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                <button
+                  onClick={() => setShowDeleteConfirm(null)}
+                  style={{
+                    padding: '12px 20px',
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: '8px',
+                    background: colors.background,
+                    color: colors.text,
+                    cursor: 'pointer'
+                  }}
+                >
+                  إلغاء
+                </button>
+                <button
+                  onClick={() => handleDeleteHalaqa(showDeleteConfirm)}
+                  style={{
+                    padding: '12px 20px',
+                    border: 'none',
+                    borderRadius: '8px',
+                    background: colors.error,
+                    color: 'white',
+                    cursor: 'pointer',
+                    fontWeight: '600'
+                  }}
+                >
+                  حذف
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
