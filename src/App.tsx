@@ -1520,38 +1520,31 @@ const App: React.FC = () => {
                                      type="text"
                                      value={editingMatnId === matn.id ? editingText : (matn.description || '')}
                                      onChange={(e) => {
-                                       setEditingText(e.target.value);
                                        if (editingMatnId !== matn.id) {
                                          setEditingMatnId(matn.id);
-                                         setEditingText(e.target.value);
                                        }
+                                       setEditingText(e.target.value);
                                      }}
                                      onFocus={() => {
-                                       if (editingMatnId !== matn.id) {
-                                         setEditingMatnId(matn.id);
-                                         setEditingText(matn.description || '');
-                                       }
+                                       setEditingMatnId(matn.id);
+                                       setEditingText(matn.description || '');
                                      }}
-                                     onBlur={(e) => {
-                                       // Keep border color change only
-                                       e.target.style.borderColor = colors.border;
-                                     }}
-                                     placeholder="أضف ملاحظة للمتن..."
+                                     placeholder={language === 'ar' ? 'أضف ملاحظة للمتن...' : 'Add note for this text...'}
                                      style={{
                                        flex: 1,
                                        padding: '12px',
-                                       border: `1px solid ${colors.border}`,
+                                       border: `2px solid ${editingMatnId === matn.id ? colors.primary : colors.border}`,
                                        borderRadius: '8px',
                                        fontSize: '0.9rem',
                                        fontFamily: 'inherit',
                                        backgroundColor: colors.background,
                                        color: colors.text,
                                        outline: 'none',
-                                       direction: 'rtl',
-                                       textAlign: 'right',
-                                       transition: 'border-color 0.2s'
+                                       direction: language === 'ar' ? 'rtl' : 'ltr',
+                                       textAlign: language === 'ar' ? 'right' : 'left',
+                                       transition: 'border-color 0.2s ease',
+                                       boxSizing: 'border-box'
                                      }}
-                                                                            onFocusCapture={(e) => e.target.style.borderColor = colors.primary}
                                    />
                                    <button
                                      onClick={() => {
