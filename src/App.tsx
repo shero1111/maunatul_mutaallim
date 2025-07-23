@@ -225,6 +225,15 @@ const App: React.FC = () => {
   const [audioPlayer, setAudioPlayer] = useState<{url: string, title: string} | null>(null);
   const [editingMatnId, setEditingMatnId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState<string>('');
+  
+  // Helper function to calculate days since last green status
+  const calculateDaysSinceLastGreen = (lastStatusChangeDate: string): number => {
+    const lastChangeDate = new Date(lastStatusChangeDate);
+    const today = new Date();
+    const diffTime = Math.abs(today.getTime() - lastChangeDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
   const [thresholdModalMatn, setThresholdModalMatn] = useState<Matn | null>(null);
   const [tempThreshold, setTempThreshold] = useState<number>(7);
   // PDF Viewer removed - only external opening
@@ -1513,66 +1522,32 @@ const App: React.FC = () => {
                          </div>
                        </div>
                        
-                                               {/* Description Field - Simple Input + Save Button */}
+                                               {/* Simple Note Field */}
                                <div style={{ marginBottom: '12px' }}>
-                                 <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
-                                   <input
-                                     type="text"
-                                     value={editingMatnId === matn.id ? editingText : (matn.description || '')}
-                                     onChange={(e) => {
-                                       if (editingMatnId !== matn.id) {
-                                         setEditingMatnId(matn.id);
-                                       }
-                                       setEditingText(e.target.value);
-                                     }}
-                                     onFocus={() => {
-                                       setEditingMatnId(matn.id);
-                                       setEditingText(matn.description || '');
-                                     }}
-                                     placeholder={language === 'ar' ? 'أضف ملاحظة للمتن...' : 'Add note for this text...'}
-                                     style={{
-                                       flex: 1,
-                                       padding: '12px',
-                                       border: `2px solid ${editingMatnId === matn.id ? colors.primary : colors.border}`,
-                                       borderRadius: '8px',
-                                       fontSize: '0.9rem',
-                                       fontFamily: 'inherit',
-                                       backgroundColor: colors.background,
-                                       color: colors.text,
-                                       outline: 'none',
-                                       direction: language === 'ar' ? 'rtl' : 'ltr',
-                                       textAlign: language === 'ar' ? 'right' : 'left',
-                                       transition: 'border-color 0.2s ease',
-                                       boxSizing: 'border-box'
-                                     }}
-                                   />
-                                   <button
-                                     onClick={() => {
-                                       const currentText = editingMatnId === matn.id ? editingText : (matn.description || '');
-                                       updateMatnDescription(matn.id, currentText);
-                                       setEditingMatnId(null);
-                                       setEditingText('');
-                                     }}
-                                     style={{
-                                       background: `linear-gradient(135deg, ${colors.success}, #2ed573)`,
-                                       color: 'white',
-                                       border: 'none',
-                                       borderRadius: '8px',
-                                       width: '44px',
-                                       height: '44px',
-                                       cursor: 'pointer',
-                                       fontSize: '1.2rem',
-                                       display: 'flex',
-                                       alignItems: 'center',
-                                       justifyContent: 'center',
-                                       boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                                       transition: 'all 0.2s',
-                                       flexShrink: 0
-                                     }}
-                                   >
-                                     💾
-                                   </button>
-                                 </div>
+                                 <textarea
+                                   value={matn.description || ''}
+                                   onChange={(e) => updateMatnDescription(matn.id, e.target.value)}
+                                   placeholder={language === 'ar' ? 'اكتب ملاحظة...' : 'Write a note...'}
+                                   rows={2}
+                                   style={{
+                                     width: '100%',
+                                     padding: '12px',
+                                     border: `1px solid ${colors.border}`,
+                                     borderRadius: '8px',
+                                     fontSize: '0.9rem',
+                                     fontFamily: 'inherit',
+                                     backgroundColor: colors.background,
+                                     color: colors.text,
+                                     outline: 'none',
+                                     resize: 'vertical',
+                                     direction: language === 'ar' ? 'rtl' : 'ltr',
+                                     textAlign: language === 'ar' ? 'right' : 'left',
+                                     transition: 'border-color 0.2s ease',
+                                     boxSizing: 'border-box'
+                                   }}
+                                   onFocus={(e) => e.target.style.borderColor = colors.primary}
+                                   onBlur={(e) => e.target.style.borderColor = colors.border}
+                                 />
                                </div>
                        
                        {/* Action Buttons */}
@@ -1621,10 +1596,10 @@ const App: React.FC = () => {
                          )}
                        </div>
                        
-                       {/* Threshold Info as Simple Text at Bottom */}
+                       {/* Days Since Last Green Status */}
                        <div style={{ textAlign: 'center', marginTop: '8px' }}>
                          <span style={{ color: colors.textSecondary, fontSize: '0.75rem' }}>
-                           آخر ختمة قبل: {matn.threshold} يوم
+                           آخر ختمة قبل: {matn.lastChange_date ? calculateDaysSinceLastGreen(matn.lastChange_date) : 0} يوم
                          </span>
                        </div>
                      </div>
