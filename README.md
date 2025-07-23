@@ -1,47 +1,72 @@
-# Getting Started with Create React App
+# Maunatul Mutaallim - Islamic Learning Management System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A comprehensive Islamic education platform for memorization and study of traditional Islamic texts.
 
-## Available Scripts
+## 🏗️ Architecture
 
-In the project directory, you can run:
+### Main Application Repository
+- **React TypeScript App** - User interface and business logic
+- **Netlify Deployment** - Automatic deployment from master branch
+- **User Management** - Role-based access control
+- **Progress Tracking** - Individual user progress for Mutuun texts
 
-### `npm start`
+### Separate Resources Repository
+- **Audio Files**: `github.com/shero1111/maunatul_mutaallim_resources`
+- **MP3 Streaming**: Direct GitHub raw URLs for audio playback
+- **Scalable Storage**: Unlimited audio files without affecting app bundle size
+- **Independent Management**: Add/update audio files without app deployment
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## 🎵 Audio Integration
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Audio files are streamed directly from GitHub raw URLs:
+```
+https://raw.githubusercontent.com/shero1111/maunatul_mutaallim_resources/main/[filename].mp3
+```
 
-### `npm test`
+Benefits:
+- ✅ No download required - instant streaming
+- ✅ CORS-friendly for web browsers  
+- ✅ Fast loading via GitHub CDN
+- ✅ Zero impact on app bundle size
+- ✅ Easy to add new audio files
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🚀 Features
 
-### `npm run build`
+- **Multi-level Islamic Texts** (Mutuun system)
+- **User-specific Progress Tracking**
+- **Audio Streaming Integration** 
+- **Role-based Access Control**
+- **Bilingual Support** (Arabic/English)
+- **Responsive Design**
+- **Real-time User Management**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 👥 User Roles
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. **Superuser** (admin1) - Full administrative access
+2. **Leitung** (leitung1) - Management and oversight  
+3. **Lehrer** (lehrer1) - Teaching and student management
+4. **Student** (student1/student2) - Learning and progress tracking
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🔧 Development
 
-### `npm run eject`
+```bash
+npm install
+npm start          # Development server
+npm run build      # Production build
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## 📱 Deployment
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **Automatic**: Push to master triggers Netlify deployment
+- **Manual**: Use Netlify dashboard for manual deployments
+- **Environment**: Production builds optimized for performance
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## 🎯 Audio Management
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+To add new audio files:
+1. Upload MP3 to `maunatul_mutaallim_resources` repository
+2. Copy the raw GitHub URL
+3. Update audio links in app configuration
+4. Deploy changes
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-# FINAL PUSH - Tue Jul 22 12:14:15 PM UTC 2025
+This architecture ensures clean separation between code and media assets.
