@@ -1961,15 +1961,15 @@ const App: React.FC = () => {
                 </label>
                 <input
                   type="text"
-                  value={userForm.username}
-                  onChange={(e) => setUserForm(prev => ({ ...prev, username: e.target.value }))}
+                  defaultValue={userForm.username}
+                  onBlur={(e) => setUserForm(prev => ({ ...prev, username: e.target.value }))}
                   style={{
                     width: 'calc(100% - 24px)',
                     maxWidth: '100%',
                     padding: '12px',
                     border: `1px solid ${colors.border}`,
                     borderRadius: '8px',
-                    fontSize: '1rem',
+                    fontSize: '16px',
                     backgroundColor: colors.background,
                     color: colors.text,
                     boxSizing: 'border-box'
@@ -1983,15 +1983,15 @@ const App: React.FC = () => {
                 </label>
                 <input
                   type="password"
-                  value={userForm.password}
-                  onChange={(e) => setUserForm(prev => ({ ...prev, password: e.target.value }))}
+                  defaultValue={userForm.password}
+                  onBlur={(e) => setUserForm(prev => ({ ...prev, password: e.target.value }))}
                   style={{
                     width: 'calc(100% - 24px)',
                     maxWidth: '100%',
                     padding: '12px',
                     border: `1px solid ${colors.border}`,
                     borderRadius: '8px',
-                    fontSize: '1rem',
+                    fontSize: '16px',
                     backgroundColor: colors.background,
                     color: colors.text,
                     boxSizing: 'border-box'
@@ -2005,15 +2005,15 @@ const App: React.FC = () => {
                   {t.role}
                 </label>
                 <select
-                  value={userForm.role}
-                  onChange={(e) => setUserForm(prev => ({ ...prev, role: e.target.value as User['role'] }))}
+                  defaultValue={userForm.role}
+                  onBlur={(e) => setUserForm(prev => ({ ...prev, role: e.target.value as User['role'] }))}
                   style={{
                     width: 'calc(100% - 24px)',
                     maxWidth: '100%',
                     padding: '12px',
                     border: `1px solid ${colors.border}`,
                     borderRadius: '8px',
-                    fontSize: '1rem',
+                    fontSize: '16px',
                     backgroundColor: colors.background,
                     color: colors.text,
                     boxSizing: 'border-box'
@@ -2397,14 +2397,14 @@ const App: React.FC = () => {
               </label>
               <input
                 type="text"
-                value={newsForm.title}
-                onChange={(e) => setNewsForm(prev => ({ ...prev, title: e.target.value }))}
+                defaultValue={newsForm.title}
+                onBlur={(e) => setNewsForm(prev => ({ ...prev, title: e.target.value }))}
                 style={{
                   width: '100%',
                   padding: '12px',
                   border: `1px solid ${colors.border}`,
                   borderRadius: '8px',
-                  fontSize: '1rem',
+                  fontSize: '16px',
                   backgroundColor: colors.background,
                   color: colors.text,
                   direction: language === 'ar' ? 'rtl' : 'ltr'
@@ -2418,15 +2418,15 @@ const App: React.FC = () => {
                 {t.newsDescription}
               </label>
               <textarea
-                value={newsForm.description}
-                onChange={(e) => setNewsForm(prev => ({ ...prev, description: e.target.value }))}
+                defaultValue={newsForm.description}
+                onBlur={(e) => setNewsForm(prev => ({ ...prev, description: e.target.value }))}
                 rows={4}
                 style={{
                   width: '100%',
                   padding: '12px',
                   border: `1px solid ${colors.border}`,
                   borderRadius: '8px',
-                  fontSize: '1rem',
+                  fontSize: '16px',
                   backgroundColor: colors.background,
                   color: colors.text,
                   resize: 'vertical',
