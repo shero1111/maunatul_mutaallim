@@ -714,7 +714,9 @@ const App: React.FC = () => {
         <audio 
           ref={audioRef} 
           src={audioUrl}
-          preload="metadata"
+          preload="none"
+          controls
+          style={{ width: '100%', marginBottom: '10px' }}
           onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)} 
           onLoadedMetadata={() => {
             console.log('Audio metadata loaded, duration:', audioRef.current?.duration);
@@ -753,9 +755,14 @@ const App: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <button onClick={togglePlay} disabled={isLoading} style={{ background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '25px', cursor: isLoading ? 'not-allowed' : 'pointer', fontSize: '16px', opacity: isLoading ? 0.5 : 1, transition: 'opacity 0.2s' }}>
-            {isLoading ? `⏳ ${currentT.loading}` : isPlaying ? `⏸️ ${currentT.pause}` : `▶️ ${currentT.play}`}
-          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button onClick={togglePlay} disabled={isLoading} style={{ background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '20px', cursor: isLoading ? 'not-allowed' : 'pointer', fontSize: '14px', opacity: isLoading ? 0.5 : 1 }}>
+              {isLoading ? `⏳ Lädt...` : isPlaying ? `⏸️ Pause` : `▶️ Play`}
+            </button>
+            <a href={audioUrl} target="_blank" rel="noopener noreferrer" style={{ background: 'rgba(255,255,255,0.2)', color: 'white', textDecoration: 'none', padding: '8px 16px', borderRadius: '20px', fontSize: '14px' }}>
+              📥 Download
+            </a>
+          </div>
           <span style={{ fontSize: '14px', fontFamily: 'monospace' }}>{formatAudioTime(currentTime)} / {formatAudioTime(duration)}</span>
         </div>
       </div>
@@ -1968,42 +1975,44 @@ const App: React.FC = () => {
           }}>
             <div style={{
               background: colors.surface,
-              borderRadius: '16px',
-              padding: '24px',
-              width: '90%',
-              maxWidth: '500px',
-              maxHeight: '90vh',
-              overflow: 'auto'
+              borderRadius: '12px',
+              padding: '16px',
+              width: '95%',
+              maxWidth: '400px',
+              maxHeight: '85vh',
+              overflow: 'auto',
+              margin: '10px'
             }}>
-              <h2 style={{ color: colors.text, marginBottom: '20px' }}>
-                {editingHalaqaId ? 'تعديل الحلقة' : 'إنشاء حلقة جديدة'}
-              </h2>
+                              <h2 style={{ color: colors.text, marginBottom: '12px', fontSize: '1.2rem' }}>
+                  {editingHalaqaId ? 'تعديل الحلقة' : 'إنشاء حلقة جديدة'}
+                </h2>
 
-              {/* Halaqa Name */}
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', color: colors.text, fontWeight: '600' }}>
-                  اسم الحلقة
-                </label>
-                <input
-                  type="text"
-                  defaultValue={halaqaForm.name}
-                  onBlur={(e) => setHalaqaForm(prev => ({ ...prev, name: e.target.value }))}
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: `1px solid ${colors.border}`,
-                    borderRadius: '8px',
-                    fontSize: '16px',
-                    backgroundColor: colors.background,
-                    color: colors.text,
-                    direction: 'rtl'
-                  }}
-                  placeholder="مثال: حلقة المبتدئين"
-                />
-              </div>
+                {/* Halaqa Name */}
+                <div style={{ marginBottom: '12px' }}>
+                                  <label style={{ display: 'block', marginBottom: '6px', color: colors.text, fontWeight: '600', fontSize: '0.9rem' }}>
+                    اسم الحلقة
+                  </label>
+                  <input
+                    type="text"
+                    defaultValue={halaqaForm.name}
+                    onBlur={(e) => setHalaqaForm(prev => ({ ...prev, name: e.target.value }))}
+                    style={{
+                      width: '100%',
+                      padding: '8px',
+                      border: `1px solid ${colors.border}`,
+                      borderRadius: '6px',
+                      fontSize: '16px',
+                      backgroundColor: colors.background,
+                      color: colors.text,
+                      direction: 'rtl',
+                      boxSizing: 'border-box'
+                    }}
+                    placeholder="مثال: حلقة المبتدئين"
+                  />
+                </div>
 
-              {/* Internal Number */}
-              <div style={{ marginBottom: '16px' }}>
+                {/* Internal Number */}
+                <div style={{ marginBottom: '12px' }}>
                 <label style={{ display: 'block', marginBottom: '8px', color: colors.text, fontWeight: '600' }}>
                   رقم الحلقة
                 </label>
