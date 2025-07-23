@@ -143,11 +143,11 @@ const generatePersonalMutuun = (userId: string): Matn[] => {
 };
 
 const demoUsers: (Student | Teacher | User)[] = [
-  { id: 'admin', username: 'admin', password: 'admin', role: 'superuser', name: 'المدير العام', isActive: true, created_at: '2024-01-01', lastPage: 'home', isOnline: true },
-  { id: 'leiter', username: 'Leiter', password: 'test', role: 'leitung', name: 'قائد الحلقات', isActive: true, created_at: '2024-01-01', lastPage: 'home', isOnline: true },
-  { id: 'lehrer', username: 'Lehrer', password: 'test', role: 'lehrer', name: 'الشيخ أحمد', isActive: true, created_at: '2024-01-01', halaqat_ids: ['halaqa1', 'halaqa2'], favorites: ['student1', 'student2'], lastPage: 'home', isOnline: false } as Teacher,
-  { id: 'student1', username: 'student1', password: 'test', role: 'student', name: 'محمد الطالب', isActive: true, created_at: '2024-01-01', status: 'revising', status_changed_at: '2024-01-15T10:30:00Z', halaqat_ids: ['halaqa1'], favorites: ['student2'], lastPage: 'home', isOnline: true } as Student,
-  { id: 'student2', username: 'student2', password: 'test', role: 'student', name: 'عبدالله القارئ', isActive: true, created_at: '2024-01-01', status: 'khatamat', status_changed_at: '2024-01-14T09:15:00Z', halaqat_ids: ['halaqa1', 'halaqa2'], favorites: [], lastPage: 'home', isOnline: true } as Student
+  { id: 'admin', username: 'superadmin1', password: 'test', role: 'superuser', name: 'superadmin1', isActive: true, created_at: '2024-01-01', lastPage: 'home', isOnline: true },
+  { id: 'leiter', username: 'leader1', password: 'test', role: 'leitung', name: 'leader1', isActive: true, created_at: '2024-01-01', lastPage: 'home', isOnline: true },
+  { id: 'lehrer', username: 'teacher1', password: 'test', role: 'lehrer', name: 'teacher1', isActive: true, created_at: '2024-01-01', halaqat_ids: ['halaqa1', 'halaqa2'], favorites: ['student1', 'student2'], lastPage: 'home', isOnline: false } as Teacher,
+  { id: 'student1', username: 'student1', password: 'test', role: 'student', name: 'student1', isActive: true, created_at: '2024-01-01', status: 'revising', status_changed_at: '2024-01-15T10:30:00Z', halaqat_ids: ['halaqa1'], favorites: ['student2'], lastPage: 'home', isOnline: true } as Student,
+  { id: 'student2', username: 'student2', password: 'test', role: 'student', name: 'student2', isActive: true, created_at: '2024-01-01', status: 'khatamat', status_changed_at: '2024-01-14T09:15:00Z', halaqat_ids: ['halaqa1', 'halaqa2'], favorites: [], lastPage: 'home', isOnline: true } as Student
 ];
 
 const demoHalaqat: Halaqa[] = [
@@ -1818,18 +1818,17 @@ const App: React.FC = () => {
     
     // Filter users based on search
     const filteredUsers = usersData.filter(user => 
-      user.name.toLowerCase().includes(userSearchQuery.toLowerCase()) ||
       user.username.toLowerCase().includes(userSearchQuery.toLowerCase()) ||
       user.role.toLowerCase().includes(userSearchQuery.toLowerCase())
     );
 
     const handleCreateUser = () => {
-      if (userForm.username.trim() && userForm.name.trim() && userForm.password.trim()) {
+      if (userForm.username.trim()) {
         const newUser: User = {
           id: `user_${Date.now()}`,
           username: userForm.username,
-          name: userForm.name,
-          password: userForm.password,
+          name: userForm.username, // username = name
+          password: userForm.password || 'test', // default password
           role: userForm.role,
           isActive: true,
           created_at: new Date().toISOString(),
@@ -1846,7 +1845,7 @@ const App: React.FC = () => {
       if (user) {
         setUserForm({ 
           username: user.username, 
-          name: user.name, 
+          name: user.username, // use username for both
           password: '', 
           role: user.role 
         });
@@ -1856,13 +1855,13 @@ const App: React.FC = () => {
     };
 
     const handleUpdateUser = () => {
-      if (editingUserId && userForm.username.trim() && userForm.name.trim()) {
+      if (editingUserId && userForm.username.trim()) {
         setUsersData(prev => prev.map(user => 
           user.id === editingUserId 
             ? { 
                 ...user, 
                 username: userForm.username, 
-                name: userForm.name, 
+                name: userForm.username, // username = name
                 role: userForm.role,
                 ...(userForm.password ? { password: userForm.password } : {})
               }
@@ -1887,14 +1886,15 @@ const App: React.FC = () => {
         </h1>
 
         {/* Search Bar */}
-        <div style={{ marginBottom: '20px' }}>
+        <div style={{ marginBottom: '20px', maxWidth: '100%', overflow: 'hidden' }}>
           <input
             type="text"
             value={userSearchQuery}
             onChange={(e) => setUserSearchQuery(e.target.value)}
             placeholder={t.searchUsers}
             style={{
-              width: '100%',
+              width: 'calc(100% - 32px)',
+              maxWidth: '100%',
               padding: '12px 16px',
               border: `2px solid ${colors.border}`,
               borderRadius: '12px',
@@ -1902,7 +1902,8 @@ const App: React.FC = () => {
               backgroundColor: colors.surface,
               color: colors.text,
               direction: language === 'ar' ? 'rtl' : 'ltr',
-              outline: 'none'
+              outline: 'none',
+              boxSizing: 'border-box'
             }}
             onFocus={(e) => e.target.style.borderColor = colors.primary}
             onBlur={(e) => e.target.style.borderColor = colors.border}
@@ -1946,34 +1947,15 @@ const App: React.FC = () => {
                   value={userForm.username}
                   onChange={(e) => setUserForm(prev => ({ ...prev, username: e.target.value }))}
                   style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: `1px solid ${colors.border}`,
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    backgroundColor: colors.background,
-                    color: colors.text
-                  }}
-                />
-              </div>
-              
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', color: colors.text, fontWeight: '600' }}>
-                  {t.name}
-                </label>
-                <input
-                  type="text"
-                  value={userForm.name}
-                  onChange={(e) => setUserForm(prev => ({ ...prev, name: e.target.value }))}
-                  style={{
-                    width: '100%',
+                    width: 'calc(100% - 24px)',
+                    maxWidth: '100%',
                     padding: '12px',
                     border: `1px solid ${colors.border}`,
                     borderRadius: '8px',
                     fontSize: '1rem',
                     backgroundColor: colors.background,
                     color: colors.text,
-                    direction: language === 'ar' ? 'rtl' : 'ltr'
+                    boxSizing: 'border-box'
                   }}
                 />
               </div>
@@ -1987,15 +1969,17 @@ const App: React.FC = () => {
                   value={userForm.password}
                   onChange={(e) => setUserForm(prev => ({ ...prev, password: e.target.value }))}
                   style={{
-                    width: '100%',
+                    width: 'calc(100% - 24px)',
+                    maxWidth: '100%',
                     padding: '12px',
                     border: `1px solid ${colors.border}`,
                     borderRadius: '8px',
                     fontSize: '1rem',
                     backgroundColor: colors.background,
-                    color: colors.text
+                    color: colors.text,
+                    boxSizing: 'border-box'
                   }}
-                  placeholder={editingUserId ? language === 'ar' ? 'اتركها فارغة إذا لم تريد التغيير' : 'Leave empty to keep current' : ''}
+                  placeholder={editingUserId ? language === 'ar' ? 'اتركها فارغة إذا لم تريد التغيير' : 'Leave empty to keep current' : 'test'}
                 />
               </div>
               
@@ -2007,13 +1991,15 @@ const App: React.FC = () => {
                   value={userForm.role}
                   onChange={(e) => setUserForm(prev => ({ ...prev, role: e.target.value as User['role'] }))}
                   style={{
-                    width: '100%',
+                    width: 'calc(100% - 24px)',
+                    maxWidth: '100%',
                     padding: '12px',
                     border: `1px solid ${colors.border}`,
                     borderRadius: '8px',
                     fontSize: '1rem',
                     backgroundColor: colors.background,
-                    color: colors.text
+                    color: colors.text,
+                    boxSizing: 'border-box'
                   }}
                 >
                   <option value="student">{t.student}</option>
@@ -2159,22 +2145,7 @@ const App: React.FC = () => {
                 }} />
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{
-                      width: '50px',
-                      height: '50px',
-                      borderRadius: '50%',
-                      background: roleColor,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'white',
-                      fontWeight: 'bold',
-                      fontSize: '1.2rem',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-                    }}>
-                      {user.name.charAt(0)}
-                    </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0px' }}>
                     <div>
                       <h3 style={{ color: colors.text, fontSize: '1.2rem', margin: '0 0 8px 0', fontWeight: '600' }}>
                         {user.name}
