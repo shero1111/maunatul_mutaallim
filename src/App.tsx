@@ -221,7 +221,12 @@ const App: React.FC = () => {
   // UI State
 
   const [levelFilter, setLevelFilter] = useState<string>('all');
-  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
+  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({
+    'المستوى الأول': false,
+    'المستوى الثاني': false, 
+    'المستوى الثالث': false,
+    'المستوى الرابع': false
+  });
   const [audioPlayer, setAudioPlayer] = useState<{url: string, title: string} | null>(null);
   const [editingMatnId, setEditingMatnId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState<string>('');
@@ -1377,15 +1382,10 @@ const App: React.FC = () => {
       }));
     };
 
-    // Auto-expand logic: when a specific level is selected, expand only that level
-    // When "all levels" is selected, expand all levels
+    // Check if section should be expanded
     const shouldExpandSection = (section: string) => {
-      if (levelFilter === 'all') {
-        return true; // Expand all when "all levels" is selected
-      } else if (levelFilter === section) {
-        return true; // Expand the selected level
-      }
-      return !collapsedSections[section]; // Use manual toggle state for others
+      // Always respect the manual toggle state
+      return !collapsedSections[section];
     };
 
     const handleLevelFilterChange = (newFilter: string) => {
