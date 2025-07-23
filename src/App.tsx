@@ -228,8 +228,8 @@ const App: React.FC = () => {
     'المستوى الرابع': false
   });
   const [audioPlayer, setAudioPlayer] = useState<{url: string, title: string} | null>(null);
-  const [editingMatnId, setEditingMatnId] = useState<string | null>(null);
-  const [editingText, setEditingText] = useState<string>('');
+  // Simple state for note editing
+  const [noteStates, setNoteStates] = useState<Record<string, string>>({});
   
   // Helper function to calculate days since last green status
   const calculateDaysSinceLastGreen = (lastStatusChangeDate: string): number => {
@@ -1522,42 +1522,28 @@ const App: React.FC = () => {
                          </div>
                        </div>
                        
-                                               {/* Simple Note Field */}
+                                               {/* Note Field - Uncontrolled for better mobile behavior */}
                                <div style={{ marginBottom: '12px' }}>
-                                 <textarea
-                                   value={matn.description || ''}
-                                   onChange={(e) => {
-                                     e.stopPropagation();
+                                 <input
+                                   type="text"
+                                   defaultValue={matn.description || ''}
+                                   onBlur={(e) => {
                                      updateMatnDescription(matn.id, e.target.value);
                                    }}
-                                   onFocus={(e) => {
-                                     e.stopPropagation();
-                                     e.target.style.borderColor = colors.primary;
-                                   }}
-                                   onBlur={(e) => {
-                                     e.stopPropagation();
-                                     e.target.style.borderColor = colors.border;
-                                   }}
-                                   onClick={(e) => e.stopPropagation()}
-                                   onTouchStart={(e) => e.stopPropagation()}
                                    placeholder={language === 'ar' ? 'اكتب ملاحظة...' : 'Write a note...'}
-                                   rows={2}
                                    style={{
                                      width: '100%',
                                      padding: '12px',
                                      border: `1px solid ${colors.border}`,
                                      borderRadius: '8px',
-                                     fontSize: '16px', // Prevents zoom on iOS
+                                     fontSize: '16px',
                                      fontFamily: 'inherit',
                                      backgroundColor: colors.background,
                                      color: colors.text,
                                      outline: 'none',
-                                     resize: 'none', // Disable resize to prevent layout issues
                                      direction: language === 'ar' ? 'rtl' : 'ltr',
                                      textAlign: language === 'ar' ? 'right' : 'left',
-                                     transition: 'border-color 0.2s ease',
-                                     boxSizing: 'border-box',
-                                     touchAction: 'manipulation' // Better touch handling
+                                     boxSizing: 'border-box'
                                    }}
                                  />
                                </div>
