@@ -2124,109 +2124,150 @@ const App: React.FC = () => {
         )}
         
         <div style={{ display: 'grid', gap: '16px' }}>
-          {filteredUsers.map(user => (
-            <div key={user.id} style={{ 
-              background: colors.surface, 
-              borderRadius: '12px', 
-              padding: '20px', 
-              border: `1px solid ${colors.border}`,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontWeight: 'bold'
-                  }}>
-                    {user.name.charAt(0)}
-                  </div>
-                  <div>
-                    <h3 style={{ color: colors.text, fontSize: '1.1rem', margin: '0 0 4px 0', fontWeight: '600' }}>
-                      {user.name}
-                    </h3>
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                      <span style={{ 
-                        background: colors.secondary + '20', 
-                        color: colors.secondary, 
-                        padding: '2px 8px', 
-                        borderRadius: '6px', 
-                        fontSize: '0.75rem',
-                        fontWeight: '600'
-                      }}>
-                        {user.role === 'superuser' ? t.superuser :
-                         user.role === 'leitung' ? t.leitung :
-                         user.role === 'lehrer' ? t.lehrer : t.student}
-                      </span>
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px'
-                      }}>
-                        <div style={{
-                          width: '6px',
-                          height: '6px',
-                          borderRadius: '50%',
-                          background: user.isOnline ? colors.success : colors.textSecondary
-                        }} />
-                        <span style={{ color: colors.textSecondary, fontSize: '0.8rem' }}>
-                          {user.isOnline ? t.online : t.offline}
+          {filteredUsers.map(user => {
+            // Role-based colors
+            const getRoleColor = (role: string) => {
+              switch (role) {
+                case 'superuser': return '#dc2626'; // Red
+                case 'leitung': return '#ea580c'; // Orange  
+                case 'lehrer': return '#2563eb'; // Blue
+                case 'student': return '#059669'; // Green
+                default: return colors.textSecondary;
+              }
+            };
+
+            const roleColor = getRoleColor(user.role);
+
+            return (
+              <div key={user.id} style={{ 
+                background: colors.surface, 
+                borderRadius: '12px', 
+                padding: '20px', 
+                border: `2px solid ${roleColor}20`,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                position: 'relative'
+              }}>
+                {/* Role indicator stripe */}
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '4px',
+                  height: '100%',
+                  background: roleColor,
+                  borderRadius: '12px 0 0 12px'
+                }} />
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{
+                      width: '50px',
+                      height: '50px',
+                      borderRadius: '50%',
+                      background: roleColor,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontWeight: 'bold',
+                      fontSize: '1.2rem',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                    }}>
+                      {user.name.charAt(0)}
+                    </div>
+                    <div>
+                      <h3 style={{ color: colors.text, fontSize: '1.2rem', margin: '0 0 8px 0', fontWeight: '600' }}>
+                        {user.name}
+                      </h3>
+                      
+                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                        {/* Role Badge */}
+                        <span style={{ 
+                          background: roleColor, 
+                          color: 'white', 
+                          padding: '4px 12px', 
+                          borderRadius: '8px', 
+                          fontSize: '0.8rem',
+                          fontWeight: '600',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                        }}>
+                          {user.role === 'superuser' ? t.superuser :
+                           user.role === 'leitung' ? t.leitung :
+                           user.role === 'lehrer' ? t.lehrer : t.student}
                         </span>
+                        
+                        {/* Online Status */}
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          background: user.isOnline ? colors.success + '20' : colors.textSecondary + '20',
+                          padding: '4px 8px',
+                          borderRadius: '6px'
+                        }}>
+                          <div style={{
+                            width: '8px',
+                            height: '8px',
+                            borderRadius: '50%',
+                            background: user.isOnline ? colors.success : colors.textSecondary,
+                            boxShadow: user.isOnline ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none'
+                          }} />
+                          <span style={{ 
+                            color: user.isOnline ? colors.success : colors.textSecondary, 
+                            fontSize: '0.8rem',
+                            fontWeight: '600'
+                          }}>
+                            {user.isOnline ? t.online : t.offline}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
+                  
+                  {/* Action Buttons */}
+                  {canManageUsers && user.id !== currentUser?.id && (
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button 
+                        onClick={() => handleEditUser(user.id)}
+                        style={{
+                          background: colors.border,
+                          border: 'none',
+                          borderRadius: '8px',
+                          padding: '10px',
+                          cursor: 'pointer',
+                          fontSize: '14px',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = colors.primary + '20'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = colors.border}
+                        title={t.editUser}
+                      >
+                        ✏️
+                      </button>
+                      <button 
+                        onClick={() => setShowDeleteConfirm(user.id)}
+                        style={{
+                          background: colors.error + '20',
+                          color: colors.error,
+                          border: 'none',
+                          borderRadius: '8px',
+                          padding: '10px',
+                          cursor: 'pointer',
+                          fontSize: '14px',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = colors.error + '30'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = colors.error + '20'}
+                        title={t.deleteUser}
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  )}
                 </div>
-                {canManageUsers && user.id !== currentUser?.id && (
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button 
-                      onClick={() => handleEditUser(user.id)}
-                      style={{
-                        background: colors.border,
-                        border: 'none',
-                        borderRadius: '8px',
-                        padding: '8px',
-                        cursor: 'pointer'
-                      }}
-                      title={t.editUser}
-                    >
-                      ✏️
-                    </button>
-                    <button 
-                      onClick={() => setShowDeleteConfirm(user.id)}
-                      style={{
-                        background: colors.error + '20',
-                        color: colors.error,
-                        border: 'none',
-                        borderRadius: '8px',
-                        padding: '8px',
-                        cursor: 'pointer'
-                      }}
-                      title={t.deleteUser}
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                )}
               </div>
-              
-              <div style={{ marginTop: '12px', fontSize: '0.85rem', color: colors.textSecondary }}>
-                <p style={{ margin: '0 0 4px 0' }}>
-                  <strong>{t.createdAt}:</strong> {new Date(user.created_at).toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US')}
-                </p>
-                {user.lastPage && (
-                  <p style={{ margin: 0 }}>
-                    <strong>{t.lastSeen}:</strong> {user.lastPage}
-                  </p>
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* No users found message */}
