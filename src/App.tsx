@@ -1851,7 +1851,11 @@ const App: React.FC = () => {
           created_at: new Date().toISOString(),
           isOnline: false
         };
-        setUsersData(prev => [...prev, newUser]);
+        setUsersData(prev => {
+          const updated = [...prev, newUser];
+          localStorage.setItem('usersData', JSON.stringify(updated));
+          return updated;
+        });
         setUserForm({ username: '', name: '', password: '', role: 'student' });
         setIsCreatingUser(false);
       }
@@ -1873,17 +1877,21 @@ const App: React.FC = () => {
 
     const handleUpdateUser = () => {
       if (editingUserId && userForm.username.trim()) {
-        setUsersData(prev => prev.map(user => 
-          user.id === editingUserId 
-            ? { 
-                ...user, 
-                username: userForm.username, 
-                name: userForm.username, // username = name
-                role: userForm.role,
-                ...(userForm.password ? { password: userForm.password } : {})
-              }
-            : user
-        ));
+        setUsersData(prev => {
+          const updated = prev.map(user => 
+            user.id === editingUserId 
+              ? { 
+                  ...user, 
+                  username: userForm.username, 
+                  name: userForm.username, // username = name
+                  role: userForm.role,
+                  ...(userForm.password ? { password: userForm.password } : {})
+                }
+              : user
+          );
+          localStorage.setItem('usersData', JSON.stringify(updated));
+          return updated;
+        });
         setUserForm({ username: '', name: '', password: '', role: 'student' });
         setEditingUserId(null);
         setIsCreatingUser(false);
@@ -1891,7 +1899,11 @@ const App: React.FC = () => {
     };
 
     const handleDeleteUser = (userId: string) => {
-      setUsersData(prev => prev.filter(user => user.id !== userId));
+      setUsersData(prev => {
+        const updated = prev.filter(user => user.id !== userId);
+        localStorage.setItem('usersData', JSON.stringify(updated));
+        return updated;
+      });
       setShowDeleteConfirm(null);
     };
 
@@ -2316,7 +2328,11 @@ const App: React.FC = () => {
           created_at: new Date().toISOString(),
           read_by: []
         };
-        setNewsData(prev => [newNews, ...prev]);
+        setNewsData(prev => {
+          const updated = [newNews, ...prev];
+          localStorage.setItem('newsData', JSON.stringify(updated));
+          return updated;
+        });
         setNewsForm({ title: '', description: '' });
         setIsCreatingNews(false);
       }
@@ -2333,11 +2349,15 @@ const App: React.FC = () => {
 
     const handleUpdateNews = () => {
       if (editingNewsId && newsForm.title.trim() && newsForm.description.trim()) {
-        setNewsData(prev => prev.map(news => 
-          news.id === editingNewsId 
-            ? { ...news, title: newsForm.title, description: newsForm.description }
-            : news
-        ));
+        setNewsData(prev => {
+          const updated = prev.map(news => 
+            news.id === editingNewsId 
+              ? { ...news, title: newsForm.title, description: newsForm.description }
+              : news
+          );
+          localStorage.setItem('newsData', JSON.stringify(updated));
+          return updated;
+        });
         setNewsForm({ title: '', description: '' });
         setEditingNewsId(null);
         setIsCreatingNews(false);
