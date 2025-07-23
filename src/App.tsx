@@ -2148,7 +2148,7 @@ const App: React.FC = () => {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0px' }}>
                     <div>
                       <h3 style={{ color: colors.text, fontSize: '1.2rem', margin: '0 0 8px 0', fontWeight: '600' }}>
-                        {user.name}
+                        {user.username}
                       </h3>
                       
                       <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
