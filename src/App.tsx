@@ -178,7 +178,10 @@ const translations = {
     superuser: 'المدير العام', leitung: 'قائد الحلقات', lehrer: 'المعلم', student: 'الطالب', online: 'متصل', offline: 'غير متصل',
     assignToHalaqa: 'إضافة إلى حلقة', removeFromHalaqa: 'إزالة من حلقة', noStudentsAssigned: 'لا يوجد طلاب مسجلون', noHalaqatAvailable: 'لا توجد حلقات متاحة',
     // News management translations
-    createNews: 'إنشاء خبر جديد', editNews: 'تعديل الخبر', newsTitle: 'عنوان الخبر', newsDescription: 'وصف الخبر', publish: 'نشر', draft: 'مسودة', published: 'منشور'
+    createNews: 'إنشاء خبر جديد', editNews: 'تعديل الخبر', newsTitle: 'عنوان الخبر', newsDescription: 'وصف الخبر', publish: 'نشر', draft: 'مسودة', published: 'منشور',
+    // User management translations
+    editUser: 'تعديل المستخدم', deleteUser: 'حذف المستخدم', confirmDelete: 'هل أنت متأكد من حذف هذا المستخدم؟', userDeleted: 'تم حذف المستخدم بنجاح',
+    searchUsers: 'البحث في المستخدمين', noUsersFound: 'لا يوجد مستخدمون', username: 'اسم المستخدم', newPassword: 'كلمة المرور الجديدة'
   },
   en: {
     appName: 'Maunatul Mutaallim', username: 'Username', password: 'Password', login: 'Login', home: 'Home', mutuun: 'Mutun', halaqat: 'Halaqat', users: 'Users', news: 'News', more: 'More',
@@ -194,7 +197,10 @@ const translations = {
     superuser: 'Super Admin', leitung: 'Halaqa Leader', lehrer: 'Teacher', student: 'Student', online: 'Online', offline: 'Offline',
     assignToHalaqa: 'Assign to Halaqa', removeFromHalaqa: 'Remove from Halaqa', noStudentsAssigned: 'No students assigned', noHalaqatAvailable: 'No halaqat available',
     // News management translations
-    createNews: 'Create New Article', editNews: 'Edit Article', newsTitle: 'Article Title', newsDescription: 'Article Description', publish: 'Publish', draft: 'Draft', published: 'Published'
+    createNews: 'Create New Article', editNews: 'Edit Article', newsTitle: 'Article Title', newsDescription: 'Article Description', publish: 'Publish', draft: 'Draft', published: 'Published',
+    // User management translations
+    editUser: 'Edit User', deleteUser: 'Delete User', confirmDelete: 'Are you sure you want to delete this user?', userDeleted: 'User deleted successfully',
+    searchUsers: 'Search Users', noUsersFound: 'No users found', username: 'Username', newPassword: 'New Password'
   }
 };
 
@@ -246,6 +252,18 @@ const App: React.FC = () => {
   const [isCreatingNews, setIsCreatingNews] = useState(false);
   const [editingNewsId, setEditingNewsId] = useState<string | null>(null);
   const [newsForm, setNewsForm] = useState({ title: '', description: '' });
+
+  // User management state
+  const [userSearchQuery, setUserSearchQuery] = useState('');
+  const [isCreatingUser, setIsCreatingUser] = useState(false);
+  const [editingUserId, setEditingUserId] = useState<string | null>(null);
+  const [userForm, setUserForm] = useState({ 
+    username: '', 
+    name: '', 
+    password: '', 
+    role: 'student' as User['role'] 
+  });
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
 
   const t = translations[language];
 
@@ -1797,37 +1815,316 @@ const App: React.FC = () => {
   // Users Page Component
   const UsersPage: React.FC = () => {
     const canManageUsers = currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
+    
+    // Filter users based on search
+    const filteredUsers = usersData.filter(user => 
+      user.name.toLowerCase().includes(userSearchQuery.toLowerCase()) ||
+      user.username.toLowerCase().includes(userSearchQuery.toLowerCase()) ||
+      user.role.toLowerCase().includes(userSearchQuery.toLowerCase())
+    );
+
+    const handleCreateUser = () => {
+      if (userForm.username.trim() && userForm.name.trim() && userForm.password.trim()) {
+        const newUser: User = {
+          id: `user_${Date.now()}`,
+          username: userForm.username,
+          name: userForm.name,
+          password: userForm.password,
+          role: userForm.role,
+          isActive: true,
+          created_at: new Date().toISOString(),
+          isOnline: false
+        };
+        setUsersData(prev => [...prev, newUser]);
+        setUserForm({ username: '', name: '', password: '', role: 'student' });
+        setIsCreatingUser(false);
+      }
+    };
+
+    const handleEditUser = (userId: string) => {
+      const user = usersData.find(u => u.id === userId);
+      if (user) {
+        setUserForm({ 
+          username: user.username, 
+          name: user.name, 
+          password: '', 
+          role: user.role 
+        });
+        setEditingUserId(userId);
+        setIsCreatingUser(true);
+      }
+    };
+
+    const handleUpdateUser = () => {
+      if (editingUserId && userForm.username.trim() && userForm.name.trim()) {
+        setUsersData(prev => prev.map(user => 
+          user.id === editingUserId 
+            ? { 
+                ...user, 
+                username: userForm.username, 
+                name: userForm.name, 
+                role: userForm.role,
+                ...(userForm.password ? { password: userForm.password } : {})
+              }
+            : user
+        ));
+        setUserForm({ username: '', name: '', password: '', role: 'student' });
+        setEditingUserId(null);
+        setIsCreatingUser(false);
+      }
+    };
+
+    const handleDeleteUser = (userId: string) => {
+      setUsersData(prev => prev.filter(user => user.id !== userId));
+      setShowDeleteConfirm(null);
+    };
 
     return (
-      <div style={{ padding: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h1 style={{ color: colors.primary, fontSize: '1.8rem', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span>👥</span>
-            {t.users}
-          </h1>
-          {canManageUsers && (
-            <button 
-              style={{
-                background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                color: 'white',
-                border: 'none',
-                borderRadius: '12px',
-                padding: '12px 20px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                fontWeight: '600'
-              }}
-            >
-              <span>➕</span>
-              {t.createUser}
-            </button>
-          )}
+      <div style={{ padding: '20px', paddingBottom: '100px' }}>
+        <h1 style={{ color: colors.primary, fontSize: '1.8rem', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span>👥</span>
+          {t.users}
+        </h1>
+
+        {/* Search Bar */}
+        <div style={{ marginBottom: '20px' }}>
+          <input
+            type="text"
+            value={userSearchQuery}
+            onChange={(e) => setUserSearchQuery(e.target.value)}
+            placeholder={t.searchUsers}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              border: `2px solid ${colors.border}`,
+              borderRadius: '12px',
+              fontSize: '1rem',
+              backgroundColor: colors.surface,
+              color: colors.text,
+              direction: language === 'ar' ? 'rtl' : 'ltr',
+              outline: 'none'
+            }}
+            onFocus={(e) => e.target.style.borderColor = colors.primary}
+            onBlur={(e) => e.target.style.borderColor = colors.border}
+          />
         </div>
+
+        {/* Create/Edit User Form */}
+        {isCreatingUser && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: colors.overlay,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px'
+          }}>
+            <div style={{
+              background: colors.surface,
+              borderRadius: '16px',
+              padding: '24px',
+              maxWidth: '400px',
+              width: '100%',
+              maxHeight: '80vh',
+              overflowY: 'auto'
+            }}>
+              <h3 style={{ color: colors.text, marginBottom: '20px', fontSize: '1.3rem' }}>
+                {editingUserId ? t.editUser : t.createUser}
+              </h3>
+              
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', color: colors.text, fontWeight: '600' }}>
+                  {t.username}
+                </label>
+                <input
+                  type="text"
+                  value={userForm.username}
+                  onChange={(e) => setUserForm(prev => ({ ...prev, username: e.target.value }))}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    backgroundColor: colors.background,
+                    color: colors.text
+                  }}
+                />
+              </div>
+              
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', color: colors.text, fontWeight: '600' }}>
+                  {t.name}
+                </label>
+                <input
+                  type="text"
+                  value={userForm.name}
+                  onChange={(e) => setUserForm(prev => ({ ...prev, name: e.target.value }))}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    backgroundColor: colors.background,
+                    color: colors.text,
+                    direction: language === 'ar' ? 'rtl' : 'ltr'
+                  }}
+                />
+              </div>
+              
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', color: colors.text, fontWeight: '600' }}>
+                  {editingUserId ? t.newPassword : t.password}
+                </label>
+                <input
+                  type="password"
+                  value={userForm.password}
+                  onChange={(e) => setUserForm(prev => ({ ...prev, password: e.target.value }))}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    backgroundColor: colors.background,
+                    color: colors.text
+                  }}
+                  placeholder={editingUserId ? language === 'ar' ? 'اتركها فارغة إذا لم تريد التغيير' : 'Leave empty to keep current' : ''}
+                />
+              </div>
+              
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', color: colors.text, fontWeight: '600' }}>
+                  {t.role}
+                </label>
+                <select
+                  value={userForm.role}
+                  onChange={(e) => setUserForm(prev => ({ ...prev, role: e.target.value as User['role'] }))}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    backgroundColor: colors.background,
+                    color: colors.text
+                  }}
+                >
+                  <option value="student">{t.student}</option>
+                  <option value="lehrer">{t.lehrer}</option>
+                  <option value="leitung">{t.leitung}</option>
+                  <option value="superuser">{t.superuser}</option>
+                </select>
+              </div>
+              
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button
+                  onClick={editingUserId ? handleUpdateUser : handleCreateUser}
+                  style={{
+                    background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '12px 20px',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    flex: 1
+                  }}
+                >
+                  {t.save}
+                </button>
+                <button
+                  onClick={() => {
+                    setIsCreatingUser(false);
+                    setEditingUserId(null);
+                    setUserForm({ username: '', name: '', password: '', role: 'student' });
+                  }}
+                  style={{
+                    background: colors.border,
+                    color: colors.text,
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '12px 20px',
+                    cursor: 'pointer',
+                    flex: 1
+                  }}
+                >
+                  {t.cancel}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation */}
+        {showDeleteConfirm && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: colors.overlay,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px'
+          }}>
+            <div style={{
+              background: colors.surface,
+              borderRadius: '16px',
+              padding: '24px',
+              maxWidth: '400px',
+              width: '100%',
+              textAlign: 'center'
+            }}>
+              <h3 style={{ color: colors.text, marginBottom: '16px' }}>{t.deleteUser}</h3>
+              <p style={{ color: colors.textSecondary, marginBottom: '20px' }}>{t.confirmDelete}</p>
+              
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button
+                  onClick={() => handleDeleteUser(showDeleteConfirm)}
+                  style={{
+                    background: `linear-gradient(135deg, ${colors.error}, #dc2626)`,
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '12px 20px',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    flex: 1
+                  }}
+                >
+                  {t.delete}
+                </button>
+                <button
+                  onClick={() => setShowDeleteConfirm(null)}
+                  style={{
+                    background: colors.border,
+                    color: colors.text,
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '12px 20px',
+                    cursor: 'pointer',
+                    flex: 1
+                  }}
+                >
+                  {t.cancel}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         
         <div style={{ display: 'grid', gap: '16px' }}>
-          {usersData.map(user => (
+          {filteredUsers.map(user => (
             <div key={user.id} style={{ 
               background: colors.surface, 
               borderRadius: '12px', 
@@ -1887,23 +2184,31 @@ const App: React.FC = () => {
                 </div>
                 {canManageUsers && user.id !== currentUser?.id && (
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <button style={{
-                      background: colors.border,
-                      border: 'none',
-                      borderRadius: '8px',
-                      padding: '8px',
-                      cursor: 'pointer'
-                    }}>
+                    <button 
+                      onClick={() => handleEditUser(user.id)}
+                      style={{
+                        background: colors.border,
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '8px',
+                        cursor: 'pointer'
+                      }}
+                      title={t.editUser}
+                    >
                       ✏️
                     </button>
-                    <button style={{
-                      background: colors.error + '20',
-                      color: colors.error,
-                      border: 'none',
-                      borderRadius: '8px',
-                      padding: '8px',
-                      cursor: 'pointer'
-                    }}>
+                    <button 
+                      onClick={() => setShowDeleteConfirm(user.id)}
+                      style={{
+                        background: colors.error + '20',
+                        color: colors.error,
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '8px',
+                        cursor: 'pointer'
+                      }}
+                      title={t.deleteUser}
+                    >
                       🗑️
                     </button>
                   </div>
@@ -1923,6 +2228,45 @@ const App: React.FC = () => {
             </div>
           ))}
         </div>
+
+        {/* No users found message */}
+        {filteredUsers.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '40px', color: colors.textSecondary }}>
+            <div style={{ fontSize: '3rem', marginBottom: '10px' }}>👥</div>
+            <p>{t.noUsersFound}</p>
+          </div>
+        )}
+
+        {/* Floating Action Button */}
+        {canManageUsers && (
+          <button
+            onClick={() => setIsCreatingUser(true)}
+            style={{
+              position: 'fixed',
+              bottom: '100px',
+              [language === 'ar' ? 'left' : 'right']: '20px',
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+              color: 'white',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+              zIndex: 999,
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+            title={t.createUser}
+          >
+            ➕
+          </button>
+        )}
       </div>
     );
   };
