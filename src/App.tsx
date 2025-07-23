@@ -443,7 +443,15 @@ const App: React.FC = () => {
           else if (matn.status === 'orange') newStatus = 'green';
           else if (matn.status === 'green') newStatus = 'red';
           
-          return { ...matn, status: newStatus, lastChange_date: new Date().toISOString().split('T')[0], days_since_last_revision: newStatus === 'green' ? 0 : matn.days_since_last_revision };
+          // Only update lastChange_date when going from GREEN to RED (actual repetition/completion)
+          const shouldUpdateDate = matn.status === 'green' && newStatus === 'red';
+          
+          return { 
+            ...matn, 
+            status: newStatus,
+            lastChange_date: shouldUpdateDate ? new Date().toISOString().split('T')[0] : matn.lastChange_date,
+            days_since_last_revision: newStatus === 'green' ? 0 : matn.days_since_last_revision 
+          };
         }
         return matn;
       });
