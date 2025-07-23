@@ -2345,7 +2345,11 @@ const App: React.FC = () => {
     };
 
     const handleDeleteNews = (newsId: string) => {
-      setNewsData(prev => prev.filter(news => news.id !== newsId));
+      setNewsData(prev => {
+        const updated = prev.filter(news => news.id !== newsId);
+        localStorage.setItem('newsData', JSON.stringify(updated));
+        return updated;
+      });
     };
 
     return (
