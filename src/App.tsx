@@ -308,7 +308,7 @@ const App: React.FC = () => {
     }
   }, [currentUser, mutunData]);
 
-  // Load data from localStorage + AUTO LOGIN
+  // Load data from localStorage + AUTO LOGIN + AUTO THRESHOLD CHECK
   useEffect(() => {
     const savedMutunData = localStorage.getItem('mutunData');
     const savedUsersData = localStorage.getItem('usersData');
@@ -318,7 +318,20 @@ const App: React.FC = () => {
     const savedCurrentUser = localStorage.getItem('currentUser');
     const savedCurrentPage = localStorage.getItem('currentPage');
     
-    if (savedMutunData) setMutunData(JSON.parse(savedMutunData));
+    // Load and automatically check for expired mutun
+    if (savedMutunData) {
+      const loadedMutun = JSON.parse(savedMutunData);
+      const updatedMutun = checkAndUpdateExpiredMutun(loadedMutun);
+      
+      // Only update state and storage if changes were made
+      if (JSON.stringify(loadedMutun) !== JSON.stringify(updatedMutun)) {
+        setMutunData(updatedMutun);
+        localStorage.setItem('mutunData', JSON.stringify(updatedMutun));
+      } else {
+        setMutunData(loadedMutun);
+      }
+    }
+    
     if (savedUsersData) setUsersData(JSON.parse(savedUsersData));
     if (savedNewsData) setNewsData(JSON.parse(savedNewsData));
     if (savedLanguage) setLanguage(savedLanguage);
@@ -443,7 +456,7 @@ const App: React.FC = () => {
           else if (matn.status === 'orange') newStatus = 'green';
           else if (matn.status === 'green') newStatus = 'red';
           
-          // Only update lastChange_date when going from GREEN to RED (actual repetition/completion)
+          // Update lastChange_date when going from GREEN to RED (manual or automatic completion)
           const shouldUpdateDate = matn.status === 'green' && newStatus === 'red';
           
           return { 
@@ -472,6 +485,30 @@ const App: React.FC = () => {
         return updated;
       });
     }
+  };
+
+  // Check and update expired mutun (automatic threshold check)
+  const checkAndUpdateExpiredMutun = (mutunData: Matn[]): Matn[] => {
+    const today = new Date().toISOString().split('T')[0];
+    
+    return mutunData.map(matn => {
+      // Only check GREEN status mutun with valid lastChange_date
+      if (matn.status === 'green' && matn.lastChange_date) {
+        const lastChangeDate = new Date(matn.lastChange_date);
+        const todayDate = new Date(today);
+        const daysSinceLastChange = Math.floor((todayDate.getTime() - lastChangeDate.getTime()) / (1000 * 60 * 60 * 24));
+        
+        // If threshold exceeded, automatically change to RED and update lastChange_date
+        if (daysSinceLastChange >= matn.threshold) {
+          return {
+            ...matn,
+            status: 'red' as const,
+            lastChange_date: today // Update to today when automatically expired
+          };
+        }
+      }
+      return matn;
+    });
   };
 
   const updateMatnDescription = (matnId: string, description: string) => {
