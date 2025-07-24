@@ -453,40 +453,6 @@ const App: React.FC = () => {
   const formatTime = (dateString: string) => new Date(dateString).toLocaleString(language === 'ar' ? 'ar-SA' : 'en-US');
   const formatTimerDisplay = (seconds: number) => `${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`;
 
-  // Note input component to prevent re-rendering issues
-  const MatnNoteInput = ({ matn }: { matn: Matn }) => {
-    return (
-      <div style={{ marginBottom: '12px' }}>
-        <input
-          type="text"
-          defaultValue={matn.description || ''}
-          onBlur={(e) => {
-            updateMatnDescription(matn.id, e.target.value);
-            e.target.style.borderColor = colors.border;
-          }}
-          onFocus={(e) => {
-            e.target.style.borderColor = colors.primary;
-          }}
-          placeholder={language === 'ar' ? 'اكتب ملاحظة...' : 'Write a note...'}
-          autoComplete="off"
-          style={{
-            width: '100%',
-            padding: '12px',
-            border: `1px solid ${colors.border}`,
-            borderRadius: '8px',
-            fontSize: '16px',
-            fontFamily: 'inherit',
-            backgroundColor: colors.background,
-            color: colors.text,
-            outline: 'none',
-            direction: language === 'ar' ? 'rtl' : 'ltr',
-            textAlign: language === 'ar' ? 'right' : 'left',
-            boxSizing: 'border-box'
-          }}
-        />
-      </div>
-    );
-  };
 
   const changeMatnStatus = (matnId: string) => {
     setMutunData(prev => {
@@ -1510,7 +1476,6 @@ const App: React.FC = () => {
                        borderRadius: '12px', 
                        padding: '16px', 
                        border: `2px solid ${getMatnColor(matn.status)}`, 
-                       transition: 'all 0.2s',
                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                      }}>
                        {/* Header with Clickable Status Badge */}
@@ -1545,7 +1510,33 @@ const App: React.FC = () => {
                        </div>
                        
                                                {/* Note Field - Completely Isolated */}
-                               <MatnNoteInput key={`note-${matn.id}`} matn={matn} />
+                               <div style={{ marginBottom: '12px' }}>
+                                 <input
+                                   type="text"
+                                   defaultValue={matn.description || ''}
+                                   onBlur={(e) => {
+                                     updateMatnDescription(matn.id, e.target.value);
+                                   }}
+                                   onFocus={(e) => {
+                                     e.target.style.borderColor = colors.primary;
+                                   }}
+                                   placeholder={language === 'ar' ? 'اكتب ملاحظة...' : 'Write a note...'}
+                                   style={{
+                                     width: '100%',
+                                     padding: '12px',
+                                     border: `1px solid ${colors.border}`,
+                                     borderRadius: '8px',
+                                     fontSize: '16px',
+                                     fontFamily: 'inherit',
+                                     backgroundColor: colors.background,
+                                     color: colors.text,
+                                     outline: 'none',
+                                     direction: language === 'ar' ? 'rtl' : 'ltr',
+                                     textAlign: language === 'ar' ? 'right' : 'left',
+                                     boxSizing: 'border-box'
+                                   }}
+                                 />
+                               </div>
                        
                        {/* Action Buttons */}
                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
