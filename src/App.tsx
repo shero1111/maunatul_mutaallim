@@ -1578,16 +1578,37 @@ const App: React.FC = () => {
                            </button>
                          )}
                                                     {matn.memorization_audio_link && (
-                             <button onClick={() => setAudioPlayer({ url: matn.memorization_audio_link, title: matn.name, matnId: matn.id })} style={{ 
-                               padding: '6px 12px', 
-                               background: colors.success, 
-                               color: 'white', 
-                               border: 'none', 
-                               borderRadius: '6px', 
-                               cursor: 'pointer', 
-                               fontSize: '12px',
-                               fontWeight: 'bold'
-                             }}>
+                             <button 
+                               onClick={(e) => {
+                                 e.preventDefault();
+                                 e.stopPropagation();
+                                 console.log('🎧 Audio button clicked for:', matn.name);
+                                 console.log('📱 User Agent:', navigator.userAgent);
+                                 console.log('🔗 Audio URL:', matn.memorization_audio_link);
+                                 
+                                 // iOS Safari fix - force state update
+                                 setTimeout(() => {
+                                   setAudioPlayer({ 
+                                     url: matn.memorization_audio_link, 
+                                     title: matn.name, 
+                                     matnId: matn.id 
+                                   });
+                                   console.log('✅ AudioPlayer state set');
+                                 }, 10);
+                               }} 
+                               style={{ 
+                                 padding: '6px 12px', 
+                                 background: colors.success, 
+                                 color: 'white', 
+                                 border: 'none', 
+                                 borderRadius: '6px', 
+                                 cursor: 'pointer', 
+                                 fontSize: '12px',
+                                 fontWeight: 'bold',
+                                 touchAction: 'manipulation', // iOS fix
+                                 WebkitTapHighlightColor: 'transparent' // iOS fix
+                               }}
+                             >
                                🎧 {t.audio}
                              </button>
                            )}
