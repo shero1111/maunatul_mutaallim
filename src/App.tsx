@@ -1740,6 +1740,7 @@ const App: React.FC = () => {
         });
         
         setHalaqaForm({ name: '', type: 'memorizing', teacher_id: '', student_ids: [], internal_number: 0, isActive: true });
+        setStudentSearchQuery('');
         setIsCreatingHalaqa(false);
       }
     };
@@ -1781,6 +1782,7 @@ const App: React.FC = () => {
         });
         
         setHalaqaForm({ name: '', type: 'memorizing', teacher_id: '', student_ids: [], internal_number: 0, isActive: true });
+        setStudentSearchQuery('');
         setEditingHalaqaId(null);
         setIsCreatingHalaqa(false);
       }
@@ -1798,6 +1800,15 @@ const App: React.FC = () => {
     // Get available teachers and students
     const availableTeachers = usersData.filter(user => user.role === 'lehrer');
     const availableStudents = usersData.filter(user => user.role === 'student');
+    
+    // Student search state
+    const [studentSearchQuery, setStudentSearchQuery] = useState('');
+    
+    // Filter students based on search
+    const filteredStudents = availableStudents.filter(student => 
+      student.name.toLowerCase().includes(studentSearchQuery.toLowerCase()) ||
+      student.username.toLowerCase().includes(studentSearchQuery.toLowerCase())
+    );
 
     return (
       <div style={{ padding: '20px' }}>
@@ -2099,6 +2110,28 @@ const App: React.FC = () => {
                 <label style={{ display: 'block', marginBottom: '8px', color: colors.text, fontWeight: '600' }}>
                   الطلاب ({halaqaForm.student_ids.length})
                 </label>
+                
+                {/* Student Search */}
+                <div style={{ marginBottom: '8px' }}>
+                  <input
+                    type="text"
+                    placeholder="البحث عن طالب..."
+                    value={studentSearchQuery}
+                    onChange={(e) => setStudentSearchQuery(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '8px',
+                      border: `1px solid ${colors.border}`,
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      backgroundColor: colors.background,
+                      color: colors.text,
+                      direction: 'rtl',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+                
                 <div style={{ 
                   maxHeight: '150px', 
                   overflow: 'auto',
@@ -2106,7 +2139,7 @@ const App: React.FC = () => {
                   borderRadius: '8px',
                   padding: '8px'
                 }}>
-                  {availableStudents.map(student => (
+                  {filteredStudents.length > 0 ? filteredStudents.map(student => (
                     <label key={student.id} style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -2134,7 +2167,16 @@ const App: React.FC = () => {
                       />
                       <span style={{ color: colors.text }}>{student.name}</span>
                     </label>
-                  ))}
+                  )) : (
+                    <div style={{ 
+                      textAlign: 'center', 
+                      padding: '20px', 
+                      color: colors.textSecondary,
+                      fontSize: '0.9rem'
+                    }}>
+                      {studentSearchQuery ? 'لا توجد نتائج للبحث' : 'لا يوجد طلاب متاحون'}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -2172,11 +2214,12 @@ const App: React.FC = () => {
                 }}>
                   <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
                     <button
-                      onClick={() => {
-                        setIsCreatingHalaqa(false);
-                        setEditingHalaqaId(null);
-                        setHalaqaForm({ name: '', type: 'memorizing', teacher_id: '', student_ids: [], internal_number: 0, isActive: true });
-                      }}
+                                          onClick={() => {
+                      setIsCreatingHalaqa(false);
+                      setEditingHalaqaId(null);
+                      setHalaqaForm({ name: '', type: 'memorizing', teacher_id: '', student_ids: [], internal_number: 0, isActive: true });
+                      setStudentSearchQuery('');
+                    }}
                       style={{
                         padding: '12px 20px',
                         border: `1px solid ${colors.border}`,
