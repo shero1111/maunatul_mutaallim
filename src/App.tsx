@@ -275,6 +275,7 @@ const App: React.FC = () => {
 
   // User management state
   const [userSearchQuery, setUserSearchQuery] = useState('');
+  const [userSearchTerm, setUserSearchTerm] = useState('');
   const [isCreatingUser, setIsCreatingUser] = useState(false);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [userForm, setUserForm] = useState({ 
@@ -599,98 +600,120 @@ const App: React.FC = () => {
     );
   });
 
-  // Focus-safe search input component to prevent keyboard closing
-  const SearchInput = React.memo(({ 
-    value, 
-    onChange, 
+  // Simple search component with input field and search button
+  const SimpleSearch = ({ 
+    searchTerm, 
+    setSearchTerm, 
+    onSearch, 
     placeholder,
-    style
-  }: { 
-    value: string; 
-    onChange: (value: string) => void; 
-    placeholder: string; 
+    style,
+    compact = false
+  }: {
+    searchTerm: string;
+    setSearchTerm: (term: string) => void;
+    onSearch: () => void;
+    placeholder: string;
     style?: React.CSSProperties;
+    compact?: boolean;
   }) => {
-    const searchRef = useRef<HTMLInputElement>(null);
-    const [isFocused, setIsFocused] = useState(false);
-    const blurTimeoutRef = useRef<NodeJS.Timeout>();
-
-    const handleFocus = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
-      if (blurTimeoutRef.current) {
-        clearTimeout(blurTimeoutRef.current);
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        onSearch();
       }
-      setIsFocused(true);
-      e.target.style.borderColor = colors.primary;
-    }, [colors.primary]);
+    };
 
-    const handleBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
-      // Delay blur to prevent focus loss during re-renders
-      blurTimeoutRef.current = setTimeout(() => {
-        setIsFocused(false);
-        e.target.style.borderColor = colors.border;
-      }, 200);
-    }, [colors.border]);
+    const inputStyle = compact ? {
+      flex: 1,
+      padding: '8px 12px',
+      border: `1px solid ${colors.border}`,
+      borderRadius: '6px',
+      fontSize: '14px',
+      backgroundColor: colors.surface,
+      color: colors.text,
+      direction: language === 'ar' ? 'rtl' : 'ltr',
+      outline: 'none',
+      boxSizing: 'border-box'
+    } : {
+      flex: 1,
+      padding: '12px 16px',
+      border: `2px solid ${colors.border}`,
+      borderRadius: '12px',
+      fontSize: '16px',
+      backgroundColor: colors.surface,
+      color: colors.text,
+      direction: language === 'ar' ? 'rtl' : 'ltr',
+      outline: 'none',
+      boxSizing: 'border-box'
+    };
 
-    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      onChange(e.target.value);
-      
-      // Maintain focus after state change
-      setTimeout(() => {
-        if (searchRef.current && isFocused) {
-          searchRef.current.focus();
-        }
-      }, 0);
-    }, [onChange, isFocused]);
+    const buttonStyle = compact ? {
+      padding: '8px 12px',
+      background: colors.primary,
+      color: 'white',
+      border: 'none',
+      borderRadius: '6px',
+      cursor: 'pointer',
+      fontSize: '14px',
+      fontWeight: 'bold'
+    } : {
+      padding: '12px 20px',
+      background: colors.primary,
+      color: 'white',
+      border: 'none',
+      borderRadius: '12px',
+      cursor: 'pointer',
+      fontSize: '16px',
+      fontWeight: 'bold',
+      minWidth: '80px'
+    };
 
-    const handleClick = useCallback((e: React.MouseEvent<HTMLInputElement>) => {
-      e.stopPropagation();
-      if (searchRef.current) {
-        searchRef.current.focus();
-      }
-    }, []);
-
-    useEffect(() => {
-      return () => {
-        if (blurTimeoutRef.current) {
-          clearTimeout(blurTimeoutRef.current);
-        }
-      };
-    }, []);
+    const clearStyle = compact ? {
+      padding: '8px',
+      background: colors.textSecondary,
+      color: 'white',
+      border: 'none',
+      borderRadius: '6px',
+      cursor: 'pointer',
+      fontSize: '14px'
+    } : {
+      padding: '12px',
+      background: colors.textSecondary,
+      color: 'white',
+      border: 'none',
+      borderRadius: '12px',
+      cursor: 'pointer',
+      fontSize: '16px'
+    };
 
     return (
-      <input
-        ref={searchRef}
-        type="text"
-        value={value}
-        onChange={handleChange}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        onClick={handleClick}
-        placeholder={placeholder}
-        autoComplete="off"
-        autoCorrect="off"
-        autoCapitalize="off"
-        spellCheck="false"
-        style={{
-          width: style?.width || 'calc(100% - 32px)',
-          maxWidth: '100%',
-          padding: style?.padding || '12px 16px',
-          border: `${style?.borderWidth || '2px'} solid ${isFocused ? colors.primary : colors.border}`,
-          borderRadius: style?.borderRadius || '12px',
-          fontSize: '16px', // Prevents iOS zoom
-          backgroundColor: colors.surface,
-          color: colors.text,
-          direction: language === 'ar' ? 'rtl' : 'ltr',
-          outline: 'none',
-          boxSizing: 'border-box',
-          WebkitAppearance: 'none',
-          WebkitTapHighlightColor: 'transparent',
-          transition: 'border-color 0.2s ease',
-          ...style
-        }}
-      />
+      <div style={{ display: 'flex', gap: '8px', ...style }}>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder={placeholder}
+          style={inputStyle}
+          onFocus={(e) => e.target.style.borderColor = colors.primary}
+          onBlur={(e) => e.target.style.borderColor = colors.border}
+        />
+        <button onClick={onSearch} style={buttonStyle}>
+          🔍
+        </button>
+        {searchTerm && (
+          <button
+            onClick={() => {
+              setSearchTerm('');
+              onSearch();
+            }}
+            style={clearStyle}
+          >
+            ✕
+          </button>
+        )}
+      </div>
     );
-  });
+  };
 
   const changeMatnStatus = (matnId: string) => {
     setMutunData(prev => {
@@ -1935,8 +1958,9 @@ const App: React.FC = () => {
     
     // Student search state
     const [studentSearchQuery, setStudentSearchQuery] = useState('');
+    const [studentSearchTerm, setStudentSearchTerm] = useState('');
     
-    // Filter students based on search - MEMOIZED to prevent re-renders
+    // Filter students based on search term (only when searched)
     const filteredStudents = useMemo(() => {
       if (!studentSearchQuery.trim()) return availableStudents;
       
@@ -1946,6 +1970,10 @@ const App: React.FC = () => {
         student.username.toLowerCase().includes(query)
       );
     }, [availableStudents, studentSearchQuery]);
+
+    const handleStudentSearch = () => {
+      setStudentSearchQuery(studentSearchTerm);
+    };
 
     return (
       <div style={{ padding: '20px' }}>
@@ -2248,19 +2276,15 @@ const App: React.FC = () => {
                   الطلاب ({halaqaForm.student_ids.length})
                 </label>
                 
-                {/* Student Search - Focus-Safe */}
+                {/* Student Search - Simple with Button */}
                 <div style={{ marginBottom: '8px' }}>
-                  <SearchInput 
-                    value={studentSearchQuery}
-                    onChange={setStudentSearchQuery}
+                  <SimpleSearch
+                    searchTerm={studentSearchTerm}
+                    setSearchTerm={setStudentSearchTerm}
+                    onSearch={handleStudentSearch}
                     placeholder="البحث عن طالب..."
-                    style={{
-                      width: '100%',
-                      padding: '8px',
-                      borderWidth: '1px',
-                      borderRadius: '6px',
-                      fontSize: '14px'
-                    }}
+                    compact={true}
+                    style={{ gap: '4px' }}
                   />
                 </div>
                 
@@ -2452,7 +2476,7 @@ const App: React.FC = () => {
   const UsersPage: React.FC = () => {
     const canManageUsers = currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
     
-    // Filter users based on search - MEMOIZED to prevent re-renders
+    // Filter users based on search term (only when searched)
     const filteredUsers = useMemo(() => {
       if (!userSearchQuery.trim()) return usersData;
       
@@ -2462,6 +2486,10 @@ const App: React.FC = () => {
         user.role.toLowerCase().includes(query)
       );
     }, [usersData, userSearchQuery]);
+
+    const handleUserSearch = () => {
+      setUserSearchQuery(userSearchTerm);
+    };
 
     const handleCreateUser = () => {
       if (userForm.username.trim()) {
@@ -2538,11 +2566,12 @@ const App: React.FC = () => {
           {t.users}
         </h1>
 
-        {/* Search Bar - Focus-Safe */}
-        <div style={{ marginBottom: '20px', maxWidth: '100%', overflow: 'hidden' }}>
-          <SearchInput 
-            value={userSearchQuery}
-            onChange={setUserSearchQuery}
+        {/* Search Bar - Simple with Button */}
+        <div style={{ marginBottom: '20px' }}>
+          <SimpleSearch
+            searchTerm={userSearchTerm}
+            setSearchTerm={setUserSearchTerm}
+            onSearch={handleUserSearch}
             placeholder={t.searchUsers}
           />
         </div>
