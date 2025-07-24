@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 // Islamic Learning Management System - Maunatul Mutaallim
 // COMPLETE IMPLEMENTATION WITH ALL FEATURES
