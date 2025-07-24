@@ -275,6 +275,7 @@ const App: React.FC = () => {
 
   // User management state  
   const [userSearchTerm, setUserSearchTerm] = useState('');
+  const [userSearchFilter, setUserSearchFilter] = useState('');
   const [isCreatingUser, setIsCreatingUser] = useState(false);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [userForm, setUserForm] = useState({ 
@@ -1844,11 +1845,20 @@ const App: React.FC = () => {
     
     // Student search state
     const [studentSearchTerm, setStudentSearchTerm] = useState('');
+    const [studentSearchFilter, setStudentSearchFilter] = useState('');
     
-    // Simple student filter
+    // Debounced student search effect
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setStudentSearchFilter(studentSearchTerm);
+      }, 300);
+      return () => clearTimeout(timer);
+    }, [studentSearchTerm]);
+
+    // Filter based on debounced term
     const filteredStudents = availableStudents.filter(student => {
-      if (!studentSearchTerm.trim()) return true;
-      const query = studentSearchTerm.toLowerCase();
+      if (!studentSearchFilter.trim()) return true;
+      const query = studentSearchFilter.toLowerCase();
       return student.name.toLowerCase().includes(query) ||
              student.username.toLowerCase().includes(query);
     });
@@ -2220,7 +2230,7 @@ const App: React.FC = () => {
                       color: colors.textSecondary,
                       fontSize: '0.9rem'
                     }}>
-                      {studentSearchTerm ? 'لا توجد نتائج للبحث' : 'لا يوجد طلاب متاحون'}
+                      {studentSearchFilter ? 'لا توجد نتائج للبحث' : 'لا يوجد طلاب متاحون'}
                     </div>
                   )}
                 </div>
@@ -2366,10 +2376,18 @@ const App: React.FC = () => {
   const UsersPage: React.FC = () => {
     const canManageUsers = currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
     
-    // Simple user filter
+    // Debounced search effect
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setUserSearchFilter(userSearchTerm);
+      }, 300);
+      return () => clearTimeout(timer);
+    }, [userSearchTerm]);
+
+    // Filter based on debounced term
     const filteredUsers = usersData.filter(user => {
-      if (!userSearchTerm.trim()) return true;
-      const query = userSearchTerm.toLowerCase();
+      if (!userSearchFilter.trim()) return true;
+      const query = userSearchFilter.toLowerCase();
       return user.username.toLowerCase().includes(query) || 
              user.role.toLowerCase().includes(query);
     });
