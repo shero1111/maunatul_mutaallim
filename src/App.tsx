@@ -275,7 +275,6 @@ const App: React.FC = () => {
 
   // User management state  
   const [userSearchTerm, setUserSearchTerm] = useState('');
-  const [userSearchFilter, setUserSearchFilter] = useState('');
   const [isCreatingUser, setIsCreatingUser] = useState(false);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [userForm, setUserForm] = useState({ 
@@ -1845,20 +1844,11 @@ const App: React.FC = () => {
     
     // Student search state
     const [studentSearchTerm, setStudentSearchTerm] = useState('');
-    const [studentSearchFilter, setStudentSearchFilter] = useState('');
     
-    // Debounced student search effect
-    useEffect(() => {
-      const timer = setTimeout(() => {
-        setStudentSearchFilter(studentSearchTerm);
-      }, 300);
-      return () => clearTimeout(timer);
-    }, [studentSearchTerm]);
-
-    // Filter based on debounced term
+    // Simple filter like working Halaqa version
     const filteredStudents = availableStudents.filter(student => {
-      if (!studentSearchFilter.trim()) return true;
-      const query = studentSearchFilter.toLowerCase();
+      if (!studentSearchTerm.trim()) return true;
+      const query = studentSearchTerm.toLowerCase();
       return student.name.toLowerCase().includes(query) ||
              student.username.toLowerCase().includes(query);
     });
@@ -2230,7 +2220,7 @@ const App: React.FC = () => {
                       color: colors.textSecondary,
                       fontSize: '0.9rem'
                     }}>
-                      {studentSearchFilter ? 'لا توجد نتائج للبحث' : 'لا يوجد طلاب متاحون'}
+                      {studentSearchTerm ? 'لا توجد نتائج للبحث' : 'لا يوجد طلاب متاحون'}
                     </div>
                   )}
                 </div>
@@ -2376,18 +2366,10 @@ const App: React.FC = () => {
   const UsersPage: React.FC = () => {
     const canManageUsers = currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
     
-    // Debounced search effect
-    useEffect(() => {
-      const timer = setTimeout(() => {
-        setUserSearchFilter(userSearchTerm);
-      }, 300);
-      return () => clearTimeout(timer);
-    }, [userSearchTerm]);
-
-    // Filter based on debounced term
+    // Simple filter like working Halaqa version
     const filteredUsers = usersData.filter(user => {
-      if (!userSearchFilter.trim()) return true;
-      const query = userSearchFilter.toLowerCase();
+      if (!userSearchTerm.trim()) return true;
+      const query = userSearchTerm.toLowerCase();
       return user.username.toLowerCase().includes(query) || 
              user.role.toLowerCase().includes(query);
     });
@@ -2467,8 +2449,8 @@ const App: React.FC = () => {
           {t.users}
         </h1>
 
-        {/* Search Bar - Simple */}
-        <div style={{ marginBottom: '20px' }}>
+        {/* Search Bar - Exact copy of working Halaqa version */}
+        <div style={{ marginBottom: '8px' }}>
           <input
             type="text"
             value={userSearchTerm}
@@ -2476,11 +2458,11 @@ const App: React.FC = () => {
             placeholder={t.searchUsers}
             style={{
               width: '100%',
-              padding: '12px 16px',
-              border: `2px solid ${colors.border}`,
-              borderRadius: '12px',
-              fontSize: '16px',
-              backgroundColor: colors.surface,
+              padding: '8px',
+              border: `1px solid ${colors.border}`,
+              borderRadius: '6px',
+              fontSize: '14px',
+              backgroundColor: colors.background,
               color: colors.text,
               direction: language === 'ar' ? 'rtl' as const : 'ltr' as const,
               outline: 'none',
