@@ -227,7 +227,7 @@ const App: React.FC = () => {
     'المستوى الثالث': false,
     'المستوى الرابع': false
   });
-  const [audioPlayer, setAudioPlayer] = useState<{url: string, title: string} | null>(null);
+  const [audioPlayer, setAudioPlayer] = useState<{url: string, title: string, matnId: string} | null>(null);
   // Simple state for note editing
   const [noteStates, setNoteStates] = useState<Record<string, string>>({});
   
@@ -681,157 +681,7 @@ const App: React.FC = () => {
     );
   };
 
-  // Audio Player Component (Fixed scope)
-  const AudioPlayer: React.FC<{ audioUrl: string; title: string; onClose: () => void }> = ({ audioUrl, title, onClose }) => {
-    const audioRef = useRef<HTMLAudioElement>(null);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [currentTime, setCurrentTime] = useState(0);
-    const [duration, setDuration] = useState(0);
-    const [isLoading, setIsLoading] = useState(true);
-    
-    // Use current theme colors and language
-    const currentColors = themeColors[theme];
-    const currentLang = language;
-    const currentT = translations[currentLang];
 
-    const togglePlay = () => {
-      if (audioRef.current) {
-        if (isPlaying) { audioRef.current.pause(); } else { audioRef.current.play(); }
-        setIsPlaying(!isPlaying);
-      }
-    };
-
-    const formatAudioTime = (time: number) => `${Math.floor(time / 60)}:${Math.floor(time % 60).toString().padStart(2, '0')}`;
-    const progress = duration ? (currentTime / duration) * 100 : 0;
-
-    return (
-      <div 
-        style={{ position: 'fixed', bottom: audioPlayer ? 0 : -200, left: 0, right: 0, background: `linear-gradient(135deg, ${currentColors.primary} 0%, ${currentColors.secondary} 100%)`, color: 'white', padding: '20px', borderRadius: '15px 15px 0 0', zIndex: 1001, boxShadow: '0 -10px 30px rgba(0,0,0,0.2)', direction: currentLang === 'ar' ? 'rtl' : 'ltr', transition: 'bottom 0.3s ease' }}
-        onClick={(e) => e.stopPropagation()} // Verhindert Event-Bubbling
-        onTouchStart={(e) => e.stopPropagation()} // Verhindert Touch-Events
-        onTouchEnd={(e) => e.stopPropagation()}
-        onTouchMove={(e) => e.stopPropagation()}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-          <h4 style={{ margin: 0, fontSize: '1.1rem', maxWidth: '80%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>🎧 {title}</h4>
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              onClose();
-            }} 
-            style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', width: '30px', height: '30px', borderRadius: '50%', cursor: 'pointer', fontSize: '16px' }}
-          >
-            ✕
-          </button>
-        </div>
-
-        {/* Debug Info */}
-        <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', marginBottom: '8px' }}>
-          URL: {audioUrl.substring(audioUrl.lastIndexOf('/') + 1)}
-        </div>
-
-        {/* Native HTML5 Audio - Primary Option */}
-        <audio 
-          ref={audioRef} 
-          src={audioUrl}
-          preload="auto"
-          controls
-          style={{ width: '100%', marginBottom: '10px' }}
-          onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)} 
-          onLoadedMetadata={() => {
-            console.log('✅ Audio loaded successfully, duration:', audioRef.current?.duration);
-            setDuration(audioRef.current?.duration || 0);
-            setIsLoading(false);
-          }} 
-          onCanPlay={() => {
-            console.log('✅ Audio ready to play');
-            setIsLoading(false);
-          }} 
-          onEnded={() => setIsPlaying(false)}
-          onError={(e) => {
-            console.error('❌ Audio Error:', e.currentTarget.error?.message);
-            console.error('❌ Error Code:', e.currentTarget.error?.code);
-            console.error('❌ Failed URL:', audioUrl);
-            setIsLoading(false);
-          }}
-          onLoadStart={() => {
-            console.log('⏳ Loading audio from:', audioUrl);
-            setIsLoading(true);
-          }}
-          onProgress={() => {
-            if (audioRef.current && audioRef.current.buffered.length > 0) {
-              const buffered = audioRef.current.buffered.end(0);
-              const duration = audioRef.current.duration;
-              console.log(`📊 Buffered: ${Math.round((buffered/duration)*100)}%`);
-            }
-          }}
-        />
-
-        <div 
-          style={{ background: 'rgba(255,255,255,0.2)', height: '6px', borderRadius: '3px', marginBottom: '15px', cursor: 'pointer' }} 
-          onClick={(e) => {
-            e.stopPropagation();
-            if (audioRef.current && duration) {
-              const rect = e.currentTarget.getBoundingClientRect();
-              const clickX = e.clientX - rect.left;
-              const newTime = (clickX / rect.width) * duration;
-              audioRef.current.currentTime = newTime;
-            }
-          }}
-        >
-          <div style={{ background: 'white', height: '100%', width: `${progress}%`, borderRadius: '3px', transition: 'width 0.1s' }} />
-        </div>
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                togglePlay();
-              }} 
-              disabled={isLoading} 
-              style={{ background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '20px', cursor: isLoading ? 'not-allowed' : 'pointer', fontSize: '14px', opacity: isLoading ? 0.5 : 1 }}
-            >
-              {isLoading ? `⏳ Lädt...` : isPlaying ? `⏸️ Pause` : `▶️ Play`}
-            </button>
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                console.log('🔄 Force reload audio');
-                if (audioRef.current) {
-                  audioRef.current.load();
-                  setIsLoading(true);
-                }
-              }}
-              style={{ background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '20px', fontSize: '14px' }}
-            >
-              🔄 Reload
-            </button>
-            <a href={audioUrl} target="_blank" rel="noopener noreferrer" style={{ background: 'rgba(255,255,255,0.2)', color: 'white', textDecoration: 'none', padding: '8px 16px', borderRadius: '20px', fontSize: '14px' }}>
-              📥 Download
-            </a>
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                console.log('🧪 Testing URL access...');
-                fetch(audioUrl, { method: 'HEAD' })
-                  .then(response => {
-                    console.log('✅ URL accessible:', response.status, response.headers.get('content-type'));
-                  })
-                  .catch(error => {
-                    console.error('❌ URL not accessible:', error);
-                  });
-              }}
-              style={{ background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '20px', fontSize: '14px' }}
-            >
-              🧪 Test
-            </button>
-          </div>
-          <span style={{ fontSize: '14px', fontFamily: 'monospace' }}>{formatAudioTime(currentTime)} / {formatAudioTime(duration)}</span>
-        </div>
-      </div>
-    );
-  };
 
 
 
@@ -1728,18 +1578,78 @@ const App: React.FC = () => {
                            </button>
                          )}
                          {matn.memorization_audio_link && (
-                           <button onClick={() => setAudioPlayer({ url: matn.memorization_audio_link, title: matn.name })} style={{ 
-                             padding: '6px 12px', 
-                             background: colors.success, 
-                             color: 'white', 
-                             border: 'none', 
-                             borderRadius: '6px', 
-                             cursor: 'pointer', 
-                             fontSize: '12px',
-                             fontWeight: 'bold'
-                           }}>
-                             🎧 {t.audio}
-                           </button>
+                           // Show audio button OR audio player
+                                                       audioPlayer && audioPlayer.matnId === matn.id ? (
+                             // Inline Audio Player
+                             <div style={{
+                               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                               padding: '12px',
+                               borderRadius: '8px',
+                               color: 'white',
+                               marginTop: '8px',
+                               width: '100%'
+                             }}>
+                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                 <span style={{ fontSize: '12px', fontWeight: 'bold' }}>🎧 {audioPlayer.title}</span>
+                                 <button 
+                                   onClick={() => setAudioPlayer(null)}
+                                   style={{ 
+                                     background: 'rgba(255,255,255,0.2)', 
+                                     border: 'none', 
+                                     color: 'white', 
+                                     width: '20px', 
+                                     height: '20px', 
+                                     borderRadius: '50%', 
+                                     cursor: 'pointer', 
+                                     fontSize: '12px' 
+                                   }}
+                                 >
+                                   ✕
+                                 </button>
+                               </div>
+                               
+                               {/* Simplified Audio Element */}
+                               <audio 
+                                 src={audioPlayer.url}
+                                 controls
+                                 preload="auto"
+                                 style={{ width: '100%', height: '30px' }}
+                               />
+                               
+                               {/* Simple Action Buttons */}
+                               <div style={{ display: 'flex', gap: '4px', marginTop: '8px', flexWrap: 'wrap' }}>
+                                 <a 
+                                   href={audioPlayer.url} 
+                                   target="_blank" 
+                                   rel="noopener noreferrer" 
+                                   style={{ 
+                                     background: 'rgba(255,255,255,0.2)', 
+                                     color: 'white', 
+                                     textDecoration: 'none', 
+                                     padding: '4px 8px', 
+                                     borderRadius: '12px', 
+                                     fontSize: '10px' 
+                                   }}
+                                 >
+                                   📥 Download
+                                 </a>
+                               </div>
+                             </div>
+                           ) : (
+                             // Audio Button
+                             <button onClick={() => setAudioPlayer({ url: matn.memorization_audio_link, title: matn.name, matnId: matn.id })} style={{ 
+                               padding: '6px 12px', 
+                               background: colors.success, 
+                               color: 'white', 
+                               border: 'none', 
+                               borderRadius: '6px', 
+                               cursor: 'pointer', 
+                               fontSize: '12px',
+                               fontWeight: 'bold'
+                             }}>
+                               🎧 {t.audio}
+                             </button>
+                           )
                          )}
                        </div>
                        
@@ -3468,7 +3378,7 @@ const App: React.FC = () => {
       {/* PDF Viewer removed - only external opening */}
 
       {/* Audio Player */}
-      {audioPlayer && <AudioPlayer audioUrl={audioPlayer.url} title={audioPlayer.title} onClose={() => setAudioPlayer(null)} />}
+
 
       {/* Timer Modal */}
       <TimerModal />
