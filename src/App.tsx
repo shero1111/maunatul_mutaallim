@@ -2018,28 +2018,29 @@ const App: React.FC = () => {
                   />
                 </div>
 
-                {/* Internal Number */}
-                <div style={{ marginBottom: '12px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', color: colors.text, fontWeight: '600' }}>
-                  رقم الحلقة
-                </label>
-                <input
-                  type="number"
-                  defaultValue={halaqaForm.internal_number || ''}
-                  onBlur={(e) => setHalaqaForm(prev => ({ ...prev, internal_number: parseInt(e.target.value) || 0 }))}
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: `1px solid ${colors.border}`,
-                    borderRadius: '8px',
-                    fontSize: '16px',
-                    backgroundColor: colors.background,
-                    color: colors.text,
-                    direction: 'rtl'
-                  }}
-                  placeholder="مثال: 101"
-                />
-              </div>
+                                 {/* Internal Number */}
+                 <div style={{ marginBottom: '12px' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', color: colors.text, fontWeight: '600', fontSize: '0.9rem' }}>
+                    رقم الحلقة
+                  </label>
+                  <input
+                    type="number"
+                    defaultValue={halaqaForm.internal_number || ''}
+                    onBlur={(e) => setHalaqaForm(prev => ({ ...prev, internal_number: parseInt(e.target.value) || 0 }))}
+                    style={{
+                      width: '100%',
+                      padding: '8px',
+                      border: `1px solid ${colors.border}`,
+                      borderRadius: '6px',
+                      fontSize: '16px',
+                      backgroundColor: colors.background,
+                      color: colors.text,
+                      direction: 'rtl',
+                      boxSizing: 'border-box'
+                    }}
+                    placeholder="مثال: 101"
+                  />
+                </div>
 
               {/* Halaqa Type */}
               <div style={{ marginBottom: '16px' }}>
@@ -2137,23 +2138,28 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              {/* Active Status */}
-              <div style={{ marginBottom: '24px' }}>
-                <label style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  cursor: 'pointer',
-                  direction: 'rtl'
-                }}>
-                  <input
-                    type="checkbox"
-                    checked={halaqaForm.isActive}
-                    onChange={(e) => setHalaqaForm(prev => ({ ...prev, isActive: e.target.checked }))}
-                  />
-                  <span style={{ color: colors.text, fontWeight: '600' }}>الحلقة نشطة</span>
-                </label>
-              </div>
+                              {/* Active Status */}
+                <div style={{ marginBottom: '16px', padding: '12px', backgroundColor: colors.background, borderRadius: '8px', border: `1px solid ${colors.border}` }}>
+                  <label style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    cursor: 'pointer',
+                    direction: 'rtl'
+                  }}>
+                    <input
+                      type="checkbox"
+                      checked={halaqaForm.isActive}
+                      onChange={(e) => setHalaqaForm(prev => ({ ...prev, isActive: e.target.checked }))}
+                    />
+                    <div>
+                      <span style={{ color: colors.text, fontWeight: '600' }}>الحلقة نشطة ومفتوحة للطلاب</span>
+                      <div style={{ fontSize: '0.8rem', color: colors.textSecondary, marginTop: '2px' }}>
+                        غير نشط = مخفية من الطلاب، نشط = ظاهرة ومتاحة
+                      </div>
+                    </div>
+                  </label>
+                </div>
 
                 </div>
 
