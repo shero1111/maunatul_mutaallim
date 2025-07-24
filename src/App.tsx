@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 
 // Islamic Learning Management System - Maunatul Mutaallim
 // COMPLETE IMPLEMENTATION WITH ALL FEATURES
@@ -596,6 +596,99 @@ const App: React.FC = () => {
           }}
         />
       </div>
+    );
+  });
+
+  // Focus-safe search input component to prevent keyboard closing
+  const SearchInput = React.memo(({ 
+    value, 
+    onChange, 
+    placeholder,
+    style
+  }: { 
+    value: string; 
+    onChange: (value: string) => void; 
+    placeholder: string; 
+    style?: React.CSSProperties;
+  }) => {
+    const searchRef = useRef<HTMLInputElement>(null);
+    const [isFocused, setIsFocused] = useState(false);
+    const blurTimeoutRef = useRef<NodeJS.Timeout>();
+
+    const handleFocus = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+      if (blurTimeoutRef.current) {
+        clearTimeout(blurTimeoutRef.current);
+      }
+      setIsFocused(true);
+      e.target.style.borderColor = colors.primary;
+    }, [colors.primary]);
+
+    const handleBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+      // Delay blur to prevent focus loss during re-renders
+      blurTimeoutRef.current = setTimeout(() => {
+        setIsFocused(false);
+        e.target.style.borderColor = colors.border;
+      }, 200);
+    }, [colors.border]);
+
+    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange(e.target.value);
+      
+      // Maintain focus after state change
+      setTimeout(() => {
+        if (searchRef.current && isFocused) {
+          searchRef.current.focus();
+        }
+      }, 0);
+    }, [onChange, isFocused]);
+
+    const handleClick = useCallback((e: React.MouseEvent<HTMLInputElement>) => {
+      e.stopPropagation();
+      if (searchRef.current) {
+        searchRef.current.focus();
+      }
+    }, []);
+
+    useEffect(() => {
+      return () => {
+        if (blurTimeoutRef.current) {
+          clearTimeout(blurTimeoutRef.current);
+        }
+      };
+    }, []);
+
+    return (
+      <input
+        ref={searchRef}
+        type="text"
+        value={value}
+        onChange={handleChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onClick={handleClick}
+        placeholder={placeholder}
+        autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck="false"
+        style={{
+          width: style?.width || 'calc(100% - 32px)',
+          maxWidth: '100%',
+          padding: style?.padding || '12px 16px',
+          border: `${style?.borderWidth || '2px'} solid ${isFocused ? colors.primary : colors.border}`,
+          borderRadius: style?.borderRadius || '12px',
+          fontSize: '16px', // Prevents iOS zoom
+          backgroundColor: colors.surface,
+          color: colors.text,
+          direction: language === 'ar' ? 'rtl' : 'ltr',
+          outline: 'none',
+          boxSizing: 'border-box',
+          WebkitAppearance: 'none',
+          WebkitTapHighlightColor: 'transparent',
+          transition: 'border-color 0.2s ease',
+          ...style
+        }}
+      />
     );
   });
 
@@ -1843,11 +1936,16 @@ const App: React.FC = () => {
     // Student search state
     const [studentSearchQuery, setStudentSearchQuery] = useState('');
     
-    // Filter students based on search
-    const filteredStudents = availableStudents.filter(student => 
-      student.name.toLowerCase().includes(studentSearchQuery.toLowerCase()) ||
-      student.username.toLowerCase().includes(studentSearchQuery.toLowerCase())
-    );
+    // Filter students based on search - MEMOIZED to prevent re-renders
+    const filteredStudents = useMemo(() => {
+      if (!studentSearchQuery.trim()) return availableStudents;
+      
+      const query = studentSearchQuery.toLowerCase();
+      return availableStudents.filter(student => 
+        student.name.toLowerCase().includes(query) ||
+        student.username.toLowerCase().includes(query)
+      );
+    }, [availableStudents, studentSearchQuery]);
 
     return (
       <div style={{ padding: '20px' }}>
@@ -2150,23 +2248,18 @@ const App: React.FC = () => {
                   الطلاب ({halaqaForm.student_ids.length})
                 </label>
                 
-                {/* Student Search */}
+                {/* Student Search - Focus-Safe */}
                 <div style={{ marginBottom: '8px' }}>
-                  <input
-                    type="text"
-                    placeholder="البحث عن طالب..."
+                  <SearchInput 
                     value={studentSearchQuery}
-                    onChange={(e) => setStudentSearchQuery(e.target.value)}
+                    onChange={setStudentSearchQuery}
+                    placeholder="البحث عن طالب..."
                     style={{
                       width: '100%',
                       padding: '8px',
-                      border: `1px solid ${colors.border}`,
+                      borderWidth: '1px',
                       borderRadius: '6px',
-                      fontSize: '14px',
-                      backgroundColor: colors.background,
-                      color: colors.text,
-                      direction: 'rtl',
-                      boxSizing: 'border-box'
+                      fontSize: '14px'
                     }}
                   />
                 </div>
@@ -2359,11 +2452,16 @@ const App: React.FC = () => {
   const UsersPage: React.FC = () => {
     const canManageUsers = currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
     
-    // Filter users based on search
-    const filteredUsers = usersData.filter(user => 
-      user.username.toLowerCase().includes(userSearchQuery.toLowerCase()) ||
-      user.role.toLowerCase().includes(userSearchQuery.toLowerCase())
-    );
+    // Filter users based on search - MEMOIZED to prevent re-renders
+    const filteredUsers = useMemo(() => {
+      if (!userSearchQuery.trim()) return usersData;
+      
+      const query = userSearchQuery.toLowerCase();
+      return usersData.filter(user => 
+        user.username.toLowerCase().includes(query) ||
+        user.role.toLowerCase().includes(query)
+      );
+    }, [usersData, userSearchQuery]);
 
     const handleCreateUser = () => {
       if (userForm.username.trim()) {
@@ -2440,28 +2538,12 @@ const App: React.FC = () => {
           {t.users}
         </h1>
 
-        {/* Search Bar */}
+        {/* Search Bar - Focus-Safe */}
         <div style={{ marginBottom: '20px', maxWidth: '100%', overflow: 'hidden' }}>
-          <input
-            type="text"
+          <SearchInput 
             value={userSearchQuery}
-            onChange={(e) => setUserSearchQuery(e.target.value)}
+            onChange={setUserSearchQuery}
             placeholder={t.searchUsers}
-            style={{
-              width: 'calc(100% - 32px)',
-              maxWidth: '100%',
-              padding: '12px 16px',
-              border: `2px solid ${colors.border}`,
-              borderRadius: '12px',
-              fontSize: '1rem',
-              backgroundColor: colors.surface,
-              color: colors.text,
-              direction: language === 'ar' ? 'rtl' : 'ltr',
-              outline: 'none',
-              boxSizing: 'border-box'
-            }}
-            onFocus={(e) => e.target.style.borderColor = colors.primary}
-            onBlur={(e) => e.target.style.borderColor = colors.border}
           />
         </div>
 
