@@ -3354,12 +3354,24 @@ const App: React.FC = () => {
             </div>
             
             {/* Simple Native Audio */}
+            {/* Debug URL */}
+            <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)', marginBottom: '10px', wordBreak: 'break-all' }}>
+              URL: {audioPlayer.url}
+            </div>
+            
             <audio 
               src={audioPlayer.url}
               controls
-              autoPlay
+              preload="auto"
               style={{ width: '100%', marginBottom: '15px' }}
-            />
+              onError={(e) => console.error('Audio Error:', e.currentTarget.error)}
+              onCanPlay={() => console.log('Audio ready to play')}
+              onLoadStart={() => console.log('Loading audio:', audioPlayer.url)}
+            >
+              <source src={audioPlayer.url} type="audio/mpeg" />
+              <source src={audioPlayer.url} type="audio/mp3" />
+              Audio not supported.
+            </audio>
             
             {/* Download Link */}
             <div style={{ textAlign: 'center' }}>
