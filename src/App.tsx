@@ -3395,16 +3395,15 @@ const App: React.FC = () => {
               Your browser doesn't support the audio element.
             </audio>
             
-            {/* Universal Skip Controls - Always Minus Left, Plus Right */}
+            {/* Beautiful Skip Controls */}
             <div style={{ 
-              position: 'relative',
               display: 'flex', 
               justifyContent: 'center', 
-              gap: '15px', 
+              gap: '20px', 
               marginBottom: '15px',
-              direction: 'ltr' // Force LTR for buttons regardless of app language
+              direction: 'ltr'
             }}>
-              {/* MINUS Button - Always LEFT */}
+              {/* Rewind 5 Seconds */}
               <button 
                 onClick={() => {
                   const audio = (window as any).currentAudio;
@@ -3415,21 +3414,35 @@ const App: React.FC = () => {
                   }
                 }}
                 style={{
-                  background: 'rgba(255,255,255,0.2)',
-                  border: 'none',
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.15))',
+                  border: '1px solid rgba(255,255,255,0.3)',
                   color: 'white',
-                  padding: '8px 12px',
-                  borderRadius: '20px',
+                  padding: '12px 16px',
+                  borderRadius: '50px',
                   cursor: 'pointer',
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                  order: 1 // Force left position
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                  order: 1
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.05)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.3)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
                 }}
               >
-                ⏪ -5s
+                <span style={{ fontSize: '16px' }}>⏮</span>
+                <span>5s</span>
               </button>
               
-              {/* PLUS Button - Always RIGHT */}
+              {/* Forward 5 Seconds */}
               <button 
                 onClick={() => {
                   const audio = (window as any).currentAudio;
@@ -3440,18 +3453,32 @@ const App: React.FC = () => {
                   }
                 }}
                 style={{
-                  background: 'rgba(255,255,255,0.2)',
-                  border: 'none',
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.15))',
+                  border: '1px solid rgba(255,255,255,0.3)',
                   color: 'white',
-                  padding: '8px 12px',
-                  borderRadius: '20px',
+                  padding: '12px 16px',
+                  borderRadius: '50px',
                   cursor: 'pointer',
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                  order: 2 // Force right position
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                  order: 2
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.05)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.3)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
                 }}
               >
-                +5s ⏩
+                <span>5s</span>
+                <span style={{ fontSize: '16px' }}>⏭</span>
               </button>
             </div>
             
