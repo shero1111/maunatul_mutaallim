@@ -3359,67 +3359,20 @@ const App: React.FC = () => {
               URL: {audioPlayer.url}
             </div>
             
-            {/* Primary Mobile-First Audio Player */}
-            <div style={{ marginBottom: '15px', textAlign: 'center' }}>
-              <a 
-                href={audioPlayer.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'block',
-                  background: 'rgba(255,255,255,0.2)',
-                  color: 'white',
-                  textDecoration: 'none',
-                  padding: '15px',
-                  borderRadius: '12px',
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                  border: '2px solid rgba(255,255,255,0.3)',
-                  marginBottom: '10px'
-                }}
-              >
-                ▶️ Play Audio (Opens in Browser Player)
-              </a>
-              
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)' }}>
-                Tap above to play in your browser's audio player
-              </div>
-            </div>
-            
-            {/* Secondary: Native HTML5 Audio (Desktop/Some Mobile) */}
-            <details style={{ marginBottom: '15px' }}>
-              <summary style={{ 
-                color: 'rgba(255,255,255,0.8)', 
-                fontSize: '12px',
-                cursor: 'pointer',
-                padding: '5px 0'
-              }}>
-                🔧 Try Native Player (Advanced)
-              </summary>
-              <audio 
-                controls
-                preload="none"
-                style={{ 
-                  width: '100%', 
-                  marginTop: '10px',
-                  height: '40px'
-                }}
-                onError={(e) => {
-                  console.error('❌ Audio Error:', e.currentTarget.error);
-                  console.error('Error code:', e.currentTarget.error?.code);
-                }}
-                onCanPlay={() => console.log('✅ Audio ready to play')}
-                onLoadStart={() => console.log('⏳ Loading audio:', audioPlayer.url)}
-                onLoadedMetadata={(e) => console.log('📊 Audio metadata loaded, duration:', e.currentTarget.duration)}
-                onPlaying={() => console.log('▶️ Audio started playing')}
-                onPause={() => console.log('⏸️ Audio paused')}
-              >
-                <source src={audioPlayer.url} type="audio/mpeg" />
-                <source src={audioPlayer.url} type="audio/wav" />
-                <source src={audioPlayer.url} type="audio/mp3" />
-                Your browser doesn't support audio playback.
-              </audio>
-            </details>
+            {/* Clean Native Audio Player */}
+            <audio 
+              controls
+              preload="none"
+              style={{ 
+                width: '100%', 
+                marginBottom: '15px',
+                height: '40px'
+              }}
+            >
+              <source src={audioPlayer.url} type="audio/mpeg" />
+              <source src={audioPlayer.url} type="audio/mp3" />
+              Audio wird nicht unterstützt.
+            </audio>
             
             {/* Download Link */}
             <div style={{ textAlign: 'center' }}>
