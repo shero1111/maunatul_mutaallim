@@ -1580,58 +1580,71 @@ const App: React.FC = () => {
                          {matn.memorization_audio_link && (
                            // Show audio button OR audio player
                                                        audioPlayer && audioPlayer.matnId === matn.id ? (
-                             // Inline Audio Player
+                             // Ultra-Simple Audio Player
                              <div style={{
                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                               padding: '12px',
-                               borderRadius: '8px',
+                               padding: '10px',
+                               borderRadius: '6px',
                                color: 'white',
-                               marginTop: '8px',
+                               marginTop: '6px',
                                width: '100%'
                              }}>
-                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                                 <span style={{ fontSize: '12px', fontWeight: 'bold' }}>🎧 {audioPlayer.title}</span>
+                               {/* Header with close button */}
+                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                                 <span style={{ fontSize: '11px', fontWeight: 'bold' }}>🎧 Audio</span>
                                  <button 
-                                   onClick={() => setAudioPlayer(null)}
+                                   onClick={(e) => {
+                                     e.stopPropagation();
+                                     setAudioPlayer(null);
+                                   }}
                                    style={{ 
-                                     background: 'rgba(255,255,255,0.2)', 
+                                     background: 'rgba(255,255,255,0.3)', 
                                      border: 'none', 
                                      color: 'white', 
-                                     width: '20px', 
-                                     height: '20px', 
+                                     width: '18px', 
+                                     height: '18px', 
                                      borderRadius: '50%', 
                                      cursor: 'pointer', 
-                                     fontSize: '12px' 
+                                     fontSize: '10px',
+                                     display: 'flex',
+                                     alignItems: 'center',
+                                     justifyContent: 'center'
                                    }}
                                  >
                                    ✕
                                  </button>
                                </div>
                                
-                               {/* Simplified Audio Element */}
+                               {/* Pure Native Audio - Zero JS interference */}
                                <audio 
-                                 src={audioPlayer.url}
                                  controls
-                                 preload="auto"
-                                 style={{ width: '100%', height: '30px' }}
-                               />
+                                 preload="none"
+                                 style={{ 
+                                   width: '100%', 
+                                   height: '32px',
+                                   outline: 'none'
+                                 }}
+                               >
+                                 <source src={audioPlayer.url} type="audio/mpeg" />
+                                 Dein Browser unterstützt kein Audio.
+                               </audio>
                                
-                               {/* Simple Action Buttons */}
-                               <div style={{ display: 'flex', gap: '4px', marginTop: '8px', flexWrap: 'wrap' }}>
+                               {/* Fallback Download */}
+                               <div style={{ marginTop: '6px', textAlign: 'center' }}>
                                  <a 
                                    href={audioPlayer.url} 
                                    target="_blank" 
                                    rel="noopener noreferrer" 
                                    style={{ 
-                                     background: 'rgba(255,255,255,0.2)', 
-                                     color: 'white', 
+                                     color: 'rgba(255,255,255,0.8)', 
                                      textDecoration: 'none', 
-                                     padding: '4px 8px', 
-                                     borderRadius: '12px', 
-                                     fontSize: '10px' 
+                                     fontSize: '9px',
+                                     padding: '2px 6px',
+                                     background: 'rgba(255,255,255,0.1)',
+                                     borderRadius: '8px'
                                    }}
                                  >
-                                   📥 Download
+                                   📥 Falls Audio nicht lädt, hier klicken
                                  </a>
                                </div>
                              </div>
