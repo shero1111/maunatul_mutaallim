@@ -12,7 +12,7 @@ interface User {
   isActive: boolean;
   created_at: string;
   lastPage?: string;
-  isOnline?: boolean;
+
 }
 
 interface Student extends User {
@@ -143,11 +143,11 @@ const generatePersonalMutuun = (userId: string): Matn[] => {
 };
 
 const demoUsers: (Student | Teacher | User)[] = [
-  { id: 'admin', username: 'admin1', password: 'test', role: 'superuser', name: 'admin1', isActive: true, created_at: '2024-01-01', lastPage: 'home', isOnline: true },
-  { id: 'leiter', username: 'leitung1', password: 'test', role: 'leitung', name: 'leitung1', isActive: true, created_at: '2024-01-01', lastPage: 'home', isOnline: true },
-  { id: 'lehrer', username: 'lehrer1', password: 'test', role: 'lehrer', name: 'lehrer1', isActive: true, created_at: '2024-01-01', halaqat_ids: ['halaqa1', 'halaqa2'], favorites: ['student1', 'student2'], lastPage: 'home', isOnline: false } as Teacher,
-  { id: 'student1', username: 'student1', password: 'test', role: 'student', name: 'student1', isActive: true, created_at: '2024-01-01', status: 'revising', status_changed_at: '2024-01-15T10:30:00Z', halaqat_ids: ['halaqa1'], favorites: ['student2'], lastPage: 'home', isOnline: true } as Student,
-  { id: 'student2', username: 'student2', password: 'test', role: 'student', name: 'student2', isActive: true, created_at: '2024-01-01', status: 'khatamat', status_changed_at: '2024-01-14T09:15:00Z', halaqat_ids: ['halaqa1', 'halaqa2'], favorites: [], lastPage: 'home', isOnline: true } as Student
+  { id: 'admin', username: 'admin1', password: 'test', role: 'superuser', name: 'admin1', isActive: true, created_at: '2024-01-01', lastPage: 'home' },
+  { id: 'leiter', username: 'leitung1', password: 'test', role: 'leitung', name: 'leitung1', isActive: true, created_at: '2024-01-01', lastPage: 'home' },
+  { id: 'lehrer', username: 'lehrer1', password: 'test', role: 'lehrer', name: 'lehrer1', isActive: true, created_at: '2024-01-01', halaqat_ids: ['halaqa1', 'halaqa2'], favorites: ['student1', 'student2'], lastPage: 'home' } as Teacher,
+  { id: 'student1', username: 'student1', password: 'test', role: 'student', name: 'student1', isActive: true, created_at: '2024-01-01', status: 'revising', status_changed_at: '2024-01-15T10:30:00Z', halaqat_ids: ['halaqa1'], favorites: ['student2'], lastPage: 'home' } as Student,
+  { id: 'student2', username: 'student2', password: 'test', role: 'student', name: 'student2', isActive: true, created_at: '2024-01-01', status: 'khatamat', status_changed_at: '2024-01-14T09:15:00Z', halaqat_ids: ['halaqa1', 'halaqa2'], favorites: [], lastPage: 'home' } as Student
 ];
 
 const demoHalaqat: Halaqa[] = [
@@ -166,7 +166,7 @@ type Theme = 'light' | 'dark';
 const translations = {
   ar: {
     appName: 'معونة المتعلم', username: 'اسم المستخدم', password: 'كلمة المرور', login: 'دخول', home: 'الرئيسية', mutuun: 'متون', halaqat: 'حلقات', users: 'المستخدمون', news: 'الأخبار', more: 'المزيد',
-    not_available: 'غير متاح', revising: 'مراجعة', khatamat: 'ختمات', changeStatus: 'تغيير الحالة', lastUpdate: 'آخر تحديث', totalUsers: 'إجمالي المستخدمين', onlineUsers: 'المستخدمون المتصلون', totalTeachers: 'إجمالي المعلمين', totalHalaqat: 'إجمالي الحلقات', studentsStatus: 'حالة الطلاب',
+    not_available: 'غير متاح', revising: 'مراجعة', khatamat: 'ختمات', changeStatus: 'تغيير الحالة', lastUpdate: 'آخر تحديث', totalUsers: 'إجمالي المستخدمين',  totalTeachers: 'إجمالي المعلمين', totalHalaqat: 'إجمالي الحلقات', studentsStatus: 'حالة الطلاب',
     logout: 'تسجيل الخروج', language: 'اللغة', theme: 'المظهر', aboutUs: 'من نحن', guide: 'دليل الاستخدام', version: 'الإصدار', materials: 'المواد', memorizationPdf: 'PDF التحفيظ', explanationPdf: 'PDF الشرح', audio: 'الصوت',
     search: 'البحث', edit: 'تعديل', delete: 'حذف', add: 'إضافة', loading: 'جاري التحميل...', play: 'تشغيل', pause: 'إيقاف', allStatuses: 'جميع الحالات', timer: 'مؤقت', stopwatch: 'ساعة إيقاف', start: 'ابدأ', stop: 'توقف', reset: 'إعادة تعيين',
     minutes: 'دقائق', seconds: 'ثواني', days: 'أيام', day: 'يوم', lastFullRevising: 'آخر ختمة كاملة كانت قبل', writeNote: 'اكتب ملاحظة', save: 'حفظ', settings: 'الإعدادات', threshold: 'عدد الأيام قبل إعادة تعيين اللون إلى الأحمر',
@@ -175,7 +175,7 @@ const translations = {
     createHalaqa: 'إنشاء حلقة جديدة', halaqaName: 'اسم الحلقة', halaqaType: 'نوع الحلقة', teacher: 'المعلم', students: 'الطلاب', active: 'نشط', inactive: 'غير نشط', 
     memorizing: 'تحفيظ', explanation: 'شرح', memorizingIntensive: 'تحفيظ مكثف', explanationIntensive: 'شرح مكثف',
     createUser: 'إنشاء مستخدم جديد', name: 'الاسم', role: 'الدور', status: 'الحالة', createdAt: 'تاريخ الإنشاء', lastSeen: 'آخر ظهور',
-    superuser: 'المدير العام', leitung: 'قائد الحلقات', lehrer: 'المعلم', student: 'الطالب', online: 'متصل', offline: 'غير متصل',
+    superuser: 'المدير العام', leitung: 'قائد الحلقات', lehrer: 'المعلم', student: 'الطالب',
     assignToHalaqa: 'إضافة إلى حلقة', removeFromHalaqa: 'إزالة من حلقة', noStudentsAssigned: 'لا يوجد طلاب مسجلون', noHalaqatAvailable: 'لا توجد حلقات متاحة',
     // News management translations
     createNews: 'إنشاء خبر جديد', editNews: 'تعديل الخبر', newsTitle: 'عنوان الخبر', newsDescription: 'وصف الخبر', publish: 'نشر', draft: 'مسودة', published: 'منشور',
@@ -185,7 +185,7 @@ const translations = {
   },
   en: {
     appName: 'Maunatul Mutaallim', username: 'Username', password: 'Password', login: 'Login', home: 'Home', mutuun: 'Mutun', halaqat: 'Halaqat', users: 'Users', news: 'News', more: 'More',
-    not_available: 'Not Available', revising: 'Revising', khatamat: 'Khatamat', changeStatus: 'Change Status', lastUpdate: 'Last Update', totalUsers: 'Total Users', onlineUsers: 'Online Users', totalTeachers: 'Total Teachers', totalHalaqat: 'Total Halaqat', studentsStatus: 'Students Status',
+    not_available: 'Not Available', revising: 'Revising', khatamat: 'Khatamat', changeStatus: 'Change Status', lastUpdate: 'Last Update', totalUsers: 'Total Users',  totalTeachers: 'Total Teachers', totalHalaqat: 'Total Halaqat', studentsStatus: 'Students Status',
     logout: 'Logout', language: 'Language', theme: 'Theme', aboutUs: 'About Us', guide: 'Guide', version: 'Version', materials: 'Materials', memorizationPdf: 'Memorization PDF', explanationPdf: 'Explanation PDF', audio: 'Audio',
     search: 'Search', edit: 'Edit', delete: 'Delete', add: 'Add', loading: 'Loading...', play: 'Play', pause: 'Pause', allStatuses: 'All Statuses', timer: 'Timer', stopwatch: 'Stopwatch', start: 'Start', stop: 'Stop', reset: 'Reset',
     minutes: 'Minutes', seconds: 'Seconds', days: 'days', day: 'day', lastFullRevising: 'Last full revising was before', writeNote: 'Write a note', save: 'Save', settings: 'Settings', threshold: 'Number of days before color resets to red',
@@ -194,7 +194,7 @@ const translations = {
     createHalaqa: 'Create New Halaqa', halaqaName: 'Halaqa Name', halaqaType: 'Halaqa Type', teacher: 'Teacher', students: 'Students', active: 'Active', inactive: 'Inactive',
     memorizing: 'Memorizing', explanation: 'Explanation', memorizingIntensive: 'Intensive Memorizing', explanationIntensive: 'Intensive Explanation',
     createUser: 'Create New User', name: 'Name', role: 'Role', status: 'Status', createdAt: 'Created At', lastSeen: 'Last Seen',
-    superuser: 'Super Admin', leitung: 'Halaqa Leader', lehrer: 'Teacher', student: 'Student', online: 'Online', offline: 'Offline',
+    superuser: 'Super Admin', leitung: 'Halaqa Leader', lehrer: 'Teacher', student: 'Student',
     assignToHalaqa: 'Assign to Halaqa', removeFromHalaqa: 'Remove from Halaqa', noStudentsAssigned: 'No students assigned', noHalaqatAvailable: 'No halaqat available',
     // News management translations
     createNews: 'Create New Article', editNews: 'Edit Article', newsTitle: 'Article Title', newsDescription: 'Article Description', publish: 'Publish', draft: 'Draft', published: 'Published',
@@ -1267,7 +1267,7 @@ const App: React.FC = () => {
   const HomePage: React.FC = () => {
     const students = usersData.filter(u => u.role === 'student') as Student[];
     const teachers = usersData.filter(u => u.role === 'lehrer');
-    const onlineUsers = usersData.filter(u => u.isOnline);
+
     
     const statusCounts = {
       not_available: students.filter(s => s.status === 'not_available').length,
@@ -1385,9 +1385,7 @@ const App: React.FC = () => {
                         <span style={{ color: getStatusColor(halaqaStudent.status), fontSize: '0.9rem', fontWeight: 'bold' }}>
                           {t[halaqaStudent.status]}
                         </span>
-                        {halaqaStudent.isOnline && (
-                          <span style={{ color: colors.success, fontSize: '0.8rem' }}>🟢 متصل</span>
-                        )}
+                        
                       </div>
                     </div>
                   ))}
@@ -1442,11 +1440,7 @@ const App: React.FC = () => {
             <div style={{ color: colors.textSecondary, fontSize: '0.9rem' }}>{t.totalUsers}</div>
           </div>
           
-          <div style={{ background: colors.surface, padding: '20px', borderRadius: '15px', textAlign: 'center', border: `1px solid ${colors.border}` }}>
-            <div style={{ fontSize: '2rem', marginBottom: '5px' }}>🟢</div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: colors.success }}>{onlineUsers.length}</div>
-            <div style={{ color: colors.textSecondary, fontSize: '0.9rem' }}>{t.onlineUsers}</div>
-          </div>
+
           
           <div style={{ background: colors.surface, padding: '20px', borderRadius: '15px', textAlign: 'center', border: `1px solid ${colors.border}` }}>
             <div style={{ fontSize: '2rem', marginBottom: '5px' }}>👨‍🏫</div>
@@ -1983,17 +1977,8 @@ const App: React.FC = () => {
                           border: `1px solid ${colors.border}`
                         }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <div style={{
-                              width: '8px',
-                              height: '8px',
-                              borderRadius: '50%',
-                              background: student.isOnline ? colors.success : colors.textSecondary
-                            }} />
                             <span style={{ color: colors.text, fontWeight: '500' }}>{student.name}</span>
                           </div>
-                          <span style={{ color: colors.textSecondary, fontSize: '0.8rem' }}>
-                            {student.isOnline ? t.online : t.offline}
-                          </span>
                         </div>
                       ))}
                     </div>
@@ -2384,7 +2369,7 @@ const App: React.FC = () => {
           role: userForm.role,
           isActive: true,
           created_at: new Date().toISOString(),
-          isOnline: false
+
         };
         setUsersData(prev => {
           const updated = [...prev, newUser];
@@ -2730,30 +2715,7 @@ const App: React.FC = () => {
                            user.role === 'lehrer' ? t.lehrer : t.student}
                         </span>
                         
-                        {/* Online Status */}
-                        <div style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          background: user.isOnline ? colors.success + '20' : colors.textSecondary + '20',
-                          padding: '4px 8px',
-                          borderRadius: '6px'
-                        }}>
-                          <div style={{
-                            width: '8px',
-                            height: '8px',
-                            borderRadius: '50%',
-                            background: user.isOnline ? colors.success : colors.textSecondary,
-                            boxShadow: user.isOnline ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none'
-                          }} />
-                          <span style={{ 
-                            color: user.isOnline ? colors.success : colors.textSecondary, 
-                            fontSize: '0.8rem',
-                            fontWeight: '600'
-                          }}>
-                            {user.isOnline ? t.online : t.offline}
-                          </span>
-                        </div>
+
                       </div>
                     </div>
                   </div>
@@ -3303,21 +3265,7 @@ const App: React.FC = () => {
                   <span style={{ color: colors.textSecondary, fontWeight: '500' }}>تاريخ التسجيل</span>
                   <span style={{ color: colors.text, fontWeight: '600' }}>{new Date(currentUser?.created_at || '').toLocaleDateString('ar-SA')}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ color: colors.textSecondary, fontWeight: '500' }}>حالة الاتصال</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ 
-                      width: '8px', 
-                      height: '8px', 
-                      borderRadius: '50%', 
-                      background: currentUser?.isOnline ? '#10b981' : '#6b7280',
-                      boxShadow: currentUser?.isOnline ? '0 0 8px #10b98150' : 'none'
-                    }} />
-                    <span style={{ color: colors.text, fontWeight: '600' }}>
-                      {currentUser?.isOnline ? 'متصل' : 'غير متصل'}
-                    </span>
-                  </div>
-                </div>
+                
               </div>
             </div>
           </div>
