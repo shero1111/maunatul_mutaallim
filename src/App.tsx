@@ -630,9 +630,9 @@ const App: React.FC = () => {
       fontSize: '14px',
       backgroundColor: colors.surface,
       color: colors.text,
-      direction: language === 'ar' ? 'rtl' : 'ltr',
+      direction: language === 'ar' ? 'rtl' as const : 'ltr' as const,
       outline: 'none',
-      boxSizing: 'border-box'
+      boxSizing: 'border-box' as const
     } : {
       flex: 1,
       padding: '12px 16px',
@@ -641,9 +641,9 @@ const App: React.FC = () => {
       fontSize: '16px',
       backgroundColor: colors.surface,
       color: colors.text,
-      direction: language === 'ar' ? 'rtl' : 'ltr',
+      direction: language === 'ar' ? 'rtl' as const : 'ltr' as const,
       outline: 'none',
-      boxSizing: 'border-box'
+      boxSizing: 'border-box' as const
     };
 
     const buttonStyle = compact ? {
