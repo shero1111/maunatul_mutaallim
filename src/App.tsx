@@ -3420,7 +3420,19 @@ const App: React.FC = () => {
             }}>
               {/* Rewind 5 Seconds */}
               <button 
-                onClick={() => {
+                onTouchStart={(e) => {
+                  e.preventDefault();
+                  // iOS: Execute immediately on touch
+                  const audio = (window as any).currentAudio;
+                  if (audio) {
+                    const newTime = Math.max(0, audio.currentTime - 5);
+                    audio.currentTime = newTime;
+                    localStorage.setItem(`audioPosition_${audioPlayer.matnId}`, newTime.toString());
+                  }
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  // Desktop fallback
                   const audio = (window as any).currentAudio;
                   if (audio) {
                     const newTime = Math.max(0, audio.currentTime - 5);
@@ -3442,8 +3454,12 @@ const App: React.FC = () => {
                   gap: '8px',
                   transition: 'all 0.2s ease',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                  order: 1
+                  order: 1,
+                  touchAction: 'manipulation',
+                  WebkitTapHighlightColor: 'transparent',
+                  outline: 'none'
                 }}
+                onTouchEnd={(e) => e.preventDefault()}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'scale(1.05)';
                   e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.3)';
@@ -3459,7 +3475,19 @@ const App: React.FC = () => {
               
               {/* Forward 5 Seconds */}
               <button 
-                onClick={() => {
+                onTouchStart={(e) => {
+                  e.preventDefault();
+                  // iOS: Execute immediately on touch
+                  const audio = (window as any).currentAudio;
+                  if (audio) {
+                    const newTime = Math.min(audio.duration || 0, audio.currentTime + 5);
+                    audio.currentTime = newTime;
+                    localStorage.setItem(`audioPosition_${audioPlayer.matnId}`, newTime.toString());
+                  }
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  // Desktop fallback
                   const audio = (window as any).currentAudio;
                   if (audio) {
                     const newTime = Math.min(audio.duration || 0, audio.currentTime + 5);
@@ -3481,8 +3509,12 @@ const App: React.FC = () => {
                   gap: '8px',
                   transition: 'all 0.2s ease',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                  order: 2
+                  order: 2,
+                  touchAction: 'manipulation',
+                  WebkitTapHighlightColor: 'transparent',
+                  outline: 'none'
                 }}
+                onTouchEnd={(e) => e.preventDefault()}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'scale(1.05)';
                   e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.3)';
