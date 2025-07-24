@@ -3359,19 +3359,50 @@ const App: React.FC = () => {
               URL: {audioPlayer.url}
             </div>
             
+            {/* Mobile-Optimized Audio */}
             <audio 
-              src={audioPlayer.url}
               controls
-              preload="auto"
-              style={{ width: '100%', marginBottom: '15px' }}
-              onError={(e) => console.error('Audio Error:', e.currentTarget.error)}
-              onCanPlay={() => console.log('Audio ready to play')}
-              onLoadStart={() => console.log('Loading audio:', audioPlayer.url)}
+              preload="none"
+              style={{ 
+                width: '100%', 
+                marginBottom: '15px',
+                height: '40px' // Bigger on mobile
+              }}
+              onError={(e) => {
+                console.error('Audio Error:', e.currentTarget.error);
+                console.error('Error code:', e.currentTarget.error?.code);
+              }}
+              onCanPlay={() => console.log('✅ Audio ready to play')}
+              onLoadStart={() => console.log('⏳ Loading audio:', audioPlayer.url)}
+              onLoadedMetadata={() => console.log('📊 Audio metadata loaded')}
+              onPlaying={() => console.log('▶️ Audio started playing')}
+              onPause={() => console.log('⏸️ Audio paused')}
             >
               <source src={audioPlayer.url} type="audio/mpeg" />
+              <source src={audioPlayer.url} type="audio/wav" />
               <source src={audioPlayer.url} type="audio/mp3" />
-              Audio not supported.
+              Your browser doesn't support audio playback.
             </audio>
+            
+            {/* Fallback Manual Link for Mobile */}
+            <div style={{ marginBottom: '10px', textAlign: 'center' }}>
+              <a 
+                href={audioPlayer.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  background: 'rgba(255,255,255,0.3)',
+                  color: 'white',
+                  textDecoration: 'none',
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  fontSize: '12px',
+                  display: 'inline-block'
+                }}
+              >
+                🎵 Open Audio in New Tab (Mobile Fallback)
+              </a>
+            </div>
             
             {/* Download Link */}
             <div style={{ textAlign: 'center' }}>
