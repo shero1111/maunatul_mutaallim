@@ -3354,13 +3354,20 @@ const App: React.FC = () => {
             </div>
             
             {/* Simple Native Audio */}
-            {/* Future-Proof HTML5 Audio Player */}
+            {/* Enhanced Audio Player with Custom Controls */}
             <audio 
+              ref={(el) => {
+                if (el && !el.dataset.initialized) {
+                  el.dataset.initialized = 'true';
+                  // Store reference for custom controls
+                  (window as any).currentAudio = el;
+                }
+              }}
               controls
               preload="none"
               style={{ 
                 width: '100%', 
-                marginBottom: '15px',
+                marginBottom: '10px',
                 minHeight: '40px'
               }}
             >
@@ -3368,6 +3375,62 @@ const App: React.FC = () => {
               <source src={audioPlayer.url} type="audio/mp3" />
               Your browser doesn't support the audio element.
             </audio>
+            
+            {/* Custom Skip Controls */}
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              gap: '15px', 
+              marginBottom: '15px' 
+            }}>
+              <button 
+                onClick={() => {
+                  const audio = (window as any).currentAudio;
+                  if (audio) {
+                    audio.currentTime = Math.max(0, audio.currentTime - 5);
+                  }
+                }}
+                style={{
+                  background: 'rgba(255,255,255,0.2)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '8px 12px',
+                  borderRadius: '20px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px'
+                }}
+              >
+                ⏪ -5s
+              </button>
+              
+              <button 
+                onClick={() => {
+                  const audio = (window as any).currentAudio;
+                  if (audio) {
+                    audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 5);
+                  }
+                }}
+                style={{
+                  background: 'rgba(255,255,255,0.2)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '8px 12px',
+                  borderRadius: '20px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px'
+                }}
+              >
+                +5s ⏩
+              </button>
+            </div>
             
             {/* Download Link */}
             <div style={{ textAlign: 'center' }}>
