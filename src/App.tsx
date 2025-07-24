@@ -73,7 +73,7 @@ const mutunTemplate = [
   {
     title: 'المستوى الأول',
     items: [
-      { name: 'ثلاثة الأصول وأدلتها', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://raw.githubusercontent.com/shero1111/maunatul_mutaallim_resources/main/audio/1-1-usul-althalatha.mp3', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: 'https://raw.githubusercontent.com/shero1111/maunatul_mutaallim_resources/main/audio/1-1-usul-althalatha.mp3' },
+      { name: 'ثلاثة الأصول وأدلتها', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://filesamples.com/samples/audio/mp3/SampleAudio_0.4mb_mp3.mp3', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: 'https://filesamples.com/samples/audio/mp3/SampleAudio_0.4mb_mp3.mp3' },
       { name: 'المفتاح في الفقه', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand3.wav', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand3.wav' },
       { name: 'معاني الفاتحة وقصار المفصل', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch3.wav', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch3.wav' },
       { name: 'الأربعين النووية', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/PinkPanther30.wav', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/PinkPanther30.wav' },
@@ -1580,18 +1580,21 @@ const App: React.FC = () => {
                          {matn.memorization_audio_link && (
                            // Show audio button OR audio player
                                                        audioPlayer && audioPlayer.matnId === matn.id ? (
-                             // Ultra-Simple Audio Player
-                             <div style={{
-                               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                               padding: '10px',
-                               borderRadius: '6px',
-                               color: 'white',
-                               marginTop: '6px',
-                               width: '100%'
-                             }}>
+                             // Ultra-Stable Audio Player with Fixed Key
+                             <div 
+                               key={`audio-player-${audioPlayer.matnId}`} 
+                               style={{
+                                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                 padding: '10px',
+                                 borderRadius: '6px',
+                                 color: 'white',
+                                 marginTop: '6px',
+                                 width: '100%'
+                               }}
+                             >
                                {/* Header with close button */}
                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                                 <span style={{ fontSize: '11px', fontWeight: 'bold' }}>🎧 Audio</span>
+                                 <span style={{ fontSize: '11px', fontWeight: 'bold' }}>🎧 Audio Player</span>
                                  <button 
                                    onClick={(e) => {
                                      e.stopPropagation();
@@ -1615,22 +1618,31 @@ const App: React.FC = () => {
                                  </button>
                                </div>
                                
-                               {/* Pure Native Audio - Zero JS interference */}
+                               {/* Static Audio Element - No Re-renders */}
                                <audio 
+                                 key={audioPlayer.url} // Force re-mount on URL change only
                                  controls
-                                 preload="none"
+                                 preload="metadata"
                                  style={{ 
                                    width: '100%', 
                                    height: '32px',
-                                   outline: 'none'
+                                   outline: 'none',
+                                   backgroundColor: 'rgba(255,255,255,0.1)',
+                                   borderRadius: '4px'
                                  }}
                                >
                                  <source src={audioPlayer.url} type="audio/mpeg" />
-                                 Dein Browser unterstützt kein Audio.
+                                 <source src={audioPlayer.url} type="audio/wav" />
+                                 Audio wird nicht unterstützt.
                                </audio>
                                
+                               {/* Debug Info */}
+                               <div style={{ marginTop: '4px', fontSize: '8px', color: 'rgba(255,255,255,0.6)', textAlign: 'center' }}>
+                                 URL: {audioPlayer.url.split('/').pop()?.substring(0, 20)}...
+                               </div>
+                               
                                {/* Fallback Download */}
-                               <div style={{ marginTop: '6px', textAlign: 'center' }}>
+                               <div style={{ marginTop: '4px', textAlign: 'center' }}>
                                  <a 
                                    href={audioPlayer.url} 
                                    target="_blank" 
@@ -1644,7 +1656,7 @@ const App: React.FC = () => {
                                      borderRadius: '8px'
                                    }}
                                  >
-                                   📥 Falls Audio nicht lädt, hier klicken
+                                   📥 Direct Download
                                  </a>
                                </div>
                              </div>
