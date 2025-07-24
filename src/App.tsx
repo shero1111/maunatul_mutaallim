@@ -462,8 +462,8 @@ const App: React.FC = () => {
           else if (matn.status === 'orange') newStatus = 'green';
           else if (matn.status === 'green') newStatus = 'red';
           
-          // Update lastChange_date when going from GREEN to RED (manual or automatic completion)
-          const shouldUpdateDate = matn.status === 'green' && newStatus === 'red';
+          // Update lastChange_date when going from ORANGE to GREEN (complete repetition)
+          const shouldUpdateDate = matn.status === 'orange' && newStatus === 'green';
           
           return { 
             ...matn, 
