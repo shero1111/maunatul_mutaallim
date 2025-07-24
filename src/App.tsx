@@ -3354,13 +3354,32 @@ const App: React.FC = () => {
             </div>
             
             {/* Simple Native Audio */}
-            {/* Enhanced Audio Player with Custom Controls */}
+            {/* Enhanced Audio Player with Position Memory */}
             <audio 
               ref={(el) => {
                 if (el && !el.dataset.initialized) {
                   el.dataset.initialized = 'true';
                   // Store reference for custom controls
                   (window as any).currentAudio = el;
+                  
+                  // Auto-resume from saved position
+                  const savedPosition = localStorage.getItem(`audioPosition_${audioPlayer.matnId}`);
+                  if (savedPosition) {
+                    el.addEventListener('canplay', () => {
+                      const position = parseFloat(savedPosition);
+                      if (position > 0 && position < el.duration) {
+                        el.currentTime = position;
+                        console.log(`📍 Resumed at ${Math.floor(position)}s for ${audioPlayer.title}`);
+                      }
+                    }, { once: true });
+                  }
+                  
+                  // Save position while playing
+                  el.addEventListener('timeupdate', () => {
+                    if (el.currentTime > 0) {
+                      localStorage.setItem(`audioPosition_${audioPlayer.matnId}`, el.currentTime.toString());
+                    }
+                  });
                 }
               }}
               controls
@@ -3387,7 +3406,10 @@ const App: React.FC = () => {
                 onClick={() => {
                   const audio = (window as any).currentAudio;
                   if (audio) {
-                    audio.currentTime = Math.max(0, audio.currentTime - 5);
+                    const newTime = Math.max(0, audio.currentTime - 5);
+                    audio.currentTime = newTime;
+                    // Save position
+                    localStorage.setItem(`audioPosition_${audioPlayer.matnId}`, newTime.toString());
                   }
                 }}
                 style={{
@@ -3411,7 +3433,10 @@ const App: React.FC = () => {
                 onClick={() => {
                   const audio = (window as any).currentAudio;
                   if (audio) {
-                    audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 5);
+                    const newTime = Math.min(audio.duration || 0, audio.currentTime + 5);
+                    audio.currentTime = newTime;
+                    // Save position
+                    localStorage.setItem(`audioPosition_${audioPlayer.matnId}`, newTime.toString());
                   }
                 }}
                 style={{
