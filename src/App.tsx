@@ -3395,20 +3395,22 @@ const App: React.FC = () => {
               Your browser doesn't support the audio element.
             </audio>
             
-            {/* Custom Skip Controls */}
+            {/* Universal Skip Controls - Always Minus Left, Plus Right */}
             <div style={{ 
+              position: 'relative',
               display: 'flex', 
               justifyContent: 'center', 
               gap: '15px', 
-              marginBottom: '15px' 
+              marginBottom: '15px',
+              direction: 'ltr' // Force LTR for buttons regardless of app language
             }}>
+              {/* MINUS Button - Always LEFT */}
               <button 
                 onClick={() => {
                   const audio = (window as any).currentAudio;
                   if (audio) {
                     const newTime = Math.max(0, audio.currentTime - 5);
                     audio.currentTime = newTime;
-                    // Save position
                     localStorage.setItem(`audioPosition_${audioPlayer.matnId}`, newTime.toString());
                   }
                 }}
@@ -3421,21 +3423,19 @@ const App: React.FC = () => {
                   cursor: 'pointer',
                   fontSize: '12px',
                   fontWeight: 'bold',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '5px'
+                  order: 1 // Force left position
                 }}
               >
                 ⏪ -5s
               </button>
               
+              {/* PLUS Button - Always RIGHT */}
               <button 
                 onClick={() => {
                   const audio = (window as any).currentAudio;
                   if (audio) {
                     const newTime = Math.min(audio.duration || 0, audio.currentTime + 5);
                     audio.currentTime = newTime;
-                    // Save position
                     localStorage.setItem(`audioPosition_${audioPlayer.matnId}`, newTime.toString());
                   }
                 }}
@@ -3448,9 +3448,7 @@ const App: React.FC = () => {
                   cursor: 'pointer',
                   fontSize: '12px',
                   fontWeight: 'bold',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '5px'
+                  order: 2 // Force right position
                 }}
               >
                 +5s ⏩
