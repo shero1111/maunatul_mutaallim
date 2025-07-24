@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 // Islamic Learning Management System - Maunatul Mutaallim
 // COMPLETE IMPLEMENTATION WITH ALL FEATURES
@@ -305,6 +305,31 @@ const App: React.FC = () => {
 
   const colors = themeColors[theme];
 
+  // Prevent mobile viewport issues that interfere with input focus
+  useEffect(() => {
+    // Ensure viewport meta tag prevents zoom on input focus
+    let viewport = document.querySelector('meta[name="viewport"]');
+    if (!viewport) {
+      viewport = document.createElement('meta');
+      viewport.setAttribute('name', 'viewport');
+      document.head.appendChild(viewport);
+    }
+    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+
+    // Prevent scrolling when keyboard opens on mobile
+    const preventScroll = (e: TouchEvent) => {
+      if ((e.target as HTMLElement)?.tagName === 'INPUT') {
+        e.stopPropagation();
+      }
+    };
+    
+    document.addEventListener('touchstart', preventScroll, { passive: false });
+    
+    return () => {
+      document.removeEventListener('touchstart', preventScroll);
+    };
+  }, []);
+
   // Initialize personal Mutuun on first login
   useEffect(() => {
     if (currentUser && mutunData.filter(m => m.user_id === currentUser.id).length === 0) {
@@ -453,6 +478,126 @@ const App: React.FC = () => {
   const formatTime = (dateString: string) => new Date(dateString).toLocaleString(language === 'ar' ? 'ar-SA' : 'en-US');
   const formatTimerDisplay = (seconds: number) => `${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`;
 
+  // Mobile-optimized input component with robust focus handling
+  const MobileInputField = React.memo(({ matn }: { matn: Matn }) => {
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [isFocused, setIsFocused] = useState(false);
+    const [inputValue, setInputValue] = useState(matn.description || '');
+    const timeoutRef = useRef<NodeJS.Timeout>();
+
+    const handleFocus = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+      // Clear any pending blur timeouts
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      
+      setIsFocused(true);
+      e.target.style.borderColor = colors.primary;
+      
+      // Ensure input stays focused on mobile
+      setTimeout(() => {
+        if (inputRef.current && document.activeElement !== inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 10);
+    }, [colors.primary]);
+
+    const handleBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+      // Delay blur to prevent interference with touch events
+      timeoutRef.current = setTimeout(() => {
+        setIsFocused(false);
+        e.target.style.borderColor = colors.border;
+        
+        // Only update if value actually changed
+        if (inputValue !== (matn.description || '')) {
+          updateMatnDescription(matn.id, inputValue);
+        }
+      }, 150);
+    }, [colors.border, inputValue, matn.description, matn.id]);
+
+    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+      setInputValue(e.target.value);
+    }, []);
+
+    const handleTouchStart = useCallback((e: React.TouchEvent) => {
+      // Prevent event bubbling that could interfere with focus
+      e.stopPropagation();
+    }, []);
+
+    const handleMouseDown = useCallback((e: React.MouseEvent) => {
+      // Prevent event bubbling on desktop
+      e.stopPropagation();
+    }, []);
+
+    const handleClick = useCallback((e: React.MouseEvent<HTMLInputElement>) => {
+      e.stopPropagation();
+      
+      // Ensure focus on mobile devices
+      if (inputRef.current) {
+        inputRef.current.focus();
+        
+        // Additional focus attempt after slight delay for mobile
+        setTimeout(() => {
+          if (inputRef.current && !isFocused) {
+            inputRef.current.focus();
+          }
+        }, 100);
+      }
+    }, [isFocused]);
+
+    useEffect(() => {
+      return () => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+      };
+    }, []);
+
+    return (
+      <div 
+        style={{ 
+          marginBottom: '12px',
+          position: 'relative',
+          isolation: 'isolate' // Create new stacking context
+        }}
+        onTouchStart={handleTouchStart}
+        onMouseDown={handleMouseDown}
+      >
+        <input
+          ref={inputRef}
+          type="text"
+          value={inputValue}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onClick={handleClick}
+          placeholder={language === 'ar' ? 'اكتب ملاحظة...' : 'Write a note...'}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
+          style={{
+            width: '100%',
+            padding: '12px',
+            border: `1px solid ${isFocused ? colors.primary : colors.border}`,
+            borderRadius: '8px',
+            fontSize: '16px', // Prevents zoom on iOS
+            fontFamily: 'inherit',
+            backgroundColor: colors.background,
+            color: colors.text,
+            outline: 'none',
+            direction: language === 'ar' ? 'rtl' : 'ltr',
+            textAlign: language === 'ar' ? 'right' : 'left',
+            boxSizing: 'border-box',
+            WebkitAppearance: 'none', // Remove iOS styling
+            WebkitTapHighlightColor: 'transparent',
+            transition: 'border-color 0.2s ease', // Smooth border transition
+            zIndex: 1 // Ensure input is above other elements
+          }}
+        />
+      </div>
+    );
+  });
 
   const changeMatnStatus = (matnId: string) => {
     setMutunData(prev => {
@@ -1509,34 +1654,8 @@ const App: React.FC = () => {
                          </div>
                        </div>
                        
-                                               {/* Note Field - Completely Isolated */}
-                               <div style={{ marginBottom: '12px' }}>
-                                 <input
-                                   type="text"
-                                   defaultValue={matn.description || ''}
-                                   onBlur={(e) => {
-                                     updateMatnDescription(matn.id, e.target.value);
-                                   }}
-                                   onFocus={(e) => {
-                                     e.target.style.borderColor = colors.primary;
-                                   }}
-                                   placeholder={language === 'ar' ? 'اكتب ملاحظة...' : 'Write a note...'}
-                                   style={{
-                                     width: '100%',
-                                     padding: '12px',
-                                     border: `1px solid ${colors.border}`,
-                                     borderRadius: '8px',
-                                     fontSize: '16px',
-                                     fontFamily: 'inherit',
-                                     backgroundColor: colors.background,
-                                     color: colors.text,
-                                     outline: 'none',
-                                     direction: language === 'ar' ? 'rtl' : 'ltr',
-                                     textAlign: language === 'ar' ? 'right' : 'left',
-                                     boxSizing: 'border-box'
-                                   }}
-                                 />
-                               </div>
+                                               {/* Note Field - Mobile Optimized */}
+                               <MobileInputField matn={matn} />
                        
                        {/* Action Buttons */}
                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
