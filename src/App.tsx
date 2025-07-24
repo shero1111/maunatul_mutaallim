@@ -273,9 +273,8 @@ const App: React.FC = () => {
   const [editingNewsId, setEditingNewsId] = useState<string | null>(null);
   const [newsForm, setNewsForm] = useState({ title: '', description: '' });
 
-  // User management state
-  const [userSearchActive, setUserSearchActive] = useState(false);
-  const [userSearchInput, setUserSearchInput] = useState('');
+  // User management state  
+  const [userSearchTerm, setUserSearchTerm] = useState('');
   const [isCreatingUser, setIsCreatingUser] = useState(false);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [userForm, setUserForm] = useState({ 
@@ -1782,8 +1781,7 @@ const App: React.FC = () => {
         });
         
         setHalaqaForm({ name: '', type: 'memorizing', teacher_id: '', student_ids: [], internal_number: 0, isActive: true });
-        setStudentSearchInput('');
-        setStudentSearchActive(false);
+        setStudentSearchTerm('');
         setIsCreatingHalaqa(false);
       }
     };
@@ -1825,8 +1823,7 @@ const App: React.FC = () => {
         });
         
         setHalaqaForm({ name: '', type: 'memorizing', teacher_id: '', student_ids: [], internal_number: 0, isActive: true });
-        setStudentSearchInput('');
-        setStudentSearchActive(false);
+        setStudentSearchTerm('');
         setEditingHalaqaId(null);
         setIsCreatingHalaqa(false);
       }
@@ -1846,30 +1843,15 @@ const App: React.FC = () => {
     const availableStudents = usersData.filter(user => user.role === 'student');
     
     // Student search state
-    const [studentSearchActive, setStudentSearchActive] = useState(false);
-    const [studentSearchInput, setStudentSearchInput] = useState('');
+    const [studentSearchTerm, setStudentSearchTerm] = useState('');
     
-    // Simple student filter - only when search is active
-    const getFilteredStudents = () => {
-      if (!studentSearchActive || !studentSearchInput.trim()) {
-        return availableStudents;
-      }
-      
-      const query = studentSearchInput.toLowerCase();
-      return availableStudents.filter(student => 
-        student.name.toLowerCase().includes(query) ||
-        student.username.toLowerCase().includes(query)
-      );
-    };
-
-    const handleStudentSearch = () => {
-      setStudentSearchActive(true);
-    };
-
-    const handleStudentClearSearch = () => {
-      setStudentSearchActive(false);
-      setStudentSearchInput('');
-    };
+    // Simple student filter
+    const filteredStudents = availableStudents.filter(student => {
+      if (!studentSearchTerm.trim()) return true;
+      const query = studentSearchTerm.toLowerCase();
+      return student.name.toLowerCase().includes(query) ||
+             student.username.toLowerCase().includes(query);
+    });
 
     return (
       <div style={{ padding: '20px' }}>
@@ -2172,61 +2154,28 @@ const App: React.FC = () => {
                   الطلاب ({halaqaForm.student_ids.length})
                 </label>
                 
-                {/* Student Search - Completely Isolated */}
+                {/* Student Search - Simple */}
                 <div style={{ marginBottom: '8px' }}>
-                  <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                    <input
-                      type="text"
-                      value={studentSearchInput}
-                      onChange={(e) => setStudentSearchInput(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleStudentSearch()}
-                      placeholder="البحث عن طالب..."
-                      style={{
-                        flex: 1,
-                        padding: '6px 8px',
-                        border: `1px solid ${colors.border}`,
-                        borderRadius: '4px',
-                        fontSize: '14px',
-                        backgroundColor: colors.surface,
-                        color: colors.text,
-                        direction: 'rtl' as const,
-                        outline: 'none',
-                        boxSizing: 'border-box' as const
-                      }}
-                      onFocus={(e) => e.target.style.borderColor = colors.primary}
-                      onBlur={(e) => e.target.style.borderColor = colors.border}
-                    />
-                    <button
-                      onClick={handleStudentSearch}
-                      style={{
-                        padding: '6px 10px',
-                        background: colors.primary,
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
-                    >
-                      🔍
-                    </button>
-                    {studentSearchActive && (
-                      <button
-                        onClick={handleStudentClearSearch}
-                        style={{
-                          padding: '6px 8px',
-                          background: colors.textSecondary,
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '12px'
-                        }}
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
+                  <input
+                    type="text"
+                    value={studentSearchTerm}
+                    onChange={(e) => setStudentSearchTerm(e.target.value)}
+                    placeholder="البحث عن طالب..."
+                    style={{
+                      width: '100%',
+                      padding: '8px',
+                      border: `1px solid ${colors.border}`,
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      backgroundColor: colors.background,
+                      color: colors.text,
+                      direction: 'rtl' as const,
+                      outline: 'none',
+                      boxSizing: 'border-box' as const
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = colors.primary}
+                    onBlur={(e) => e.target.style.borderColor = colors.border}
+                  />
                 </div>
                 
                 <div style={{ 
@@ -2236,7 +2185,7 @@ const App: React.FC = () => {
                   borderRadius: '8px',
                   padding: '8px'
                 }}>
-                  {getFilteredStudents().length > 0 ? getFilteredStudents().map(student => (
+                  {filteredStudents.length > 0 ? filteredStudents.map(student => (
                     <label key={student.id} style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -2271,7 +2220,7 @@ const App: React.FC = () => {
                       color: colors.textSecondary,
                       fontSize: '0.9rem'
                     }}>
-                      {studentSearchActive ? 'لا توجد نتائج للبحث' : 'لا يوجد طلاب متاحون'}
+                      {studentSearchTerm ? 'لا توجد نتائج للبحث' : 'لا يوجد طلاب متاحون'}
                     </div>
                   )}
                 </div>
@@ -2315,8 +2264,7 @@ const App: React.FC = () => {
                       setIsCreatingHalaqa(false);
                       setEditingHalaqaId(null);
                       setHalaqaForm({ name: '', type: 'memorizing', teacher_id: '', student_ids: [], internal_number: 0, isActive: true });
-                      setStudentSearchInput('');
-                      setStudentSearchActive(false);
+                      setStudentSearchTerm('');
                     }}
                       style={{
                         padding: '12px 20px',
@@ -2418,27 +2366,13 @@ const App: React.FC = () => {
   const UsersPage: React.FC = () => {
     const canManageUsers = currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
     
-    // Simple filter - only when search is active
-    const getFilteredUsers = () => {
-      if (!userSearchActive || !userSearchInput.trim()) {
-        return usersData;
-      }
-      
-      const query = userSearchInput.toLowerCase();
-      return usersData.filter(user => 
-        user.username.toLowerCase().includes(query) ||
-        user.role.toLowerCase().includes(query)
-      );
-    };
-
-    const handleUserSearch = () => {
-      setUserSearchActive(true);
-    };
-
-    const handleUserClearSearch = () => {
-      setUserSearchActive(false);
-      setUserSearchInput('');
-    };
+    // Simple user filter
+    const filteredUsers = usersData.filter(user => {
+      if (!userSearchTerm.trim()) return true;
+      const query = userSearchTerm.toLowerCase();
+      return user.username.toLowerCase().includes(query) || 
+             user.role.toLowerCase().includes(query);
+    });
 
     const handleCreateUser = () => {
       if (userForm.username.trim()) {
@@ -2515,62 +2449,28 @@ const App: React.FC = () => {
           {t.users}
         </h1>
 
-        {/* Search Bar - Completely Isolated */}
+        {/* Search Bar - Simple */}
         <div style={{ marginBottom: '20px' }}>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <input
-              type="text"
-              value={userSearchInput}
-              onChange={(e) => setUserSearchInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleUserSearch()}
-              placeholder={t.searchUsers}
-              style={{
-                flex: 1,
-                padding: '10px 12px',
-                border: `1px solid ${colors.border}`,
-                borderRadius: '6px',
-                fontSize: '16px',
-                backgroundColor: colors.surface,
-                color: colors.text,
-                direction: language === 'ar' ? 'rtl' as const : 'ltr' as const,
-                outline: 'none',
-                boxSizing: 'border-box' as const
-              }}
-              onFocus={(e) => e.target.style.borderColor = colors.primary}
-              onBlur={(e) => e.target.style.borderColor = colors.border}
-            />
-            <button
-              onClick={handleUserSearch}
-              style={{
-                padding: '10px 16px',
-                background: colors.primary,
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: 'bold'
-              }}
-            >
-              🔍
-            </button>
-            {userSearchActive && (
-              <button
-                onClick={handleUserClearSearch}
-                style={{
-                  padding: '10px 12px',
-                  background: colors.textSecondary,
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '14px'
-                }}
-              >
-                ✕
-              </button>
-            )}
-          </div>
+          <input
+            type="text"
+            value={userSearchTerm}
+            onChange={(e) => setUserSearchTerm(e.target.value)}
+            placeholder={t.searchUsers}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              border: `2px solid ${colors.border}`,
+              borderRadius: '12px',
+              fontSize: '16px',
+              backgroundColor: colors.surface,
+              color: colors.text,
+              direction: language === 'ar' ? 'rtl' as const : 'ltr' as const,
+              outline: 'none',
+              boxSizing: 'border-box' as const
+            }}
+            onFocus={(e) => e.target.style.borderColor = colors.primary}
+            onBlur={(e) => e.target.style.borderColor = colors.border}
+          />
         </div>
 
         {/* Create/Edit User Form */}
@@ -2773,7 +2673,7 @@ const App: React.FC = () => {
         )}
         
         <div style={{ display: 'grid', gap: '16px' }}>
-          {getFilteredUsers().map(user => {
+          {filteredUsers.map(user => {
             // Role-based colors
             const getRoleColor = (role: string) => {
               switch (role) {
@@ -2905,7 +2805,7 @@ const App: React.FC = () => {
         </div>
 
         {/* No users found message */}
-                  {getFilteredUsers().length === 0 && (
+                  {filteredUsers.length === 0 && (
           <div style={{ textAlign: 'center', padding: '40px', color: colors.textSecondary }}>
             <div style={{ fontSize: '3rem', marginBottom: '10px' }}>👥</div>
             <p>{t.noUsersFound}</p>
