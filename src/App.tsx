@@ -3332,7 +3332,7 @@ const App: React.FC = () => {
 
       {/* PDF Viewer removed - only external opening */}
 
-              {/* Fixed Overlay Audio Player - Outside all components */}
+              {/* Responsive Audio Player Modal */}
         {audioPlayer && (
           <div style={{
             position: 'fixed',
@@ -3340,28 +3340,46 @@ const App: React.FC = () => {
             left: '50%',
             transform: 'translate(-50%, -50%)',
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            padding: '20px',
-            borderRadius: '12px',
+            padding: window.innerHeight < 700 ? '12px' : window.innerWidth < 400 ? '16px' : '20px',
+            borderRadius: window.innerWidth < 400 ? '8px' : '12px',
             color: 'white',
             zIndex: 10000,
             boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-            width: '90%',
-            maxWidth: '400px'
+            width: window.innerWidth < 400 ? '95%' : '90%',
+            maxWidth: window.innerWidth < 400 ? '350px' : '400px',
+            maxHeight: window.innerHeight < 700 ? '85vh' : '90vh',
+            overflow: 'auto'
           }}>
-            {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-              <h3 style={{ margin: 0, fontSize: '16px' }}>🎧 {audioPlayer.title}</h3>
+            {/* Responsive Header */}
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              marginBottom: window.innerHeight < 700 ? '10px' : '15px' 
+            }}>
+              <h3 style={{ 
+                margin: 0, 
+                fontSize: window.innerWidth < 400 ? '14px' : '16px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                maxWidth: '70%'
+              }}>
+                🎧 {audioPlayer.title}
+              </h3>
               <button 
                 onClick={() => setAudioPlayer(null)}
                 style={{ 
                   background: 'rgba(255,255,255,0.2)', 
                   border: 'none', 
                   color: 'white', 
-                  width: '30px', 
-                  height: '30px', 
+                  width: window.innerWidth < 400 ? '28px' : '30px', 
+                  height: window.innerWidth < 400 ? '28px' : '30px', 
                   borderRadius: '50%', 
                   cursor: 'pointer', 
-                  fontSize: '16px'
+                  fontSize: window.innerWidth < 400 ? '14px' : '16px',
+                  minWidth: window.innerWidth < 400 ? '28px' : '30px',
+                  flexShrink: 0
                 }}
               >
                 ✕
@@ -3410,12 +3428,12 @@ const App: React.FC = () => {
               Your browser doesn't support the audio element.
             </audio>
             
-            {/* Beautiful Skip Controls */}
+            {/* Responsive Skip Controls */}
             <div style={{ 
               display: 'flex', 
               justifyContent: 'center', 
-              gap: '20px', 
-              marginBottom: '15px',
+              gap: window.innerWidth < 400 ? '12px' : '20px', 
+              marginBottom: window.innerHeight < 700 ? '10px' : '15px',
               direction: 'ltr'
             }}>
               {/* Rewind 5 Seconds */}
@@ -3440,25 +3458,25 @@ const App: React.FC = () => {
                     localStorage.setItem(`audioPosition_${audioPlayer.matnId}`, newTime.toString());
                   }
                 }}
-                style={{
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.15))',
-                  border: '1px solid rgba(255,255,255,0.3)',
-                  color: 'white',
-                  padding: '12px 16px',
-                  borderRadius: '50px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  transition: 'all 0.2s ease',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                  order: 1,
-                  touchAction: 'manipulation',
-                  WebkitTapHighlightColor: 'transparent',
-                  outline: 'none'
-                }}
+                                  style={{
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.15))',
+                    border: '1px solid rgba(255,255,255,0.3)',
+                    color: 'white',
+                    padding: window.innerWidth < 400 ? '8px 12px' : '12px 16px',
+                    borderRadius: window.innerWidth < 400 ? '20px' : '50px',
+                    cursor: 'pointer',
+                    fontSize: window.innerWidth < 400 ? '12px' : '14px',
+                    fontWeight: '600',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: window.innerWidth < 400 ? '6px' : '8px',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                    order: 1,
+                    touchAction: 'manipulation',
+                    WebkitTapHighlightColor: 'transparent',
+                    outline: 'none'
+                  }}
                 onTouchEnd={(e) => e.preventDefault()}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'scale(1.05)';
@@ -3499,14 +3517,14 @@ const App: React.FC = () => {
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.15))',
                   border: '1px solid rgba(255,255,255,0.3)',
                   color: 'white',
-                  padding: '12px 16px',
-                  borderRadius: '50px',
+                  padding: window.innerWidth < 400 ? '8px 12px' : '12px 16px',
+                  borderRadius: window.innerWidth < 400 ? '20px' : '50px',
                   cursor: 'pointer',
-                  fontSize: '14px',
+                  fontSize: window.innerWidth < 400 ? '12px' : '14px',
                   fontWeight: '600',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '8px',
+                  gap: window.innerWidth < 400 ? '6px' : '8px',
                   transition: 'all 0.2s ease',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
                   order: 2,
