@@ -274,8 +274,8 @@ const App: React.FC = () => {
   const [newsForm, setNewsForm] = useState({ title: '', description: '' });
 
   // User management state
-  const [userSearchQuery, setUserSearchQuery] = useState('');
-  const [userSearchTerm, setUserSearchTerm] = useState('');
+  const [userSearchActive, setUserSearchActive] = useState(false);
+  const [userSearchInput, setUserSearchInput] = useState('');
   const [isCreatingUser, setIsCreatingUser] = useState(false);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [userForm, setUserForm] = useState({ 
@@ -600,120 +600,7 @@ const App: React.FC = () => {
     );
   });
 
-  // Simple search component with input field and search button
-  const SimpleSearch = ({ 
-    searchTerm, 
-    setSearchTerm, 
-    onSearch, 
-    placeholder,
-    style,
-    compact = false
-  }: {
-    searchTerm: string;
-    setSearchTerm: (term: string) => void;
-    onSearch: () => void;
-    placeholder: string;
-    style?: React.CSSProperties;
-    compact?: boolean;
-  }) => {
-    const handleKeyPress = (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter') {
-        onSearch();
-      }
-    };
 
-    const inputStyle = compact ? {
-      flex: 1,
-      padding: '8px 12px',
-      border: `1px solid ${colors.border}`,
-      borderRadius: '6px',
-      fontSize: '14px',
-      backgroundColor: colors.surface,
-      color: colors.text,
-      direction: language === 'ar' ? 'rtl' as const : 'ltr' as const,
-      outline: 'none',
-      boxSizing: 'border-box' as const
-    } : {
-      flex: 1,
-      padding: '12px 16px',
-      border: `2px solid ${colors.border}`,
-      borderRadius: '12px',
-      fontSize: '16px',
-      backgroundColor: colors.surface,
-      color: colors.text,
-      direction: language === 'ar' ? 'rtl' as const : 'ltr' as const,
-      outline: 'none',
-      boxSizing: 'border-box' as const
-    };
-
-    const buttonStyle = compact ? {
-      padding: '8px 12px',
-      background: colors.primary,
-      color: 'white',
-      border: 'none',
-      borderRadius: '6px',
-      cursor: 'pointer',
-      fontSize: '14px',
-      fontWeight: 'bold'
-    } : {
-      padding: '12px 20px',
-      background: colors.primary,
-      color: 'white',
-      border: 'none',
-      borderRadius: '12px',
-      cursor: 'pointer',
-      fontSize: '16px',
-      fontWeight: 'bold',
-      minWidth: '80px'
-    };
-
-    const clearStyle = compact ? {
-      padding: '8px',
-      background: colors.textSecondary,
-      color: 'white',
-      border: 'none',
-      borderRadius: '6px',
-      cursor: 'pointer',
-      fontSize: '14px'
-    } : {
-      padding: '12px',
-      background: colors.textSecondary,
-      color: 'white',
-      border: 'none',
-      borderRadius: '12px',
-      cursor: 'pointer',
-      fontSize: '16px'
-    };
-
-    return (
-      <div style={{ display: 'flex', gap: '8px', ...style }}>
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder={placeholder}
-          style={inputStyle}
-          onFocus={(e) => e.target.style.borderColor = colors.primary}
-          onBlur={(e) => e.target.style.borderColor = colors.border}
-        />
-        <button onClick={onSearch} style={buttonStyle}>
-          🔍
-        </button>
-        {searchTerm && (
-          <button
-            onClick={() => {
-              setSearchTerm('');
-              onSearch();
-            }}
-            style={clearStyle}
-          >
-            ✕
-          </button>
-        )}
-      </div>
-    );
-  };
 
   const changeMatnStatus = (matnId: string) => {
     setMutunData(prev => {
@@ -1957,22 +1844,29 @@ const App: React.FC = () => {
     const availableStudents = usersData.filter(user => user.role === 'student');
     
     // Student search state
-    const [studentSearchQuery, setStudentSearchQuery] = useState('');
-    const [studentSearchTerm, setStudentSearchTerm] = useState('');
+    const [studentSearchActive, setStudentSearchActive] = useState(false);
+    const [studentSearchInput, setStudentSearchInput] = useState('');
     
-    // Filter students based on search term (only when searched)
-    const filteredStudents = useMemo(() => {
-      if (!studentSearchQuery.trim()) return availableStudents;
+    // Simple student filter - only when search is active
+    const getFilteredStudents = () => {
+      if (!studentSearchActive || !studentSearchInput.trim()) {
+        return availableStudents;
+      }
       
-      const query = studentSearchQuery.toLowerCase();
+      const query = studentSearchInput.toLowerCase();
       return availableStudents.filter(student => 
         student.name.toLowerCase().includes(query) ||
         student.username.toLowerCase().includes(query)
       );
-    }, [availableStudents, studentSearchQuery]);
+    };
 
     const handleStudentSearch = () => {
-      setStudentSearchQuery(studentSearchTerm);
+      setStudentSearchActive(true);
+    };
+
+    const handleStudentClearSearch = () => {
+      setStudentSearchActive(false);
+      setStudentSearchInput('');
     };
 
     return (
@@ -2276,16 +2170,61 @@ const App: React.FC = () => {
                   الطلاب ({halaqaForm.student_ids.length})
                 </label>
                 
-                {/* Student Search - Simple with Button */}
+                {/* Student Search - Completely Isolated */}
                 <div style={{ marginBottom: '8px' }}>
-                  <SimpleSearch
-                    searchTerm={studentSearchTerm}
-                    setSearchTerm={setStudentSearchTerm}
-                    onSearch={handleStudentSearch}
-                    placeholder="البحث عن طالب..."
-                    compact={true}
-                    style={{ gap: '4px' }}
-                  />
+                  <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      value={studentSearchInput}
+                      onChange={(e) => setStudentSearchInput(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleStudentSearch()}
+                      placeholder="البحث عن طالب..."
+                      style={{
+                        flex: 1,
+                        padding: '6px 8px',
+                        border: `1px solid ${colors.border}`,
+                        borderRadius: '4px',
+                        fontSize: '14px',
+                        backgroundColor: colors.surface,
+                        color: colors.text,
+                        direction: 'rtl' as const,
+                        outline: 'none',
+                        boxSizing: 'border-box' as const
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = colors.primary}
+                      onBlur={(e) => e.target.style.borderColor = colors.border}
+                    />
+                    <button
+                      onClick={handleStudentSearch}
+                      style={{
+                        padding: '6px 10px',
+                        background: colors.primary,
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '12px'
+                      }}
+                    >
+                      🔍
+                    </button>
+                    {studentSearchActive && (
+                      <button
+                        onClick={handleStudentClearSearch}
+                        style={{
+                          padding: '6px 8px',
+                          background: colors.textSecondary,
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '12px'
+                        }}
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
                 </div>
                 
                 <div style={{ 
@@ -2295,7 +2234,7 @@ const App: React.FC = () => {
                   borderRadius: '8px',
                   padding: '8px'
                 }}>
-                  {filteredStudents.length > 0 ? filteredStudents.map(student => (
+                  {getFilteredStudents().length > 0 ? getFilteredStudents().map(student => (
                     <label key={student.id} style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -2330,7 +2269,7 @@ const App: React.FC = () => {
                       color: colors.textSecondary,
                       fontSize: '0.9rem'
                     }}>
-                      {studentSearchQuery ? 'لا توجد نتائج للبحث' : 'لا يوجد طلاب متاحون'}
+                      {studentSearchActive ? 'لا توجد نتائج للبحث' : 'لا يوجد طلاب متاحون'}
                     </div>
                   )}
                 </div>
@@ -2476,19 +2415,26 @@ const App: React.FC = () => {
   const UsersPage: React.FC = () => {
     const canManageUsers = currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
     
-    // Filter users based on search term (only when searched)
-    const filteredUsers = useMemo(() => {
-      if (!userSearchQuery.trim()) return usersData;
+    // Simple filter - only when search is active
+    const getFilteredUsers = () => {
+      if (!userSearchActive || !userSearchInput.trim()) {
+        return usersData;
+      }
       
-      const query = userSearchQuery.toLowerCase();
+      const query = userSearchInput.toLowerCase();
       return usersData.filter(user => 
         user.username.toLowerCase().includes(query) ||
         user.role.toLowerCase().includes(query)
       );
-    }, [usersData, userSearchQuery]);
+    };
 
     const handleUserSearch = () => {
-      setUserSearchQuery(userSearchTerm);
+      setUserSearchActive(true);
+    };
+
+    const handleUserClearSearch = () => {
+      setUserSearchActive(false);
+      setUserSearchInput('');
     };
 
     const handleCreateUser = () => {
@@ -2566,14 +2512,62 @@ const App: React.FC = () => {
           {t.users}
         </h1>
 
-        {/* Search Bar - Simple with Button */}
+        {/* Search Bar - Completely Isolated */}
         <div style={{ marginBottom: '20px' }}>
-          <SimpleSearch
-            searchTerm={userSearchTerm}
-            setSearchTerm={setUserSearchTerm}
-            onSearch={handleUserSearch}
-            placeholder={t.searchUsers}
-          />
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <input
+              type="text"
+              value={userSearchInput}
+              onChange={(e) => setUserSearchInput(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleUserSearch()}
+              placeholder={t.searchUsers}
+              style={{
+                flex: 1,
+                padding: '10px 12px',
+                border: `1px solid ${colors.border}`,
+                borderRadius: '6px',
+                fontSize: '16px',
+                backgroundColor: colors.surface,
+                color: colors.text,
+                direction: language === 'ar' ? 'rtl' as const : 'ltr' as const,
+                outline: 'none',
+                boxSizing: 'border-box' as const
+              }}
+              onFocus={(e) => e.target.style.borderColor = colors.primary}
+              onBlur={(e) => e.target.style.borderColor = colors.border}
+            />
+            <button
+              onClick={handleUserSearch}
+              style={{
+                padding: '10px 16px',
+                background: colors.primary,
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: 'bold'
+              }}
+            >
+              🔍
+            </button>
+            {userSearchActive && (
+              <button
+                onClick={handleUserClearSearch}
+                style={{
+                  padding: '10px 12px',
+                  background: colors.textSecondary,
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Create/Edit User Form */}
@@ -2776,7 +2770,7 @@ const App: React.FC = () => {
         )}
         
         <div style={{ display: 'grid', gap: '16px' }}>
-          {filteredUsers.map(user => {
+          {getFilteredUsers().map(user => {
             // Role-based colors
             const getRoleColor = (role: string) => {
               switch (role) {
@@ -2908,7 +2902,7 @@ const App: React.FC = () => {
         </div>
 
         {/* No users found message */}
-        {filteredUsers.length === 0 && (
+                  {getFilteredUsers().length === 0 && (
           <div style={{ textAlign: 'center', padding: '40px', color: colors.textSecondary }}>
             <div style={{ fontSize: '3rem', marginBottom: '10px' }}>👥</div>
             <p>{t.noUsersFound}</p>
