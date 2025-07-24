@@ -1582,19 +1582,13 @@ const App: React.FC = () => {
                                onClick={(e) => {
                                  e.preventDefault();
                                  e.stopPropagation();
-                                 console.log('🎧 Audio button clicked for:', matn.name);
-                                 console.log('📱 User Agent:', navigator.userAgent);
-                                 console.log('🔗 Audio URL:', matn.memorization_audio_link);
                                  
-                                 // iOS Safari fix - force state update
-                                 setTimeout(() => {
-                                   setAudioPlayer({ 
-                                     url: matn.memorization_audio_link, 
-                                     title: matn.name, 
-                                     matnId: matn.id 
-                                   });
-                                   console.log('✅ AudioPlayer state set');
-                                 }, 10);
+                                 // Fast modal open
+                                 setAudioPlayer({ 
+                                   url: matn.memorization_audio_link, 
+                                   title: matn.name, 
+                                   matnId: matn.id 
+                                 });
                                }} 
                                style={{ 
                                  padding: '6px 12px', 
