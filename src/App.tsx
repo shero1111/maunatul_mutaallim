@@ -705,10 +705,24 @@ const App: React.FC = () => {
     const progress = duration ? (currentTime / duration) * 100 : 0;
 
     return (
-      <div style={{ position: 'fixed', bottom: audioPlayer ? 0 : -200, left: 0, right: 0, background: `linear-gradient(135deg, ${currentColors.primary} 0%, ${currentColors.secondary} 100%)`, color: 'white', padding: '20px', borderRadius: '15px 15px 0 0', zIndex: 1001, boxShadow: '0 -10px 30px rgba(0,0,0,0.2)', direction: currentLang === 'ar' ? 'rtl' : 'ltr', transition: 'bottom 0.3s ease' }}>
+      <div 
+        style={{ position: 'fixed', bottom: audioPlayer ? 0 : -200, left: 0, right: 0, background: `linear-gradient(135deg, ${currentColors.primary} 0%, ${currentColors.secondary} 100%)`, color: 'white', padding: '20px', borderRadius: '15px 15px 0 0', zIndex: 1001, boxShadow: '0 -10px 30px rgba(0,0,0,0.2)', direction: currentLang === 'ar' ? 'rtl' : 'ltr', transition: 'bottom 0.3s ease' }}
+        onClick={(e) => e.stopPropagation()} // Verhindert Event-Bubbling
+        onTouchStart={(e) => e.stopPropagation()} // Verhindert Touch-Events
+        onTouchEnd={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+      >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
           <h4 style={{ margin: 0, fontSize: '1.1rem', maxWidth: '80%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>🎧 {title}</h4>
-          <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', width: '30px', height: '30px', borderRadius: '50%', cursor: 'pointer', fontSize: '16px' }}>✕</button>
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }} 
+            style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', width: '30px', height: '30px', borderRadius: '50%', cursor: 'pointer', fontSize: '16px' }}
+          >
+            ✕
+          </button>
         </div>
 
         {/* Debug Info */}
@@ -753,24 +767,36 @@ const App: React.FC = () => {
           }}
         />
 
-        <div style={{ background: 'rgba(255,255,255,0.2)', height: '6px', borderRadius: '3px', marginBottom: '15px', cursor: 'pointer' }} onClick={(e) => {
-          if (audioRef.current && duration) {
-            const rect = e.currentTarget.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const newTime = (clickX / rect.width) * duration;
-            audioRef.current.currentTime = newTime;
-          }
-        }}>
+        <div 
+          style={{ background: 'rgba(255,255,255,0.2)', height: '6px', borderRadius: '3px', marginBottom: '15px', cursor: 'pointer' }} 
+          onClick={(e) => {
+            e.stopPropagation();
+            if (audioRef.current && duration) {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const clickX = e.clientX - rect.left;
+              const newTime = (clickX / rect.width) * duration;
+              audioRef.current.currentTime = newTime;
+            }
+          }}
+        >
           <div style={{ background: 'white', height: '100%', width: `${progress}%`, borderRadius: '3px', transition: 'width 0.1s' }} />
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <button onClick={togglePlay} disabled={isLoading} style={{ background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '20px', cursor: isLoading ? 'not-allowed' : 'pointer', fontSize: '14px', opacity: isLoading ? 0.5 : 1 }}>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                togglePlay();
+              }} 
+              disabled={isLoading} 
+              style={{ background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '20px', cursor: isLoading ? 'not-allowed' : 'pointer', fontSize: '14px', opacity: isLoading ? 0.5 : 1 }}
+            >
               {isLoading ? `⏳ Lädt...` : isPlaying ? `⏸️ Pause` : `▶️ Play`}
             </button>
             <button 
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 console.log('🔄 Force reload audio');
                 if (audioRef.current) {
                   audioRef.current.load();
@@ -785,7 +811,8 @@ const App: React.FC = () => {
               📥 Download
             </a>
             <button 
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 console.log('🧪 Testing URL access...');
                 fetch(audioUrl, { method: 'HEAD' })
                   .then(response => {
