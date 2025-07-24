@@ -711,34 +711,44 @@ const App: React.FC = () => {
           <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', width: '30px', height: '30px', borderRadius: '50%', cursor: 'pointer', fontSize: '16px' }}>✕</button>
         </div>
 
+        {/* Debug Info */}
+        <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', marginBottom: '8px' }}>
+          URL: {audioUrl.substring(audioUrl.lastIndexOf('/') + 1)}
+        </div>
+
+        {/* Native HTML5 Audio - Primary Option */}
         <audio 
           ref={audioRef} 
           src={audioUrl}
-          preload="none"
+          preload="auto"
           controls
           style={{ width: '100%', marginBottom: '10px' }}
           onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)} 
           onLoadedMetadata={() => {
-            console.log('Audio metadata loaded, duration:', audioRef.current?.duration);
+            console.log('✅ Audio loaded successfully, duration:', audioRef.current?.duration);
             setDuration(audioRef.current?.duration || 0);
+            setIsLoading(false);
           }} 
           onCanPlay={() => {
-            console.log('Audio can play');
+            console.log('✅ Audio ready to play');
             setIsLoading(false);
           }} 
           onEnded={() => setIsPlaying(false)}
           onError={(e) => {
-            console.error('Audio Error Details:', e.currentTarget.error);
-            console.error('Failed URL:', audioUrl);
+            console.error('❌ Audio Error:', e.currentTarget.error?.message);
+            console.error('❌ Error Code:', e.currentTarget.error?.code);
+            console.error('❌ Failed URL:', audioUrl);
             setIsLoading(false);
           }}
           onLoadStart={() => {
-            console.log('Starting to load audio:', audioUrl);
+            console.log('⏳ Loading audio from:', audioUrl);
             setIsLoading(true);
           }}
           onProgress={() => {
-            if (audioRef.current) {
-              console.log('Audio loading progress, buffered:', audioRef.current.buffered.length);
+            if (audioRef.current && audioRef.current.buffered.length > 0) {
+              const buffered = audioRef.current.buffered.end(0);
+              const duration = audioRef.current.duration;
+              console.log(`📊 Buffered: ${Math.round((buffered/duration)*100)}%`);
             }
           }}
         />
@@ -755,13 +765,40 @@ const App: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button onClick={togglePlay} disabled={isLoading} style={{ background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '20px', cursor: isLoading ? 'not-allowed' : 'pointer', fontSize: '14px', opacity: isLoading ? 0.5 : 1 }}>
               {isLoading ? `⏳ Lädt...` : isPlaying ? `⏸️ Pause` : `▶️ Play`}
+            </button>
+            <button 
+              onClick={() => {
+                console.log('🔄 Force reload audio');
+                if (audioRef.current) {
+                  audioRef.current.load();
+                  setIsLoading(true);
+                }
+              }}
+              style={{ background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '20px', fontSize: '14px' }}
+            >
+              🔄 Reload
             </button>
             <a href={audioUrl} target="_blank" rel="noopener noreferrer" style={{ background: 'rgba(255,255,255,0.2)', color: 'white', textDecoration: 'none', padding: '8px 16px', borderRadius: '20px', fontSize: '14px' }}>
               📥 Download
             </a>
+            <button 
+              onClick={() => {
+                console.log('🧪 Testing URL access...');
+                fetch(audioUrl, { method: 'HEAD' })
+                  .then(response => {
+                    console.log('✅ URL accessible:', response.status, response.headers.get('content-type'));
+                  })
+                  .catch(error => {
+                    console.error('❌ URL not accessible:', error);
+                  });
+              }}
+              style={{ background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '20px', fontSize: '14px' }}
+            >
+              🧪 Test
+            </button>
           </div>
           <span style={{ fontSize: '14px', fontFamily: 'monospace' }}>{formatAudioTime(currentTime)} / {formatAudioTime(duration)}</span>
         </div>
