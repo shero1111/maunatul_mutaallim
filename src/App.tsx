@@ -1577,91 +1577,7 @@ const App: React.FC = () => {
                              📖 {t.explanationPdf}
                            </button>
                          )}
-                         {matn.memorization_audio_link && (
-                           // Show audio button OR audio player
-                                                       audioPlayer && audioPlayer.matnId === matn.id ? (
-                             // Ultra-Stable Audio Player with Fixed Key
-                             <div 
-                               key={`audio-player-${audioPlayer.matnId}`} 
-                               style={{
-                                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                 padding: '10px',
-                                 borderRadius: '6px',
-                                 color: 'white',
-                                 marginTop: '6px',
-                                 width: '100%'
-                               }}
-                             >
-                               {/* Header with close button */}
-                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                                 <span style={{ fontSize: '11px', fontWeight: 'bold' }}>🎧 Audio Player</span>
-                                 <button 
-                                   onClick={(e) => {
-                                     e.stopPropagation();
-                                     setAudioPlayer(null);
-                                   }}
-                                   style={{ 
-                                     background: 'rgba(255,255,255,0.3)', 
-                                     border: 'none', 
-                                     color: 'white', 
-                                     width: '18px', 
-                                     height: '18px', 
-                                     borderRadius: '50%', 
-                                     cursor: 'pointer', 
-                                     fontSize: '10px',
-                                     display: 'flex',
-                                     alignItems: 'center',
-                                     justifyContent: 'center'
-                                   }}
-                                 >
-                                   ✕
-                                 </button>
-                               </div>
-                               
-                               {/* Static Audio Element - No Re-renders */}
-                               <audio 
-                                 key={audioPlayer.url} // Force re-mount on URL change only
-                                 controls
-                                 preload="metadata"
-                                 style={{ 
-                                   width: '100%', 
-                                   height: '32px',
-                                   outline: 'none',
-                                   backgroundColor: 'rgba(255,255,255,0.1)',
-                                   borderRadius: '4px'
-                                 }}
-                               >
-                                 <source src={audioPlayer.url} type="audio/mpeg" />
-                                 <source src={audioPlayer.url} type="audio/wav" />
-                                 Audio wird nicht unterstützt.
-                               </audio>
-                               
-                               {/* Debug Info */}
-                               <div style={{ marginTop: '4px', fontSize: '8px', color: 'rgba(255,255,255,0.6)', textAlign: 'center' }}>
-                                 URL: {audioPlayer.url.split('/').pop()?.substring(0, 20)}...
-                               </div>
-                               
-                               {/* Fallback Download */}
-                               <div style={{ marginTop: '4px', textAlign: 'center' }}>
-                                 <a 
-                                   href={audioPlayer.url} 
-                                   target="_blank" 
-                                   rel="noopener noreferrer" 
-                                   style={{ 
-                                     color: 'rgba(255,255,255,0.8)', 
-                                     textDecoration: 'none', 
-                                     fontSize: '9px',
-                                     padding: '2px 6px',
-                                     background: 'rgba(255,255,255,0.1)',
-                                     borderRadius: '8px'
-                                   }}
-                                 >
-                                   📥 Direct Download
-                                 </a>
-                               </div>
-                             </div>
-                           ) : (
-                             // Audio Button
+                                                    {matn.memorization_audio_link && (
                              <button onClick={() => setAudioPlayer({ url: matn.memorization_audio_link, title: matn.name, matnId: matn.id })} style={{ 
                                padding: '6px 12px', 
                                background: colors.success, 
@@ -1674,8 +1590,7 @@ const App: React.FC = () => {
                              }}>
                                🎧 {t.audio}
                              </button>
-                           )
-                         )}
+                           )}
                        </div>
                        
                        {/* Days Since Last Green Status */}
@@ -3402,10 +3317,88 @@ const App: React.FC = () => {
 
       {/* PDF Viewer removed - only external opening */}
 
-      {/* Audio Player */}
+              {/* Fixed Overlay Audio Player - Outside all components */}
+        {audioPlayer && (
+          <div style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            padding: '20px',
+            borderRadius: '12px',
+            color: 'white',
+            zIndex: 10000,
+            boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+            width: '90%',
+            maxWidth: '400px'
+          }}>
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+              <h3 style={{ margin: 0, fontSize: '16px' }}>🎧 {audioPlayer.title}</h3>
+              <button 
+                onClick={() => setAudioPlayer(null)}
+                style={{ 
+                  background: 'rgba(255,255,255,0.2)', 
+                  border: 'none', 
+                  color: 'white', 
+                  width: '30px', 
+                  height: '30px', 
+                  borderRadius: '50%', 
+                  cursor: 'pointer', 
+                  fontSize: '16px'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            
+            {/* Simple Native Audio */}
+            <audio 
+              src={audioPlayer.url}
+              controls
+              autoPlay
+              style={{ width: '100%', marginBottom: '15px' }}
+            />
+            
+            {/* Download Link */}
+            <div style={{ textAlign: 'center' }}>
+              <a 
+                href={audioPlayer.url} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                style={{ 
+                  color: 'white', 
+                  textDecoration: 'none',
+                  background: 'rgba(255,255,255,0.2)',
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  fontSize: '14px'
+                }}
+              >
+                📥 Download MP3
+              </a>
+            </div>
+          </div>
+        )}
 
+        {/* Overlay Background */}
+        {audioPlayer && (
+          <div 
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0,0,0,0.5)',
+              zIndex: 9999
+            }}
+            onClick={() => setAudioPlayer(null)}
+          />
+        )}
 
-      {/* Timer Modal */}
+        {/* Timer Modal */}
       <TimerModal />
 
 
