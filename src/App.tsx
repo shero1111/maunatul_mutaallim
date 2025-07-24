@@ -1782,7 +1782,8 @@ const App: React.FC = () => {
         });
         
         setHalaqaForm({ name: '', type: 'memorizing', teacher_id: '', student_ids: [], internal_number: 0, isActive: true });
-        setStudentSearchQuery('');
+        setStudentSearchInput('');
+        setStudentSearchActive(false);
         setIsCreatingHalaqa(false);
       }
     };
@@ -1824,7 +1825,8 @@ const App: React.FC = () => {
         });
         
         setHalaqaForm({ name: '', type: 'memorizing', teacher_id: '', student_ids: [], internal_number: 0, isActive: true });
-        setStudentSearchQuery('');
+        setStudentSearchInput('');
+        setStudentSearchActive(false);
         setEditingHalaqaId(null);
         setIsCreatingHalaqa(false);
       }
@@ -2313,7 +2315,8 @@ const App: React.FC = () => {
                       setIsCreatingHalaqa(false);
                       setEditingHalaqaId(null);
                       setHalaqaForm({ name: '', type: 'memorizing', teacher_id: '', student_ids: [], internal_number: 0, isActive: true });
-                      setStudentSearchQuery('');
+                      setStudentSearchInput('');
+                      setStudentSearchActive(false);
                     }}
                       style={{
                         padding: '12px 20px',
