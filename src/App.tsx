@@ -1967,27 +1967,34 @@ const App: React.FC = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            background: 'rgba(0,0,0,0.5)',
+            background: 'rgba(0,0,0,0.7)',
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 1000
+            alignItems: 'flex-start',
+            zIndex: 10000,
+            paddingTop: '20px',
+            paddingBottom: '100px'
           }}>
             <div style={{
               background: colors.surface,
               borderRadius: '12px',
-              padding: '16px',
               width: '95%',
               maxWidth: '400px',
-              maxHeight: '85vh',
-              overflow: 'auto',
-              margin: '10px'
+              maxHeight: 'calc(100vh - 140px)',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
             }}>
-                              <h2 style={{ color: colors.text, marginBottom: '12px', fontSize: '1.2rem' }}>
-                  {editingHalaqaId ? 'تعديل الحلقة' : 'إنشاء حلقة جديدة'}
-                </h2>
+                                              {/* Modal Header */}
+                <div style={{ padding: '16px 16px 0 16px', borderBottom: `1px solid ${colors.border}` }}>
+                  <h2 style={{ color: colors.text, marginBottom: '12px', fontSize: '1.2rem', textAlign: 'center' }}>
+                    {editingHalaqaId ? 'تعديل الحلقة' : 'إنشاء حلقة جديدة'}
+                  </h2>
+                </div>
 
-                {/* Halaqa Name */}
+                {/* Scrollable Content */}
+                <div style={{ flex: 1, overflow: 'auto', padding: '16px' }}>
+                  {/* Halaqa Name */}
                 <div style={{ marginBottom: '12px' }}>
                                   <label style={{ display: 'block', marginBottom: '6px', color: colors.text, fontWeight: '600', fontSize: '0.9rem' }}>
                     اسم الحلقة
@@ -2148,40 +2155,51 @@ const App: React.FC = () => {
                 </label>
               </div>
 
-              {/* Action Buttons */}
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-                <button
-                  onClick={() => {
-                    setIsCreatingHalaqa(false);
-                    setEditingHalaqaId(null);
-                    setHalaqaForm({ name: '', type: 'memorizing', teacher_id: '', student_ids: [], internal_number: 0, isActive: true });
-                  }}
-                  style={{
-                    padding: '12px 20px',
-                    border: `1px solid ${colors.border}`,
-                    borderRadius: '8px',
-                    background: colors.background,
-                    color: colors.text,
-                    cursor: 'pointer'
-                  }}
-                >
-                  إلغاء
-                </button>
-                <button
-                  onClick={editingHalaqaId ? handleUpdateHalaqa : handleCreateHalaqa}
-                  style={{
-                    padding: '12px 20px',
-                    border: 'none',
-                    borderRadius: '8px',
-                    background: colors.primary,
-                    color: 'white',
-                    cursor: 'pointer',
-                    fontWeight: '600'
-                  }}
-                >
-                  {editingHalaqaId ? 'تحديث' : 'إنشاء'}
-                </button>
-              </div>
+                </div>
+
+                {/* Sticky Footer with Action Buttons */}
+                <div style={{ 
+                  padding: '16px', 
+                  borderTop: `1px solid ${colors.border}`,
+                  background: colors.surface,
+                  borderRadius: '0 0 12px 12px'
+                }}>
+                  <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                    <button
+                      onClick={() => {
+                        setIsCreatingHalaqa(false);
+                        setEditingHalaqaId(null);
+                        setHalaqaForm({ name: '', type: 'memorizing', teacher_id: '', student_ids: [], internal_number: 0, isActive: true });
+                      }}
+                      style={{
+                        padding: '12px 20px',
+                        border: `1px solid ${colors.border}`,
+                        borderRadius: '8px',
+                        background: colors.background,
+                        color: colors.text,
+                        cursor: 'pointer',
+                        fontSize: '16px'
+                      }}
+                    >
+                      إلغاء
+                    </button>
+                    <button
+                      onClick={editingHalaqaId ? handleUpdateHalaqa : handleCreateHalaqa}
+                      style={{
+                        padding: '12px 20px',
+                        border: 'none',
+                        borderRadius: '8px',
+                        background: colors.primary,
+                        color: 'white',
+                        cursor: 'pointer',
+                        fontWeight: '600',
+                        fontSize: '16px'
+                      }}
+                    >
+                      {editingHalaqaId ? 'تحديث' : 'إنشاء'}
+                    </button>
+                  </div>
+                </div>
             </div>
           </div>
         )}
