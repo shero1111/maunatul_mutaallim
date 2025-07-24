@@ -3354,61 +3354,33 @@ const App: React.FC = () => {
             </div>
             
             {/* Simple Native Audio */}
-            {/* Device Detection & Smart Info */}
-            <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)', marginBottom: '10px' }}>
-              <div style={{ marginBottom: '5px', display: 'flex', justifyContent: 'space-between' }}>
-                <span>📱 {/iPhone|iPad|iPod/.test(navigator.userAgent) ? 'iOS' : 
-                        /Android/.test(navigator.userAgent) ? 'Android' : 
-                        'Desktop'}</span>
-                <span>📁 {(audioPlayer.url.match(/[\d.-]+\s*MB/) || ['16MB'])[0]}</span>
-              </div>
-              <div style={{ wordBreak: 'break-all', opacity: 0.6 }}>
-                🔗 {audioPlayer.url.split('/').pop()?.substring(0, 30)}...
-              </div>
+            {/* Audio File Info */}
+            <div style={{ 
+              fontSize: '11px', 
+              color: 'rgba(255,255,255,0.7)', 
+              marginBottom: '12px', 
+              textAlign: 'center',
+              background: 'rgba(255,255,255,0.1)',
+              padding: '8px',
+              borderRadius: '6px'
+            }}>
+              🎵 {audioPlayer.url.split('/').pop()?.replace(/\.[^/.]+$/, "") || "Audio File"}
             </div>
             
-            {/* Universal Mobile-Compatible Audio Player */}
+            {/* Future-Proof HTML5 Audio Player */}
             <audio 
               controls
-              preload="metadata"
-              playsInline
-              webkit-playsinline="true"
-              controlsList="nodownload"
+              preload="none"
               style={{ 
                 width: '100%', 
                 marginBottom: '15px',
-                height: '44px', // Optimized for all mobile browsers
-                backgroundColor: 'rgba(255,255,255,0.1)',
-                borderRadius: '8px'
-              }}
-              onLoadStart={() => console.log('🔄 Loading:', audioPlayer.url)}
-              onCanPlay={() => console.log('✅ Ready to play')}
-              onError={(e) => {
-                console.error('❌ Audio error:', e.currentTarget.error?.code);
-                // Auto-fallback suggestion
-                const fallbackMsg = e.currentTarget.error?.code === 4 ? 
-                  'Try download button below' : 'Check network connection';
-                console.log('💡 Suggestion:', fallbackMsg);
+                minHeight: '40px'
               }}
             >
-              {/* Multiple source formats for maximum compatibility */}
               <source src={audioPlayer.url} type="audio/mpeg" />
               <source src={audioPlayer.url} type="audio/mp3" />
-              <source src={audioPlayer.url} type="audio/wav" />
-              <source src={audioPlayer.url.replace('.mp3', '.ogg')} type="audio/ogg" />
-              Audio playback not supported on this device.
+              Your browser doesn't support the audio element.
             </audio>
-            
-            {/* Mobile Compatibility Tips */}
-            <div style={{ 
-              fontSize: '10px', 
-              color: 'rgba(255,255,255,0.6)', 
-              textAlign: 'center',
-              marginBottom: '10px',
-              lineHeight: '1.3'
-            }}>
-              💡 Tip: If audio doesn't play, try the download button or check your device's media settings
-            </div>
             
             {/* Download Link */}
             <div style={{ textAlign: 'center' }}>
