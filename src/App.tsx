@@ -3354,19 +3354,6 @@ const App: React.FC = () => {
             </div>
             
             {/* Simple Native Audio */}
-            {/* Audio File Info */}
-            <div style={{ 
-              fontSize: '11px', 
-              color: 'rgba(255,255,255,0.7)', 
-              marginBottom: '12px', 
-              textAlign: 'center',
-              background: 'rgba(255,255,255,0.1)',
-              padding: '8px',
-              borderRadius: '6px'
-            }}>
-              🎵 {audioPlayer.url.split('/').pop()?.replace(/\.[^/.]+$/, "") || "Audio File"}
-            </div>
-            
             {/* Future-Proof HTML5 Audio Player */}
             <audio 
               controls
