@@ -3738,7 +3738,7 @@ const App: React.FC = () => {
               marginBottom: window.innerHeight < 700 ? '10px' : '15px',
               direction: 'ltr'
             }}>
-              {/* Rewind 5 Seconds */}
+              {/* Rewind 5 Seconds - ALWAYS LEFT */}
               <button 
                 onTouchStart={(e) => {
                   e.preventDefault();
@@ -3776,7 +3776,6 @@ const App: React.FC = () => {
                   gap: window.innerWidth < 400 ? '6px' : '8px',
                   transition: 'all 0.2s ease',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                  order: 1,
                   touchAction: 'manipulation',
                   WebkitTapHighlightColor: 'transparent',
                   outline: 'none'
@@ -3795,7 +3794,7 @@ const App: React.FC = () => {
                 <span>5s</span>
               </button>
               
-              {/* Forward 5 Seconds */}
+              {/* Forward 5 Seconds - ALWAYS RIGHT */}
               <button 
                 onTouchStart={(e) => {
                   e.preventDefault();
@@ -3833,7 +3832,6 @@ const App: React.FC = () => {
                   gap: window.innerWidth < 400 ? '6px' : '8px',
                   transition: 'all 0.2s ease',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                  order: 2,
                   touchAction: 'manipulation',
                   WebkitTapHighlightColor: 'transparent',
                   outline: 'none'
