@@ -212,6 +212,19 @@ const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
+  // Audio Player State
+  const [audioState, setAudioState] = useState<{
+    isPlaying: boolean;
+    currentTime: number;
+    duration: number;
+    isDragging: boolean;
+  }>({
+    isPlaying: false,
+    currentTime: 0,
+    duration: 0,
+    isDragging: false
+  });
+  
   // Data State
   const [usersData, setUsersData] = useState(demoUsers);
   const [halaqatData, setHalaqatData] = useState(demoHalaqat);
@@ -696,6 +709,149 @@ const App: React.FC = () => {
       updateMatnThreshold(thresholdModalMatn.id, tempThreshold);
       closeThresholdModal();
     }
+  };
+
+  // Custom Progress Bar Component with Drag & Drop
+  const ProgressBar: React.FC<{
+    currentTime: number;
+    duration: number;
+    onSeek: (time: number) => void;
+    isDragging: boolean;
+    setIsDragging: (dragging: boolean) => void;
+  }> = ({ currentTime, duration, onSeek, isDragging, setIsDragging }) => {
+    const progressBarRef = useRef<HTMLDivElement>(null);
+    const [dragPosition, setDragPosition] = useState(0);
+
+    const formatTime = (seconds: number) => {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const calculatePosition = (clientX: number) => {
+      if (!progressBarRef.current) return 0;
+      const rect = progressBarRef.current.getBoundingClientRect();
+      const position = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+      return position * duration;
+    };
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+      setIsDragging(true);
+      const newTime = calculatePosition(e.clientX);
+      setDragPosition(newTime);
+      onSeek(newTime);
+    };
+
+    const handleMouseMove = useCallback((e: MouseEvent) => {
+      if (!isDragging) return;
+      const newTime = calculatePosition(e.clientX);
+      setDragPosition(newTime);
+      onSeek(newTime);
+    }, [isDragging, duration, onSeek]);
+
+    const handleMouseUp = useCallback(() => {
+      setIsDragging(false);
+    }, [setIsDragging]);
+
+    // Touch events for mobile
+    const handleTouchStart = (e: React.TouchEvent) => {
+      setIsDragging(true);
+      const touch = e.touches[0];
+      const newTime = calculatePosition(touch.clientX);
+      setDragPosition(newTime);
+      onSeek(newTime);
+    };
+
+    const handleTouchMove = useCallback((e: TouchEvent) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      const newTime = calculatePosition(touch.clientX);
+      setDragPosition(newTime);
+      onSeek(newTime);
+    }, [isDragging, duration, onSeek]);
+
+    const handleTouchEnd = useCallback(() => {
+      setIsDragging(false);
+    }, [setIsDragging]);
+
+    useEffect(() => {
+      if (isDragging) {
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+        document.addEventListener('touchmove', handleTouchMove, { passive: false });
+        document.addEventListener('touchend', handleTouchEnd);
+      }
+
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('touchmove', handleTouchMove);
+        document.removeEventListener('touchend', handleTouchEnd);
+      };
+    }, [isDragging, handleMouseMove, handleMouseUp, handleTouchMove, handleTouchEnd]);
+
+    const progressPercentage = duration > 0 ? (isDragging ? dragPosition : currentTime) / duration * 100 : 0;
+
+    return (
+      <div style={{ margin: '15px 0' }}>
+        {/* Time Display */}
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          marginBottom: '8px',
+          fontSize: '12px',
+          color: 'rgba(255,255,255,0.8)'
+        }}>
+          <span>{formatTime(isDragging ? dragPosition : currentTime)}</span>
+          <span>{formatTime(duration)}</span>
+        </div>
+
+        {/* Progress Bar */}
+        <div
+          ref={progressBarRef}
+          onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
+          style={{
+            width: '100%',
+            height: '6px',
+            backgroundColor: 'rgba(255,255,255,0.3)',
+            borderRadius: '3px',
+            position: 'relative',
+            cursor: 'pointer',
+            touchAction: 'none'
+          }}
+        >
+          {/* Progress Fill */}
+          <div
+            style={{
+              width: `${progressPercentage}%`,
+              height: '100%',
+              backgroundColor: 'white',
+              borderRadius: '3px',
+              transition: isDragging ? 'none' : 'width 0.1s ease'
+            }}
+          />
+          
+          {/* Drag Handle */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: `${progressPercentage}%`,
+              transform: 'translate(-50%, -50%)',
+              width: isDragging ? '16px' : '12px',
+              height: isDragging ? '16px' : '12px',
+              backgroundColor: 'white',
+              borderRadius: '50%',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+              transition: isDragging ? 'none' : 'all 0.2s ease',
+              cursor: 'grab'
+            }}
+          />
+        </div>
+      </div>
+    );
   };
 
   // Bottom Sheet Component (Fixed scope)
@@ -3398,7 +3554,7 @@ const App: React.FC = () => {
 
       {/* PDF Viewer removed - only external opening */}
 
-              {/* Responsive Audio Player Modal */}
+              {/* Enhanced Audio Player Modal with Custom Progress Bar */}
         {audioPlayer && (
           <div style={{
             position: 'fixed',
@@ -3434,7 +3590,10 @@ const App: React.FC = () => {
                 🎧 {audioPlayer.title}
               </h3>
               <button 
-                onClick={() => setAudioPlayer(null)}
+                onClick={() => {
+                  setAudioPlayer(null);
+                  setAudioState({ isPlaying: false, currentTime: 0, duration: 0, isDragging: false });
+                }}
                 style={{ 
                   background: 'rgba(255,255,255,0.2)', 
                   border: 'none', 
@@ -3452,8 +3611,7 @@ const App: React.FC = () => {
               </button>
             </div>
             
-            {/* Simple Native Audio */}
-            {/* Enhanced Audio Player with Position Memory */}
+            {/* Hidden Audio Element for Playback */}
             <audio 
               ref={(el) => {
                 if (el && !el.dataset.initialized) {
@@ -3464,35 +3622,113 @@ const App: React.FC = () => {
                   // Auto-resume from saved position
                   const savedPosition = localStorage.getItem(`audioPosition_${audioPlayer.matnId}`);
                   if (savedPosition) {
-                    el.addEventListener('canplay', () => {
+                    el.addEventListener('loadedmetadata', () => {
                       const position = parseFloat(savedPosition);
                       if (position > 0 && position < el.duration) {
                         el.currentTime = position;
+                        setAudioState(prev => ({ ...prev, currentTime: position, duration: el.duration }));
                         console.log(`📍 Resumed at ${Math.floor(position)}s for ${audioPlayer.title}`);
+                      } else {
+                        setAudioState(prev => ({ ...prev, duration: el.duration }));
                       }
+                    }, { once: true });
+                  } else {
+                    el.addEventListener('loadedmetadata', () => {
+                      setAudioState(prev => ({ ...prev, duration: el.duration }));
                     }, { once: true });
                   }
                   
-                  // Save position while playing
+                  // Update time while playing
                   el.addEventListener('timeupdate', () => {
+                    if (!audioState.isDragging) {
+                      setAudioState(prev => ({ ...prev, currentTime: el.currentTime }));
+                    }
                     if (el.currentTime > 0) {
                       localStorage.setItem(`audioPosition_${audioPlayer.matnId}`, el.currentTime.toString());
                     }
                   });
+
+                  // Handle play/pause state
+                  el.addEventListener('play', () => {
+                    setAudioState(prev => ({ ...prev, isPlaying: true }));
+                  });
+
+                  el.addEventListener('pause', () => {
+                    setAudioState(prev => ({ ...prev, isPlaying: false }));
+                  });
+
+                  el.addEventListener('ended', () => {
+                    setAudioState(prev => ({ ...prev, isPlaying: false, currentTime: 0 }));
+                    localStorage.removeItem(`audioPosition_${audioPlayer.matnId}`);
+                  });
                 }
               }}
-              controls
-              preload="none"
-              style={{ 
-                width: '100%', 
-                marginBottom: '10px',
-                minHeight: '40px'
-              }}
+              preload="metadata"
+              style={{ display: 'none' }}
             >
               <source src={audioPlayer.url} type="audio/mpeg" />
               <source src={audioPlayer.url} type="audio/mp3" />
-              Your browser doesn't support the audio element.
             </audio>
+
+            {/* Custom Audio Controls */}
+            <div style={{ marginBottom: '15px' }}>
+              {/* Play/Pause Button */}
+              <div style={{ textAlign: 'center', marginBottom: '15px' }}>
+                <button
+                  onClick={() => {
+                    const audio = (window as any).currentAudio;
+                    if (audio) {
+                      if (audioState.isPlaying) {
+                        audio.pause();
+                      } else {
+                        audio.play();
+                      }
+                    }
+                  }}
+                  style={{
+                    background: 'rgba(255,255,255,0.2)',
+                    border: '2px solid rgba(255,255,255,0.4)',
+                    borderRadius: '50%',
+                    width: '60px',
+                    height: '60px',
+                    color: 'white',
+                    fontSize: '24px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.3)';
+                    e.currentTarget.style.transform = 'scale(1.05)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                >
+                  {audioState.isPlaying ? '⏸️' : '▶️'}
+                </button>
+              </div>
+
+              {/* Custom Progress Bar with Drag & Drop */}
+              <ProgressBar
+                currentTime={audioState.currentTime}
+                duration={audioState.duration}
+                isDragging={audioState.isDragging}
+                setIsDragging={(dragging) => setAudioState(prev => ({ ...prev, isDragging: dragging }))}
+                onSeek={(time) => {
+                  const audio = (window as any).currentAudio;
+                  if (audio) {
+                    audio.currentTime = time;
+                    setAudioState(prev => ({ ...prev, currentTime: time }));
+                    localStorage.setItem(`audioPosition_${audioPlayer.matnId}`, time.toString());
+                  }
+                }}
+              />
+            </div>
             
             {/* Responsive Skip Controls */}
             <div style={{ 
@@ -3511,6 +3747,7 @@ const App: React.FC = () => {
                   if (audio) {
                     const newTime = Math.max(0, audio.currentTime - 5);
                     audio.currentTime = newTime;
+                    setAudioState(prev => ({ ...prev, currentTime: newTime }));
                     localStorage.setItem(`audioPosition_${audioPlayer.matnId}`, newTime.toString());
                   }
                 }}
@@ -3521,28 +3758,29 @@ const App: React.FC = () => {
                   if (audio) {
                     const newTime = Math.max(0, audio.currentTime - 5);
                     audio.currentTime = newTime;
+                    setAudioState(prev => ({ ...prev, currentTime: newTime }));
                     localStorage.setItem(`audioPosition_${audioPlayer.matnId}`, newTime.toString());
                   }
                 }}
-                                  style={{
-                    background: 'linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.15))',
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    color: 'white',
-                    padding: window.innerWidth < 400 ? '8px 12px' : '12px 16px',
-                    borderRadius: window.innerWidth < 400 ? '20px' : '50px',
-                    cursor: 'pointer',
-                    fontSize: window.innerWidth < 400 ? '12px' : '14px',
-                    fontWeight: '600',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: window.innerWidth < 400 ? '6px' : '8px',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                    order: 1,
-                    touchAction: 'manipulation',
-                    WebkitTapHighlightColor: 'transparent',
-                    outline: 'none'
-                  }}
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.15))',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  color: 'white',
+                  padding: window.innerWidth < 400 ? '8px 12px' : '12px 16px',
+                  borderRadius: window.innerWidth < 400 ? '20px' : '50px',
+                  cursor: 'pointer',
+                  fontSize: window.innerWidth < 400 ? '12px' : '14px',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: window.innerWidth < 400 ? '6px' : '8px',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                  order: 1,
+                  touchAction: 'manipulation',
+                  WebkitTapHighlightColor: 'transparent',
+                  outline: 'none'
+                }}
                 onTouchEnd={(e) => e.preventDefault()}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'scale(1.05)';
@@ -3566,6 +3804,7 @@ const App: React.FC = () => {
                   if (audio) {
                     const newTime = Math.min(audio.duration || 0, audio.currentTime + 5);
                     audio.currentTime = newTime;
+                    setAudioState(prev => ({ ...prev, currentTime: newTime }));
                     localStorage.setItem(`audioPosition_${audioPlayer.matnId}`, newTime.toString());
                   }
                 }}
@@ -3576,6 +3815,7 @@ const App: React.FC = () => {
                   if (audio) {
                     const newTime = Math.min(audio.duration || 0, audio.currentTime + 5);
                     audio.currentTime = newTime;
+                    setAudioState(prev => ({ ...prev, currentTime: newTime }));
                     localStorage.setItem(`audioPosition_${audioPlayer.matnId}`, newTime.toString());
                   }
                 }}
